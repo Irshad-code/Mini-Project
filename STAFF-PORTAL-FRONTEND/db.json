@@ -1,0 +1,18 @@
+{
+  "employees": [
+    {
+      "id": "1",
+      "fullName": "Soni Ponnan",
+      "email": "john.doe@university.edu",
+      "dateOfBirth": "1978-04-28",
+      "gender": "male",
+      "college": "Government Engineering College, Thrissur",
+      "department": "Computer Science",
+      "contactDetails": {
+        "phone": "+91 9876543210",
+        "currentAddress": "123 Faculty Housing, University Campus",
+        "permanentAddress": "456 Residential Colony, City"
+      }
+    }
+  ]
+}
