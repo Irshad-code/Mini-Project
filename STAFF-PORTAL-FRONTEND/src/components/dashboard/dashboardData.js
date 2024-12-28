@@ -12,6 +12,18 @@ import {
   FiArchive,
   FiBookmark,
   FiPieChart,
+  FiList,
+  FiCoffee,
+  FiAward,
+  FiBarChart2,
+  FiCheckCircle,
+  FiStar,
+  FiUpload,
+  FiDownload,
+  FiTarget,
+  FiLayers,
+  FiTrendingUp,
+  FiDatabase,
 } from "react-icons/fi";
 
 export const dashboardFeatures = [
@@ -37,6 +49,44 @@ export const dashboardFeatures = [
     sections: ["current", "archived"],
   },
   {
+    id: "tutorship",
+    title: "My Tutorship",
+    description: "Monitor and manage your assigned student batch",
+    icon: FiBook,
+    sections: [
+      "batch-details",
+      "academic-records",
+      "scholarships",
+      "credit-approvals",
+      "achievements",
+    ],
+  },
+  {
+    id: "copo",
+    title: "CO-PO Computation",
+    description: "Calculate and analyze Course Outcomes and Program Outcomes",
+    icon: FiTarget,
+    sections: [
+      "internal-assessment",
+      "high-level-mapping",
+      "detailed-analysis",
+      "reports",
+      "templates",
+    ],
+  },
+  {
+    id: "result-analysis",
+    title: "KTU Result Analysis",
+    description: "Generate and view comprehensive result analysis reports",
+    icon: FiTrendingUp,
+    sections: [
+      "upload-results",
+      "generate-analysis",
+      "analysis-history",
+      "batch-comparison",
+    ],
+  },
+  {
     id: "tax",
     title: "Tax Management",
     description: "Handle your tax calculations, declarations and documents",
@@ -51,11 +101,11 @@ export const dashboardFeatures = [
     sections: ["apply", "history"],
   },
   {
-    id: "payroll",
-    title: "Payroll",
-    description: "Access your salary statements and payroll details",
-    icon: FiDollarSign,
-    sections: ["statements", "details"],
+    id: "schedule",
+    title: "My Schedule",
+    description: "View and manage your daily schedule and activities",
+    icon: FiClock,
+    sections: ["timetable", "activities", "meetings"],
   },
 ];
 
@@ -72,6 +122,83 @@ export const navigationItems = {
     { name: "Current Classes", icon: FiBookOpen, section: "current" },
     { name: "Archived Classes", icon: FiArchive, section: "archived" },
   ],
+  tutorship: [
+    { name: "Batch Details", icon: FiUser, section: "batch-details" },
+    {
+      name: "Academic Records",
+      icon: FiBarChart2,
+      section: "academic-records",
+    },
+    {
+      name: "Scholarship Approvals",
+      icon: FiCheckCircle,
+      section: "scholarships",
+    },
+    {
+      name: "Credit Approvals",
+      icon: FiCheckSquare,
+      section: "credit-approvals",
+    },
+    { name: "Student Achievements", icon: FiAward, section: "achievements" },
+  ],
+  copo: [
+    {
+      name: "Internal Assessment",
+      icon: FiClipboard,
+      section: "internal-assessment",
+      description: "Upload and process internal marks for CO-PO calculation",
+    },
+    {
+      name: "High-Level Mapping",
+      icon: FiLayers,
+      section: "high-level-mapping",
+      description: "Define CO-PO mapping matrix and weightages",
+    },
+    {
+      name: "Detailed Analysis",
+      icon: FiBarChart2,
+      section: "detailed-analysis",
+      description: "Complete CO-PO computation with all components",
+    },
+    {
+      name: "Generated Reports",
+      icon: FiDownload,
+      section: "reports",
+      description: "View and download generated CO-PO reports",
+    },
+    {
+      name: "Upload Templates",
+      icon: FiUpload,
+      section: "templates",
+      description: "Download and upload standardized templates",
+    },
+  ],
+  "result-analysis": [
+    {
+      name: "Upload Results",
+      icon: FiUpload,
+      section: "upload-results",
+      description: "Upload semester result PDFs for analysis",
+    },
+    {
+      name: "Generate Analysis",
+      icon: FiBarChart2,
+      section: "generate-analysis",
+      description: "Generate Excel reports with comprehensive analysis",
+    },
+    {
+      name: "Analysis History",
+      icon: FiDatabase,
+      section: "analysis-history",
+      description: "View and download previous analysis reports",
+    },
+    {
+      name: "Batch Comparison",
+      icon: FiTrendingUp,
+      section: "batch-comparison",
+      description: "Compare results across different batches and semesters",
+    },
+  ],
   tax: [
     { name: "Tax Calculator", icon: FiPieChart, section: "calculator" },
     { name: "Tax Declarations", icon: FiFileText, section: "declarations" },
@@ -82,8 +209,9 @@ export const navigationItems = {
     { name: "Apply Leave", icon: FiCalendar, section: "apply" },
     { name: "Leave History", icon: FiClock, section: "history" },
   ],
-  payroll: [
-    { name: "Salary Statements", icon: FiDollarSign, section: "statements" },
-    { name: "Payroll Details", icon: FiGrid, section: "details" },
+  schedule: [
+    { name: "Timetable", icon: FiList, section: "timetable" },
+    { name: "Daily Activities", icon: FiCoffee, section: "activities" },
+    { name: "Meetings", icon: FiCalendar, section: "meetings" },
   ],
 };
