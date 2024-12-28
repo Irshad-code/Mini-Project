@@ -1,4 +1,4 @@
-import { Tab } from "@headlessui/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { useNavigation } from "../../../../contexts/NavigationContext";
 import Card from "../../../../components/ui/Card";
 import PageContainer from "../../../../components/layout/PageContainer";
@@ -15,28 +15,28 @@ export default function PersonalInfo() {
   return (
     <PageContainer>
       <div className="w-full">
-        <Card className="bg-[var(--color-bg-primary)] shadow-lg p-8 rounded-xl w-full border border-[var(--color-border-primary)]">
+        <Card className="bg-[var(--color-bg-primary)] shadow-lg p-8 rounded-xl w-full border border-[var(--color-border-primary)]  ">
           <h2 className="text-3xl font-bold text-[var(--color-primary-500)] mb-6">
             Personal Information
           </h2>
 
-          <Tab.Group>
-            <Tab.List className="flex space-x-2 border-b-2 border-[var(--color-border-primary)]">
+          <TabGroup>
+            <TabList className="flex space-x-2 border-b-2 border-[var(--color-border-primary)]">
               {tabs.map((tab, index) => (
                 <TabButton key={tab.name} index={index} name={tab.name} />
               ))}
-            </Tab.List>
-            <Tab.Panels className="mt-8">
+            </TabList>
+            <TabPanels className="mt-8">
               {tabs.map((tab) => (
-                <Tab.Panel
+                <TabPanel
                   key={tab.name}
                   className="animate-fadeIn bg-[var(--color-bg-secondary)] p-6 rounded-lg"
                 >
                   <tab.component />
-                </Tab.Panel>
+                </TabPanel>
               ))}
-            </Tab.Panels>
-          </Tab.Group>
+            </TabPanels>
+          </TabGroup>
         </Card>
       </div>
     </PageContainer>

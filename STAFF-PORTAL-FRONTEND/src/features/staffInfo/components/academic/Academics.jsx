@@ -1,4 +1,4 @@
-import { Tab } from "@headlessui/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import BasicInfo from "../personal/BasicInfo";
 import ContactDetails from "../personal/ContactDetails";
 import Card from "../../../../components/ui/Card";
@@ -19,23 +19,23 @@ export default function PersonalInfo() {
             Personal Information
           </h2>
 
-          <Tab.Group>
-            <Tab.List className="flex space-x-2 border-b-2 border-[var(--color-border-primary)]">
+          <TabGroup>
+            <TabList className="flex space-x-2 border-b-2 border-[var(--color-border-primary)]">
               {tabs.map((tab, index) => (
                 <TabButton key={tab.name} index={index} name={tab.name} />
               ))}
-            </Tab.List>
-            <Tab.Panels className="mt-8">
+            </TabList>
+            <TabPanels className="mt-8">
               {tabs.map((tab) => (
-                <Tab.Panel
+                <TabPanel
                   key={tab.name}
                   className="animate-fadeIn bg-[var(--color-bg-secondary)] p-6 rounded-lg"
                 >
                   <tab.component />
-                </Tab.Panel>
+                </TabPanel>
               ))}
-            </Tab.Panels>
-          </Tab.Group>
+            </TabPanels>
+          </TabGroup>
         </Card>
       </div>
     </PageContainer>
