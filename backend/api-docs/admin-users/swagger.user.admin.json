@@ -1,0 +1,237 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Admin User Management API",
+    "version": "1.0.0",
+    "description": "API documentation for admin user management features like signup."
+  },
+  "basePath": "/api/admin",
+  "schemes": ["http"],
+  "paths": {
+    "/users/signup": {
+      "post": {
+        "tags": ["Admin Users"],
+        "summary": "Admin creates a new user",
+        "description": "Allows an admin or superuser to create a new user account. JWT authentication is required.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Signup details for the new user",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "example@example.com"
+                },
+                "username": {
+                  "type": "string",
+                  "example": "johndoe"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password",
+                  "example": "password123"
+                },
+                "role": {
+                  "type": "string",
+                  "example": "USER"
+                },
+                "phoneNumber": {
+                  "type": "string",
+                  "pattern": "^[0-9]{10}$",
+                  "example": "1234567890",
+                  "description": "10-digit phone number"
+                }
+              },
+              "required": ["email", "username", "password", "phoneNumber"]
+            }
+          }
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User successfully created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User registered. Please login to the system."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - JWT token is missing or invalid",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient privileges (only admin or superuser allowed)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "User already exists",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User already exists."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "put": {
+        "summary": "Update User",
+        "description": "Update a user's details by ID (admin or super users).",
+        "consumes": ["multipart/form-data"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the user to update."
+          },
+          {
+            "in": "formData",
+            "name": "username",
+            "type": "string",
+            "required": false,
+            "description": "The updated username of the user."
+          },
+          {
+            "in": "formData",
+            "name": "email",
+            "type": "string",
+            "required": false,
+            "description": "The updated email of the user."
+          },
+          {
+            "in": "formData",
+            "name": "role",
+            "type": "string",
+            "required": false,
+            "description": "The updated role(REGULAR_USER,ADMIN_USER) of the user."
+          },
+          {
+            "in": "formData",
+            "name": "phoneNumber",
+            "type": "string",
+            "required": false,
+            "description": "The updated phoneNumber of the user."
+          },
+
+          {
+            "in": "formData",
+            "name": "image",
+            "type": "file",
+            "required": false,
+            "description": "Profile image of the user (optional)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully."
+          },
+          "400": {
+            "description": "Invalid data or unauthorized."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete User",
+        "description": "Delete a user by ID (admin or super users).",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully."
+          },
+          "400": {
+            "description": "Invalid ID or unauthorized."
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+    }
+  },
+  "tags": [
+    {
+      "name": "Admin Users",
+      "description": "Operations related to admin and superuser user management"
+    }
+  ]
+}

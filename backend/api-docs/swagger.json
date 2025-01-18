@@ -1,0 +1,8 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Pharma API",
+    "description": "This API provides endpoints for managing pharmaceutical data.\n\n### Document Locations\n- **[Users](/api-docs/users)**\n\n\n\n- **[AdminUsers](/api-docs/admin/users)**\n\n\n\n\n ",
+    "version": "1.0.0"
+  }
+}

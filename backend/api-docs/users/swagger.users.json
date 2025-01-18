@@ -1,0 +1,524 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "User Management API",
+    "description": "API for managing users, including signup, login, password reset, and more.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/users/login": {
+      "post": {
+        "summary": "User Login",
+        "description": "Authenticate the user using their email and password.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            },
+            "description": "The login credentials containing email and password."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful. Returns the user details and a JWT token.",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request. Missing email or password."
+          },
+          "401": {
+            "description": "Unauthorized. Invalid email or password."
+          },
+          "424": {
+            "description": "Failed Dependency. Email is not verified."
+          },
+          "428": {
+            "description": "Precondition Required. Password reset is required.",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/api/users/forgot-password": {
+      "post": {
+        "summary": "Forgot Password",
+        "description": "Send a password reset email to the user.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ForgotPasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset email sent successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Password reset email sent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing data.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Invalid email address provided"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "User not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "An error occurred while processing your request"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/reset-password": {
+      "post": {
+        "summary": "Reset Password",
+        "description": "Reset a user's password using a token. The token must be valid and not expired.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/ResetPasswordRequest"
+              },
+              "examples": {
+                "resetPassword": {
+                  "value": {
+                    "token": "string",
+                    "password": "newSecurePassword123!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Password reset successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Invalid data."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Invalid or expired token."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Something went wrong. Please try again."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/verify/{token}": {
+      "get": {
+        "summary": "Verify Email",
+        "description": "Verify user's email using a token.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The verification token."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verified successfully."
+          },
+          "400": {
+            "description": "Invalid token."
+          }
+        }
+      }
+    },
+    "/api/users/resend-verification": {
+      "post": {
+        "summary": "Resend Verification Email",
+        "description": "Resend the email verification to the user.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResendVerificationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification email resent."
+          },
+          "400": {
+            "description": "Invalid request data."
+          }
+        }
+      }
+    },
+
+    "/api/users/reset-password-with-email": {
+      "post": {
+        "summary": "Reset Password via Email",
+        "description": "Request to reset a password using an email address.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResetPasswordRequestWithEmail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset email sent successfully."
+          },
+          "400": {
+            "description": "Invalid or missing data."
+          }
+        }
+      }
+    },
+
+    "/api/users/list": {
+      "get": {
+        "summary": "List Users",
+        "description": "List all registered users (only accessible to Super Users).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Specifies the page number of records to retrieve.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Specifies the number of records in each page to retrieve.",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "description": "Filters users by role (e.g., STUDENT, ALUMNI, ADMIN, etc.).",
+            "required": false,
+            "type": "string",
+            "enum": ["ADMIN_USER", "REGULAR_USER"]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully."
+          },
+          "401": {
+            "description": "Unauthorized or invalid token."
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "put": {
+        "summary": "Update User",
+        "description": "Update a user's details by ID (admin or super users).",
+        "consumes": ["multipart/form-data"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the user to update."
+          },
+          {
+            "in": "formData",
+            "name": "username",
+            "type": "string",
+            "required": false,
+            "description": "The updated username of the user."
+          },
+          {
+            "in": "formData",
+            "name": "image",
+            "type": "file",
+            "required": false,
+            "description": "Profile image of the user (optional)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully."
+          },
+          "400": {
+            "description": "Invalid data or unauthorized."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SignupRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+
+        "image": {
+          "type": "file"
+        }
+      },
+      "required": ["username", "email", "password"]
+    },
+    "LoginRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        }
+      },
+      "required": ["email", "password"]
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "soni"
+        },
+        "email": {
+          "type": "string",
+          "example": "soniponnan@gmail.com"
+        },
+        "role": {
+          "type": "string",
+          "example": "SUPER_USER"
+        },
+        "emailVerified": {
+          "type": "boolean",
+          "example": true
+        },
+        "adminVerified": {
+          "type": "boolean",
+          "example": true
+        },
+        "verificationToken": {
+          "type": "string",
+          "example": "6c0d4e2c91a99ff5074b100303cd664f278ca1700dc1646f8c2acbc24e08ed1f"
+        },
+        "image": {
+          "type": "string",
+          "example": null
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "INACTIVE", "SUSPENDED"],
+          "example": "ACTIVE"
+        },
+        "passwordResetRequired": {
+          "type": "boolean",
+          "example": false
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-09-20T00:56:17.676Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-09-20T01:16:33.104Z"
+        },
+        "userId": {
+          "type": "string",
+          "example": "66ecc83176b566c2ddb866f7"
+        },
+        "token": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZWNjODMxNzZiNTY2YzJkZGI4NjZmNyIsInJvbGUiOiJTVVBFUl9VU0VSIiwiaWF0IjoxNzM2NjAzMjA0LCJleHAiOjE3MzY2ODk2MDR9.Ob3DAeSAdPeYCJvZYN7kKSWsdW9bKXWARKGyPXYuRJY"
+        }
+      }
+    },
+    "PasswordResetResponse": {
+      "type": "object",
+      "properties": {
+        "resetToken": {
+          "type": "string",
+          "example": "6c0d4e2c91a99ff5074b100303cd664f278ca1700dc1646f8c2acbc24e08ed1f"
+        },
+        "message": {
+          "type": "string",
+          "example": "Password reset required."
+        }
+      }
+    },
+    "ForgotPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "user@example.com"
+        }
+      },
+      "required": ["email"]
+    },
+    "ResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "required": true,
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        }
+      },
+      "required": ["newPassword", "confirmPassword"]
+    },
+    "ResetPasswordRequestWithEmail": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+
+        "password": {
+          "type": "string",
+          "format": "password"
+        }
+      }
+    },
+    "ResendVerificationRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      },
+      "required": ["email"]
+    }
+  },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}
