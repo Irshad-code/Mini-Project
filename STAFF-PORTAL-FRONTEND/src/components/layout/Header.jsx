@@ -3,9 +3,17 @@ import { FiBell, FiMenu, FiX, FiUser } from 'react-icons/fi';
 import { Menu, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import ThemeToggle from '../ui/ThemeToggle';
+import { useUser } from '../../contexts/UserContext';
 
 export default function Header({ onMobileMenuToggle, isMobileNavOpen }) {
   const [notifications] = useState(3);
+  const { signout } = useUser();
+
+  const menuItems = [
+    { label: 'Profile', onClick: () => console.log('Profile clicked') },
+    { label: 'Settings', onClick: () => console.log('Settings clicked') },
+    { label: 'Sign out', onClick: signout },
+  ];
 
   return (
     <header className="fixed w-full bg-[var(--color-bg-secondary)] border-b border-[var(--color-border-primary)]">
@@ -52,18 +60,18 @@ export default function Header({ onMobileMenuToggle, isMobileNavOpen }) {
             >
               <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right glass-effect rounded-md shadow-lg focus:outline-none">
                 <div className="py-1">
-                  {['Profile', 'Settings', 'Sign out'].map((item) => (
-                    <Menu.Item key={item}>
+                  {menuItems.map((item) => (
+                    <Menu.Item key={item.label}>
                       {({ active }) => (
-                        <a
-                          href="#"
+                        <button
+                          onClick={item.onClick}
                           className={clsx(
                             active ? 'bg-[var(--color-bg-white-opacity)]' : '',
-                            'block px-4 py-2 text-sm text-[var(--color-text-primary)]'
+                            'block w-full text-left px-4 py-2 text-sm text-[var(--color-text-primary)]'
                           )}
                         >
-                          {item}
-                        </a>
+                          {item.label}
+                        </button>
                       )}
                     </Menu.Item>
                   ))}

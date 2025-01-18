@@ -23,16 +23,9 @@ const userSchema = new Schema(
       enum: ["SUPER_USER", "ADMIN_USER", "REGULAR_USER"], // Allowed roles
       index: true, // Index on role for faster querying
     },
-    department: {
-      type: String,
-      required: true,
-    },
     emailVerified: {
       type: Boolean,
       default: true,
-    },
-    phoneNumber: {
-      type: String,
     },
     verificationToken: {
       type: String,

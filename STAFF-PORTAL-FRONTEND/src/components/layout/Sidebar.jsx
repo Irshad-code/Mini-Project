@@ -1,5 +1,6 @@
 import { FiArrowLeft } from "react-icons/fi";
 import { useNavigation } from "../../contexts/NavigationContext";
+import { useUser } from "../../contexts/UserContext";
 import NavigationItem from "./navigation/NavigationItem";
 import UserProfile from "./navigation/UserProfile";
 import {
@@ -10,6 +11,7 @@ import Button from "../ui/Button";
 
 export default function Sidebar({ isOpen, onClose }) {
   const { currentSection, setCurrentSection } = useNavigation();
+  const { user } = useUser();
 
   // Helper function to determine if we're in a staff info section
   const isStaffInfoSection = () =>
@@ -26,12 +28,7 @@ export default function Sidebar({ isOpen, onClose }) {
   // Helper function to determine if we're in a tax section
   const isTaxSection = () =>
     currentSection === "tax" ||
-    [
-      "calculator",
-      "declarations",
-      "documents",
-      "history",
-    ].includes(currentSection);
+    ["calculator", "declarations", "documents", "history"].includes(currentSection);
 
   // Determine if we're in a feature section or subsection
   const currentFeature = isStaffInfoSection()
@@ -41,7 +38,7 @@ export default function Sidebar({ isOpen, onClose }) {
     : currentSection;
 
   const isFeatureSection = currentFeature !== "dashboard";
-  const navigationItems = getNavigationItems(currentFeature);
+  const navigationItems = getNavigationItems(currentFeature, user?.role);
 
   const handleBackToDashboard = () => {
     setCurrentSection("dashboard");
@@ -69,7 +66,11 @@ export default function Sidebar({ isOpen, onClose }) {
         }`}
         style={{ zIndex: 999 }}
       >
-        <UserProfile initials="JD" name="John Doe" role="Faculty Member" />
+        <UserProfile 
+          initials={user?.username?.charAt(0)?.toUpperCase() || "U"} 
+          name={user?.username || "User"} 
+          role={user?.role === "SUPER_USER" ? "Admin" : "Staff Member"} 
+        />
 
         {isFeatureSection && (
           <div className="px-4 py-3">
@@ -102,16 +103,6 @@ export default function Sidebar({ isOpen, onClose }) {
             ))}
           </div>
         </nav>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--color-border-primary)]">
-          <Button
-            variant="ghost"
-            onClick={handleBackToDashboard}
-            className="w-full justify-center"
-          >
-            Sign Out
-          </Button>
-        </div>
       </div>
     </>
   );

@@ -224,7 +224,7 @@ module.exports.updateById = async (req, res) => {
 module.exports.signup = async function (req, res) {
   try {
     logger.debug("request body", req.body);
-    const { email, password, department } = req.body;
+    const { email, password } = req.body;
     logger.debug("email found", email);
     // Check if user already exists
     const existingUser = await userService.findUserByEmail(email);
@@ -243,7 +243,7 @@ module.exports.signup = async function (req, res) {
     const userData = {
       ...req.body, // Contains all validated fields like username, email, role, etc.
       password: hashedPassword,
-      emailVerified: true,
+      emailVerified: false,
       verificationToken,
     };
     logger.debug("userData", userData);

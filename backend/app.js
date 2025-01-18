@@ -10,7 +10,6 @@ const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
 // Load routes
 const usersRouter = require("./routes/users/routes/user.routes");
-const adminUserRouter = require("./routes/admin/users/admin.user.routes");
 
 // Load database and cached data
 const db = require("./db/db");
@@ -105,7 +104,6 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/api/users", usersRouter);
-app.use("/api/admin/users", adminUserRouter);
 
 // Serve Swagger UI
 if (process.env.NODE_ENV === "development") {

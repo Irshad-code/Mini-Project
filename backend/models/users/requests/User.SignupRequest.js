@@ -20,13 +20,6 @@ const SignupRequest = Yup.object()
       .min(6, "Password must be at least 6 characters long")
       .required("Password is required")
       .trim(),
-    role: Yup.string()
-      .oneOf(["SUPER_USER", "ADMIN_USER", "REGULAR_USER"], "Invalid user role")
-      .required("Role is required"),
-    phoneNumber: Yup.number().nullable().optional(), // Optional phone number, can be null
-    status: Yup.string()
-      .oneOf(["ACTIVE", "INACTIVE", "SUSPENDED"], "Invalid status")
-      .default("ACTIVE"), // Default status
   })
   .noUnknown(true); // This strips any unknown keys from the request
 

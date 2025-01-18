@@ -1,3 +1,7 @@
+import { FiLogOut } from "react-icons/fi";
+import { useUser } from "../../../contexts/UserContext";
+import Button from "../../ui/Button";
+
 export default function UserProfile({ initials, name, role }) {
   return (
     <div className="px-6 py-4 border-b border-[var(--color-border-primary)]">
@@ -7,7 +11,7 @@ export default function UserProfile({ initials, name, role }) {
             {initials}
           </span>
         </div>
-        <div>
+        <div className="flex-grow">
           <h3 className="text-[var(--color-text-primary)] font-medium">
             {name}
           </h3>
