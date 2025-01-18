@@ -13,13 +13,7 @@ import {
   Divider,
   Grid,
 } from "@mui/material";
-import {
-  FiUser,
-  FiMail,
-  FiLock,
-  FiEye,
-  FiEyeOff,
-} from "react-icons/fi";
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { authService } from "../../services/api/auth.service";
 
 const SignupPage = () => {
@@ -58,7 +52,7 @@ const SignupPage = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
-    
+
     // Password validation
     if (!formData.password) {
       newErrors.password = "Password is required";
@@ -72,8 +66,10 @@ const SignupPage = () => {
 
       if (!isLongEnough) {
         newErrors.password = "Password must be at least 8 characters long";
-      } else if (!(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar)) {
-        newErrors.password = 
+      } else if (
+        !(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar)
+      ) {
+        newErrors.password =
           "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character";
       }
     }
@@ -84,7 +80,7 @@ const SignupPage = () => {
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
-    
+
     return newErrors;
   };
 
@@ -100,10 +96,11 @@ const SignupPage = () => {
       // Remove confirmPassword before sending to API
       const { confirmPassword, ...signupData } = formData;
       await authService.signup(signupData);
-      navigate("/login", { 
-        state: { 
-          message: "Registration successful! Please check your email to verify your account." 
-        } 
+      navigate("/login", {
+        state: {
+          message:
+            "Registration successful! Please check your email to verify your account.",
+        },
       });
     } catch (error) {
       setErrors({
@@ -118,7 +115,7 @@ const SignupPage = () => {
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
-        background: "var(--color-bg-secondary)",
+        background: "#f8fafc",
         py: 12,
       }}
     >
@@ -130,7 +127,7 @@ const SignupPage = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: "var(--color-bg-primary)",
+            background: "#ffffff",
             borderRadius: 2,
           }}
         >
@@ -150,7 +147,7 @@ const SignupPage = () => {
 
           <Typography
             variant="body1"
-            sx={{ color: "var(--color-text-primary)", mb: 4 }}
+            sx={{ color: "#1e293b", mb: 4 }}
           >
             Sign up to get started with Staff Portal
           </Typography>
@@ -178,27 +175,27 @@ const SignupPage = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <FiUser className="text-[var(--color-text-primary)]" />
+                        <FiUser className="text-[#64748b]" />
                       </InputAdornment>
                     ),
                   }}
                   sx={{
                     "& .MuiInputLabel-root": {
-                      color: "var(--color-text-secondary)",
+                      color: "#64748b",
                     },
                     "& .MuiOutlinedInput-root": {
                       "& fieldset": {
-                        borderColor: "var(--color-border-primary)",
+                        borderColor: "#e2e8f0",
                       },
                       "&:hover fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                       "&.Mui-focused fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                     },
                     "& .MuiInputBase-input": {
-                      color: "var(--color-text-primary)",
+                      color: "#1e293b",
                     },
                   }}
                 />
@@ -219,27 +216,27 @@ const SignupPage = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <FiMail className="text-[var(--color-text-primary)]" />
+                        <FiMail className="text-[#64748b]" />
                       </InputAdornment>
                     ),
                   }}
                   sx={{
                     "& .MuiInputLabel-root": {
-                      color: "var(--color-text-secondary)",
+                      color: "#64748b",
                     },
                     "& .MuiOutlinedInput-root": {
                       "& fieldset": {
-                        borderColor: "var(--color-border-primary)",
+                        borderColor: "#e2e8f0",
                       },
                       "&:hover fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                       "&.Mui-focused fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                     },
                     "& .MuiInputBase-input": {
-                      color: "var(--color-text-primary)",
+                      color: "#1e293b",
                     },
                   }}
                 />
@@ -261,7 +258,7 @@ const SignupPage = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <FiLock className="text-[var(--color-text-primary)]" />
+                        <FiLock className="text-[#64748b]" />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -270,7 +267,7 @@ const SignupPage = () => {
                           aria-label="toggle password visibility"
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
-                          sx={{ color: "var(--color-text-primary)" }}
+                          sx={{ color: "#64748b" }}
                         >
                           {showPassword ? <FiEyeOff /> : <FiEye />}
                         </IconButton>
@@ -279,21 +276,21 @@ const SignupPage = () => {
                   }}
                   sx={{
                     "& .MuiInputLabel-root": {
-                      color: "var(--color-text-secondary)",
+                      color: "#64748b",
                     },
                     "& .MuiOutlinedInput-root": {
                       "& fieldset": {
-                        borderColor: "var(--color-border-primary)",
+                        borderColor: "#e2e8f0",
                       },
                       "&:hover fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                       "&.Mui-focused fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                     },
                     "& .MuiInputBase-input": {
-                      color: "var(--color-text-primary)",
+                      color: "#1e293b",
                     },
                   }}
                 />
@@ -315,7 +312,7 @@ const SignupPage = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <FiLock className="text-[var(--color-text-primary)]" />
+                        <FiLock className="text-[#64748b]" />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -326,7 +323,7 @@ const SignupPage = () => {
                             setShowConfirmPassword(!showConfirmPassword)
                           }
                           edge="end"
-                          sx={{ color: "var(--color-text-primary)" }}
+                          sx={{ color: "#64748b" }}
                         >
                           {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
                         </IconButton>
@@ -335,21 +332,21 @@ const SignupPage = () => {
                   }}
                   sx={{
                     "& .MuiInputLabel-root": {
-                      color: "var(--color-text-secondary)",
+                      color: "#64748b",
                     },
                     "& .MuiOutlinedInput-root": {
                       "& fieldset": {
-                        borderColor: "var(--color-border-primary)",
+                        borderColor: "#e2e8f0",
                       },
                       "&:hover fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                       "&.Mui-focused fieldset": {
-                        borderColor: "var(--color-primary-500)",
+                        borderColor: "#3b82f6",
                       },
                     },
                     "& .MuiInputBase-input": {
-                      color: "var(--color-text-primary)",
+                      color: "#1e293b",
                     },
                   }}
                 />
@@ -378,7 +375,7 @@ const SignupPage = () => {
               <Divider sx={{ mb: 2 }}>
                 <Typography
                   variant="body2"
-                  sx={{ color: "var(--color-text-primary)" }}
+                  sx={{ color: "#1e293b" }}
                 >
                   OR
                 </Typography>
@@ -386,13 +383,13 @@ const SignupPage = () => {
 
               <Typography
                 variant="body2"
-                sx={{ color: "var(--color-text-primary)" }}
+                sx={{ color: "#1e293b" }}
               >
                 Already have an account?{" "}
                 <Link
                   to="/login"
                   style={{
-                    color: "var(--color-primary-500)",
+                    color: "#3b82f6",
                     textDecoration: "none",
                     fontWeight: 600,
                   }}

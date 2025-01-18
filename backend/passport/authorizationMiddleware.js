@@ -1,6 +1,9 @@
 const authorizeRole = (role) => {
   return (req, res, next) => {
-    if (req.user && req.user.role === role) {
+    if (
+      req.user &&
+      (req.user.role === role || req.user.role === "SUPER_USER")
+    ) {
       next(); // Proceed to the next middleware or route handler
     } else {
       console.log("user i snot defined");

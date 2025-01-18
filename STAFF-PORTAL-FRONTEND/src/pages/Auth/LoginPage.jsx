@@ -65,12 +65,12 @@ const LoginPage = () => {
 
     try {
       const response = await authService.login(formData);
-      
+
       if (response.requiresPasswordReset) {
         setRequiresPasswordReset(true);
         setResetToken(response.resetToken);
         setErrors({
-          submit: response.message
+          submit: response.message,
         });
         navigate(`/reset-password?token=${response.resetToken}`);
         return;
@@ -87,7 +87,7 @@ const LoginPage = () => {
       navigate("/dashboard");
     } catch (error) {
       setErrors({
-        submit: error.message
+        submit: error.message,
       });
     }
   };
@@ -98,7 +98,7 @@ const LoginPage = () => {
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
-        background: "var(--color-bg-secondary)",
+        background: "#f8fafc",
         py: 12,
       }}
     >
@@ -110,7 +110,7 @@ const LoginPage = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: "var(--color-bg-primary)",
+            background: "#ffffff",
             borderRadius: 2,
           }}
         >
@@ -128,7 +128,7 @@ const LoginPage = () => {
             Welcome Back
           </Typography>
 
-          <Typography variant="body1" sx={{ color: 'var(--color-text-primary)', mb: 4 }}>
+          <Typography variant="body1" sx={{ color: '#1e293b', mb: 4 }}>
             Sign in to access your account
           </Typography>
 
@@ -155,28 +155,28 @@ const LoginPage = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <FiMail className="text-[var(--color-text-primary)]" />
+                    <FiMail className="text-[#64748b]" />
                   </InputAdornment>
                 ),
               }}
               sx={{
                 mb: 2,
-                '& .MuiInputLabel-root': {
-                  color: 'var(--color-text-secondary)',
+                "& .MuiInputLabel-root": {
+                  color: '#64748b',
                 },
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'var(--color-border-primary)',
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: '#e2e8f0',
                   },
-                  '&:hover fieldset': {
-                    borderColor: 'var(--color-primary-500)',
+                  "&:hover fieldset": {
+                    borderColor: '#3b82f6',
                   },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'var(--color-primary-500)',
+                  "&.Mui-focused fieldset": {
+                    borderColor: '#3b82f6',
                   },
                 },
-                '& .MuiInputBase-input': {
-                  color: 'var(--color-text-primary)',
+                "& .MuiInputBase-input": {
+                  color: '#1e293b',
                 },
               }}
             />
@@ -197,7 +197,7 @@ const LoginPage = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <FiLock className="text-[var(--color-text-primary)]" />
+                    <FiLock className="text-[#64748b]" />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -206,7 +206,7 @@ const LoginPage = () => {
                       aria-label="toggle password visibility"
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
-                      sx={{ color: 'var(--color-text-primary)' }}
+                      sx={{ color: '#64748b' }}
                     >
                       {showPassword ? <FiEyeOff /> : <FiEye />}
                     </IconButton>
@@ -215,31 +215,38 @@ const LoginPage = () => {
               }}
               sx={{
                 mb: 2,
-                '& .MuiInputLabel-root': {
-                  color: 'var(--color-text-secondary)',
+                "& .MuiInputLabel-root": {
+                  color: '#64748b',
                 },
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'var(--color-border-primary)',
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: '#e2e8f0',
                   },
-                  '&:hover fieldset': {
-                    borderColor: 'var(--color-primary-500)',
+                  "&:hover fieldset": {
+                    borderColor: '#3b82f6',
                   },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'var(--color-primary-500)',
+                  "&.Mui-focused fieldset": {
+                    borderColor: '#3b82f6',
                   },
                 },
-                '& .MuiInputBase-input': {
-                  color: 'var(--color-text-primary)',
+                "& .MuiInputBase-input": {
+                  color: '#1e293b',
                 },
               }}
             />
 
-            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+                mb: 2,
+              }}
+            >
               <Link
                 to="/forgot-password"
                 style={{
-                  color: 'var(--color-primary-500)',
+                  color: '#3b82f6',
                   textDecoration: "none",
                   fontWeight: 500,
                 }}
@@ -257,9 +264,10 @@ const LoginPage = () => {
                 mb: 2,
                 py: 1.5,
                 background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-                '&:hover': {
-                  background: "linear-gradient(45deg, #1976D2 30%, #00B4D8 90%)",
-                }
+                "&:hover": {
+                  background:
+                    "linear-gradient(45deg, #1976D2 30%, #00B4D8 90%)",
+                },
               }}
             >
               Sign In
@@ -267,17 +275,17 @@ const LoginPage = () => {
 
             <Box sx={{ mt: 3, textAlign: "center" }}>
               <Divider sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ color: 'var(--color-text-primary)' }}>
+                <Typography variant="body2" sx={{ color: '#1e293b' }}>
                   OR
                 </Typography>
               </Divider>
-              
-              <Typography variant="body2" sx={{ color: 'var(--color-text-primary)' }}>
+
+              <Typography variant="body2" sx={{ color: '#1e293b' }}>
                 Don't have an account?{" "}
                 <Link
                   to="/signup"
                   style={{
-                    color: 'var(--color-primary-500)',
+                    color: '#3b82f6',
                     textDecoration: "none",
                     fontWeight: 600,
                   }}

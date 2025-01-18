@@ -3,10 +3,14 @@ const log4js = require("log4js");
 const logger = log4js.getLogger("Common Service");
 
 const userModel = require("../../models/users/dbmodels/user.model");
+const collegeModel = require("../../models/admin/colleges/dbmodels/college.model");
+const departmentModel = require("../../models/admin/departments/dbmodels/department.model");
 //access the models:
 
 const modelHandlers = {
   users: userModel,
+  colleges: collegeModel,
+  departments: departmentModel,
 };
 const validParams = {
   //agencyfileuploads: ["year", "month", "agencyName", "status"],

@@ -1,0 +1,56 @@
+const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
+const Schema = mongoose.Schema;
+const userBasicInfo = new Schema(
+  {
+    userid: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    fullName: { type: String, required: true },
+    dateOfBirth: { type: Date, required: true },
+    gender: { type: String, required: true },
+    college: { type: Schema.Types.ObjectId, ref: "College", required: true },
+    department: {
+      type: Schema.Types.ObjectId,
+      ref: "Department",
+      required: true,
+    },
+    designation: { type: String, required: true },
+    highestQualification: { type: String, required: true },
+    areaOfSpecialization: { type: String, required: true },
+    isKtuPhdGuide: { type: Boolean, required: true },
+    publicationCount: { type: Number, required: true },
+    projectCount: { type: Number, required: true },
+    religion: { type: String, required: true },
+    caste: { type: String, required: true },
+    joiningDate: { type: Date, required: true },
+    teachingExperience: { type: Number, required: true },
+    industryExperience: { type: Number, required: true },
+    description: { type: String, required: true },
+    websiteUrl: { type: String, required: true },
+  },
+  {
+    timestamps: true, // Automatically handle createdAt and updatedAt fields
+  }
+);
+
+// Set schema options for better JSON output
+userBasicInfo.set("toJSON", {
+  getters: true,
+  virtuals: true,
+  versionKey: false, // Removes __v from JSON output
+  transform: (doc, ret) => {
+    ret.basicInfoId = ret._id;
+    delete ret._id; // Removes _id from JSON output
+    delete ret.id;
+    delete ret.password; // Removes password from JSON output for security reasons
+    return ret;
+  },
+});
+
+// Apply the uniqueValidator plugin to userSchema
+userBasicInfo.plugin(uniqueValidator, { message: "{PATH} must be unique." });
+
+module.exports = userBasicInfo;

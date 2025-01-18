@@ -24,7 +24,7 @@ const {
 const {
   validateAndTransformRequest,
   validateId,
-} = require("../../routes.common.middleware/validation.middleware");
+} = require("../../../middlewares/validation.middleware");
 
 ///////////////////////////////////////////////////////////
 //routes starts here

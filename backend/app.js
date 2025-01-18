@@ -10,6 +10,8 @@ const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
 // Load routes
 const usersRouter = require("./routes/users/routes/user.routes");
+const collegesRouter = require("./routes/college.routes");
+const departmentsRouter = require("./routes/department.routes");
 
 // Load database and cached data
 const db = require("./db/db");
@@ -104,6 +106,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/api/users", usersRouter);
+app.use("/api/colleges", collegesRouter);
+app.use("/api/departments", departmentsRouter);
 
 // Serve Swagger UI
 if (process.env.NODE_ENV === "development") {
