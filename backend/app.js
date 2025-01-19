@@ -12,6 +12,7 @@ const helmet = require("helmet");
 const usersRouter = require("./routes/users/routes/user.routes");
 const collegesRouter = require("./routes/college.routes");
 const departmentsRouter = require("./routes/department.routes");
+const userBasicInfoRouter = require("./routes/user.basicinfo.routes");
 
 // Load database and cached data
 const db = require("./db/db");
@@ -108,6 +109,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/users", usersRouter);
 app.use("/api/colleges", collegesRouter);
 app.use("/api/departments", departmentsRouter);
+app.use("/api/userbasicinfo", userBasicInfoRouter);
 
 // Serve Swagger UI
 if (process.env.NODE_ENV === "development") {
@@ -146,7 +148,7 @@ if (process.env.NODE_ENV === "production") {
 }
 // Error handling middleware
 app.use((err, req, res) => {
-  res.sendFile(path.resolve, __dirname, "public", "index.html");
+  res.sendFile(path.resolve(__dirname, "public", "index.html"));
 });
 // Error handling middleware
 app.use((err, req, res, next) => {

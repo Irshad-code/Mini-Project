@@ -1,12 +1,15 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const Schema = mongoose.Schema;
+
 const userBasicInfo = new Schema(
   {
-    userid: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique: true, // Ensure userid is unique
+      index: true, // Add an index for fast lookups
     },
     fullName: { type: String, required: true },
     dateOfBirth: { type: Date, required: true },
@@ -26,9 +29,9 @@ const userBasicInfo = new Schema(
     religion: { type: String, required: true },
     caste: { type: String, required: true },
     joiningDate: { type: Date, required: true },
-    teachingExperience: { type: Number, required: true },
-    industryExperience: { type: Number, required: true },
-    description: { type: String, required: true },
+    totalTeachingExperience: { type: Number, required: true },
+    totalIndustryExperience: { type: Number, required: true },
+    briefDescription: { type: String, required: true },
     websiteUrl: { type: String, required: true },
   },
   {
@@ -50,7 +53,7 @@ userBasicInfo.set("toJSON", {
   },
 });
 
-// Apply the uniqueValidator plugin to userSchema
+// Apply the uniqueValidator plugin to userBasicInfo schema
 userBasicInfo.plugin(uniqueValidator, { message: "{PATH} must be unique." });
 
 module.exports = userBasicInfo;

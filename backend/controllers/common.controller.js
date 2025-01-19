@@ -2,10 +2,45 @@ const commonService = require("../services/common/common.services");
 const { isEmptyList, handleError } = require("./util/controller.util");
 const log4js = require("log4js");
 const logger = log4js.getLogger("CommonController");
+
 module.exports.welcome = async function (req, res) {
   logger.debug("I am logging req", req.baseUrl.substring(1));
   var result = await commonService.welcome(req.baseUrl.substring(1));
   return res.json(result);
+};
+module.exports.findByUserId = async function (req, res) {
+  try {
+    let id = req.query.id;
+    logger.info(`request   ID: ${id}`);
+    logger.debug("I am logging req", req.baseUrl.substring(1));
+    const modelname = req.baseUrl.substring(1).toLowerCase();
+    var result = await commonService.findUserById(modelname, id);
+    if (isEmptyList(result)) {
+      return handleError(res, 404, "List not found");
+    }
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, 500, "Internal server error", error);
+  }
+};
+module.exports.upsertByUserId = async function (req, res) {
+  try {
+    let id = req.query.id;
+    logger.info(`request   ID: ${id}`);
+    logger.debug("I am logging req", req.baseUrl.substring(1));
+    const modelname = req.baseUrl.substring(1).toLowerCase();
+    const reqObject = req.body;
+    logger.info(` request: ${JSON.stringify(reqObject)}`);
+    let result = await commonService.upsertByUserId(modelname, id, reqObject);
+    if (isEmptyList(result)) {
+      return handleError(res, 404, " not saved");
+    }
+    return res
+      .status(201)
+      .json({ message: "Record inserted successfully", record: result });
+  } catch (error) {
+    return handleError(res, 500, "Internal server error", error);
+  }
 };
 module.exports.list = async function (req, res) {
   try {

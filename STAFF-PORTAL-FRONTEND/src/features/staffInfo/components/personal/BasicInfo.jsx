@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { FiEdit2, FiSave, FiX } from "react-icons/fi";
-import { useEmployee } from "../../hooks/useEmployee";
+import { useBasicInfo } from "../../hooks/useBasicInfo";
 import FormField from "../../../../components/ui/FormField";
 import Button from "../../../../components/ui/Button";
 import { masterService } from "../../../../services/api/master.service";
-import { Grid } from "@mui/material"; // Import Grid from MUI
+import { Grid } from "@mui/material";
+import { useUser } from "../../../../contexts/UserContext";
 
 export default function BasicInfo() {
-  const { employee, isEditing, handleEdit, handleSave, handleCancel } =
-    useEmployee();
+  const { user } = useUser();
+  const { data, isLoading, error, isEditing, handleEdit, handleSave, handleCancel } =
+    useBasicInfo(user?.userId);
+    
   const [formData, setFormData] = useState({
     fullName: "",
     dateOfBirth: "",
@@ -28,7 +31,6 @@ export default function BasicInfo() {
     totalIndustryExperience: "",
     briefDescription: "",
     websiteUrl: "",
-    ...employee, // Spread employee data if it exists
   });
   const [errors, setErrors] = useState({});
   const [isDirty, setIsDirty] = useState(false);
@@ -54,12 +56,17 @@ export default function BasicInfo() {
   }, []);
 
   useEffect(() => {
-    if (!isEditing && employee) {
-      setFormData(employee);
-      setErrors({});
+    if (data) {
+      setFormData({
+        ...formData,
+        ...data,
+        // Ensure dates are in correct format
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : '',
+        joiningDate: data.joiningDate ? new Date(data.joiningDate).toISOString().split('T')[0] : '',
+      });
       setIsDirty(false);
     }
-  }, [isEditing, employee]);
+  }, [data]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -195,339 +202,377 @@ export default function BasicInfo() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      handleSave(formData);
+      const result = await handleSave(formData);
+      if (result.success) {
+        setIsDirty(false);
+      } else {
+        setErrors(prev => ({
+          ...prev,
+          submit: result.error
+        }));
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 animate-fadeIn">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-[var(--color-text-primary)]">
-          Basic Information
-        </h3>
-        {!isEditing ? (
-          <Button
-            variant="ghost"
-            onClick={handleEdit}
-            icon={<FiEdit2 className="w-4 h-4" />}
-          >
-            Edit Information
-          </Button>
-        ) : null}
-      </div>
-
-      <div className="space-y-6">
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Full Name"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.fullName}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Date of Birth"
-              name="dateOfBirth"
-              type="date"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.dateOfBirth}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Gender"
-              name="gender"
-              type="select"
-              value={formData.gender}
-              onChange={handleChange}
-              disabled={!isEditing}
-              options={[
-                { value: "", label: "Select gender" },
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-                { value: "other", label: "Other" },
-              ]}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="College"
-              name="college"
-              type="select"
-              value={formData.college}
-              onChange={handleChange}
-              disabled={!isEditing}
-              options={[
-                { value: "", label: "Select college" },
-                ...(colleges?.map((college) => ({
-                  value: college.collegeId,
-                  label: college.collegeName,
-                })) || []),
-              ]}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Department"
-              name="department"
-              type="select"
-              value={formData.department}
-              onChange={handleChange}
-              disabled={!isEditing}
-              options={[
-                { value: "", label: "Select department" },
-                ...(departments?.map((dept) => ({
-                  value: dept.departmentId,
-                  label: dept.departmentName,
-                })) || []),
-              ]}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Designation"
-              name="designation"
-              type="select"
-              value={formData.designation}
-              onChange={handleChange}
-              disabled={!isEditing}
-              options={[
-                { value: "", label: "Select designation" },
-                { value: "Professor", label: "Professor" },
-                { value: "Associate Professor", label: "Associate Professor" },
-                { value: "Assistant Professor", label: "Assistant Professor" },
-                { value: "Head of Department", label: "Head of Department" },
-                { value: "Programmer", label: "Programmer" },
-                { value: "Lab Assistant", label: "Lab Assistant" },
-                { value: "Technical Assistant", label: "Technical Assistant" },
-                {
-                  value: "System Administrator",
-                  label: "System Administrator",
-                },
-                { value: "Research Associate", label: "Research Associate" },
-                { value: "Teaching Assistant", label: "Teaching Assistant" },
-              ]}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Highest Qualification"
-              name="highestQualification"
-              type="select"
-              value={formData.highestQualification}
-              onChange={handleChange}
-              disabled={!isEditing}
-              options={[
-                { value: "", label: "Select qualification" },
-                { value: "PhD", label: "PhD" },
-                { value: "MTech", label: "M.Tech" },
-                { value: "BTech", label: "B.Tech" },
-                { value: "MCA", label: "MCA" },
-                { value: "MSc", label: "M.Sc" },
-                { value: "BSc", label: "B.Sc" },
-                { value: "Diploma", label: "Diploma" },
-                { value: "MBA", label: "MBA" },
-              ]}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Total Teaching Experience (Years)"
-              name="totalTeachingExperience"
-              type="number"
-              value={formData.totalTeachingExperience}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.totalTeachingExperience}
-              min="0"
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Total Industry Experience (Years)"
-              name="totalIndustryExperience"
-              type="number"
-              value={formData.totalIndustryExperience}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.totalIndustryExperience}
-              min="0"
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Area of Specialization"
-              name="areaOfSpecialization"
-              value={formData.areaOfSpecialization}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.areaOfSpecialization}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="KTU Approved PhD Guide"
-              name="isKtuPhdGuide"
-              type="select"
-              value={formData.isKtuPhdGuide}
-              onChange={handleChange}
-              disabled={!isEditing}
-              options={[
-                { value: "", label: "Select option" },
-                { value: false, label: "No" },
-                { value: true, label: "Yes" },
-              ]}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Total Publications"
-              name="publicationCount"
-              type="number"
-              value={formData.publicationCount}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.publicationCount}
-              min="0"
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Total Projects"
-              name="projectCount"
-              type="number"
-              value={formData.projectCount}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.projectCount}
-              min="0"
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Religion"
-              name="religion"
-              value={formData.religion}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.religion}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Caste"
-              name="caste"
-              value={formData.caste}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.caste}
-              required
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormField
-              label="Joining Date in current institution"
-              name="joiningDate"
-              type="date"
-              value={formData.joiningDate}
-              onChange={handleChange}
-              disabled={!isEditing}
-              error={errors.joiningDate}
-              required
-              fullWidth
-            />
-          </Grid>
-        </Grid>
-
-        <div className="mt-6">
-          <FormField
-            label="Brief Description about yourself"
-            name="briefDescription"
-            type="textarea"
-            value={formData.briefDescription}
-            onChange={handleChange}
-            disabled={!isEditing}
-            error={errors.briefDescription}
-            placeholder="Brief description about your experience, research and project interests (max 250 characters)"
-            rows={3}
-            required
-            fullWidth
-          />
-        </div>
-      </div>
-
-      {isEditing && (
-        <div className="flex justify-end space-x-3 pt-6 border-t border-[var(--color-border-primary)]">
-          <Button
-            variant="secondary"
-            onClick={handleCancel}
-            icon={<FiX className="w-4 h-4" />}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            icon={<FiSave className="w-4 h-4" />}
-            disabled={!isDirty}
-          >
-            Save Changes
-          </Button>
+    <div className="space-y-8 animate-fadeIn">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
         </div>
       )}
-    </form>
+      
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-semibold text-[var(--color-text-primary)]">
+              Basic Information
+            </h3>
+            {!data && !isEditing ? (
+              <Button
+                variant="primary"
+                onClick={handleEdit}
+                icon={<FiEdit2 className="w-4 h-4" />}
+              >
+                Add Information
+              </Button>
+            ) : !isEditing ? (
+              <Button
+                variant="ghost"
+                onClick={handleEdit}
+                icon={<FiEdit2 className="w-4 h-4" />}
+              >
+                Edit Information
+              </Button>
+            ) : null}
+          </div>
+
+          {!data && !isEditing ? (
+            <div className="text-center py-8 text-gray-500">
+              No basic information added yet. Click "Add Information" to get started.
+            </div>
+          ) : (
+            <>
+              <div className="space-y-6">
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Full Name"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.fullName}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Date of Birth"
+                      name="dateOfBirth"
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.dateOfBirth}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Gender"
+                      name="gender"
+                      type="select"
+                      value={formData.gender}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      options={[
+                        { value: "", label: "Select gender" },
+                        { value: "male", label: "Male" },
+                        { value: "female", label: "Female" },
+                        { value: "other", label: "Other" },
+                      ]}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="College"
+                      name="college"
+                      type="select"
+                      value={formData.college}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      options={[
+                        { value: "", label: "Select college" },
+                        ...(colleges?.map((college) => ({
+                          value: college.collegeId,
+                          label: college.collegeName,
+                        })) || []),
+                      ]}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Department"
+                      name="department"
+                      type="select"
+                      value={formData.department}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      options={[
+                        { value: "", label: "Select department" },
+                        ...(departments?.map((dept) => ({
+                          value: dept.departmentId,
+                          label: dept.departmentName,
+                        })) || []),
+                      ]}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Designation"
+                      name="designation"
+                      type="select"
+                      value={formData.designation}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      options={[
+                        { value: "", label: "Select designation" },
+                        { value: "Professor", label: "Professor" },
+                        { value: "Associate Professor", label: "Associate Professor" },
+                        { value: "Assistant Professor", label: "Assistant Professor" },
+                        { value: "Head of Department", label: "Head of Department" },
+                        { value: "Programmer", label: "Programmer" },
+                        { value: "Lab Assistant", label: "Lab Assistant" },
+                        { value: "Technical Assistant", label: "Technical Assistant" },
+                        {
+                          value: "System Administrator",
+                          label: "System Administrator",
+                        },
+                        { value: "Research Associate", label: "Research Associate" },
+                        { value: "Teaching Assistant", label: "Teaching Assistant" },
+                      ]}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Highest Qualification"
+                      name="highestQualification"
+                      type="select"
+                      value={formData.highestQualification}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      options={[
+                        { value: "", label: "Select qualification" },
+                        { value: "PhD", label: "PhD" },
+                        { value: "MTech", label: "M.Tech" },
+                        { value: "BTech", label: "B.Tech" },
+                        { value: "MCA", label: "MCA" },
+                        { value: "MSc", label: "M.Sc" },
+                        { value: "BSc", label: "B.Sc" },
+                        { value: "Diploma", label: "Diploma" },
+                        { value: "MBA", label: "MBA" },
+                      ]}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Total Teaching Experience (Years)"
+                      name="totalTeachingExperience"
+                      type="number"
+                      value={formData.totalTeachingExperience}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.totalTeachingExperience}
+                      min="0"
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Total Industry Experience (Years)"
+                      name="totalIndustryExperience"
+                      type="number"
+                      value={formData.totalIndustryExperience}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.totalIndustryExperience}
+                      min="0"
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Area of Specialization"
+                      name="areaOfSpecialization"
+                      value={formData.areaOfSpecialization}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.areaOfSpecialization}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="KTU Approved PhD Guide"
+                      name="isKtuPhdGuide"
+                      type="select"
+                      value={formData.isKtuPhdGuide}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      options={[
+                        { value: "", label: "Select option" },
+                        { value: false, label: "No" },
+                        { value: true, label: "Yes" },
+                      ]}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Total Publications"
+                      name="publicationCount"
+                      type="number"
+                      value={formData.publicationCount}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.publicationCount}
+                      min="0"
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Total Projects"
+                      name="projectCount"
+                      type="number"
+                      value={formData.projectCount}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.projectCount}
+                      min="0"
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Religion"
+                      name="religion"
+                      value={formData.religion}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.religion}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Caste"
+                      name="caste"
+                      value={formData.caste}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.caste}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <FormField
+                      label="Joining Date in current institution"
+                      name="joiningDate"
+                      type="date"
+                      value={formData.joiningDate}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      error={errors.joiningDate}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+                </Grid>
+
+                <div className="mt-6">
+                  <FormField
+                    label="Brief Description about yourself"
+                    name="briefDescription"
+                    type="textarea"
+                    value={formData.briefDescription}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    error={errors.briefDescription}
+                    placeholder="Brief description about your experience, research and project interests (max 250 characters)"
+                    rows={3}
+                    required
+                    fullWidth
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {isEditing && (
+            <div className="flex justify-end space-x-3 pt-6 border-t border-[var(--color-border-primary)]">
+              <Button
+                variant="secondary"
+                onClick={handleCancel}
+                icon={<FiX className="w-4 h-4" />}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                icon={<FiSave className="w-4 h-4" />}
+                disabled={!isDirty}
+              >
+                Save Changes
+              </Button>
+            </div>
+          )}
+        </form>
+      )}
+    </div>
   );
 }

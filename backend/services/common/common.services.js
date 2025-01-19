@@ -5,12 +5,14 @@ const logger = log4js.getLogger("Common Service");
 const userModel = require("../../models/users/dbmodels/user.model");
 const collegeModel = require("../../models/admin/colleges/dbmodels/college.model");
 const departmentModel = require("../../models/admin/departments/dbmodels/department.model");
+const userbasicinfoModel = require("../../models/users/dbmodels/user.basicinfo.model");
 //access the models:
 
 const modelHandlers = {
   users: userModel,
   colleges: collegeModel,
   departments: departmentModel,
+  userbasicinfo: userbasicinfoModel,
 };
 const validParams = {
   //agencyfileuploads: ["year", "month", "agencyName", "status"],
@@ -27,6 +29,28 @@ const projectfields = {
   //agencies: "_id name",
   //products: "_id brandName",
 };
+
+async function findUserById(model, userId) {
+  logger.info("inside findBy userid");
+  model = removeapi(model);
+  logger.info("model", model);
+  logger.info("userId", userId);
+  return await modelHandlers[model].findOne({
+    userId: new mongoose.Types.ObjectId(userId),
+  });
+}
+async function upsertByUserId(model, userId, data) {
+  model = removeapi(model);
+  logger.info("model", model);
+  logger.info("modelHandler", modelHandlers[model]);
+  logger.info("data stored", data);
+
+  return await modelHandlers[model].findOneAndUpdate(
+    { userId: new mongoose.Types.ObjectId(userId) },
+    { $set: data },
+    { upsert: true, new: true } // Upsert: create if not found, new: return updated document
+  );
+}
 
 async function getapproximatecount(model) {
   model = removeapi(model);
@@ -172,4 +196,6 @@ module.exports = {
   create,
   completeList,
   getapproximatecount,
+  findUserById,
+  upsertByUserId,
 };

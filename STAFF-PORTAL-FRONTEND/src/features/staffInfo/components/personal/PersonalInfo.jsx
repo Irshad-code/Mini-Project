@@ -5,10 +5,12 @@ import PageContainer from "../../../../components/layout/PageContainer";
 import TabButton from "../../../../components/ui/TabButton";
 import BasicInfo from "./BasicInfo";
 import ContactDetails from "./ContactDetails";
+import OfficialIds from "./OfficialIds";
 
 const tabs = [
   { name: "Basic Info", component: BasicInfo },
   { name: "Contact Details", component: ContactDetails },
+  { name: "Official IDs", component: OfficialIds },
 ];
 
 export default function PersonalInfo() {

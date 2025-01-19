@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const usersModel = require("../models/users/dbmodels/user.model");
+const userBasicInfo = require("../models/users/dbmodels/user.basicinfo.model");
 //db url
 
 const uri = process.env.MONGODB_URI;

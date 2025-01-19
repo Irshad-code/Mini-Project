@@ -6,7 +6,8 @@ function isValidObjectId(id) {
 }
 
 function validateId(req, res, next) {
-  const id = req.params.id; // Assuming ID is passed as a URL parameter
+  const id = (req.params.id || req.query.id || "").trim();
+  logger.info("requestid", id);
   if (!isValidObjectId(id)) {
     return res.status(400).json({ error: "Invalid ObjectId" });
   }

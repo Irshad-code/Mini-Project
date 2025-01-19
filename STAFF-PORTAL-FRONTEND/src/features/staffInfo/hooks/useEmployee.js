@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { employeeApi } from '../../../services/api';
+import { basicInfoService } from '../../../services/api/basicInfo.service';
 
 export function useEmployee(id = '1') {
   const [state, setState] = useState({
@@ -15,7 +15,7 @@ export function useEmployee(id = '1') {
 
   const fetchEmployee = async () => {
     try {
-      const data = await employeeApi.getEmployee(id);
+      const data = await basicInfoService.findById(id);
       setState((prev) => ({
         ...prev,
         employee: data,
@@ -38,7 +38,14 @@ export function useEmployee(id = '1') {
   const handleSave = async (updatedEmployee) => {
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      const data = await employeeApi.updateEmployee(id, updatedEmployee);
+      let data;
+      if (!state.employee) {
+        // If no employee exists, create new
+        data = await basicInfoService.create(updatedEmployee);
+      } else {
+        // Otherwise update existing
+        data = await basicInfoService.updateById(id, updatedEmployee);
+      }
       setState((prev) => ({
         ...prev,
         employee: data,
