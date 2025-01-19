@@ -27,6 +27,14 @@ const BasicInfoRequest = Yup.object()
     religion: Yup.string().required("Religion is required").trim(),
     caste: Yup.string().required("Caste is required").trim(),
     joiningDate: Yup.date().required("Joining date is required"), // Removed .trim()
+    dateofJoiningService: Yup.date().required(
+      "Date of joining service is required"
+    ), // Removed .trim()
+    bloodGroup: Yup.string().required("Blood group is required").trim(),
+    websiteUrl: Yup.string().optional(),
+    googleScholarUrl: Yup.string().optional(),
+    webofscienceUrl: Yup.string().optional(),
+    scopusUrl: Yup.string().optional(),
     briefDescription: Yup.string()
       .max(250, "Brief description should not exceed 250 characters")
       .required("Brief description is required")

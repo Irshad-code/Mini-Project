@@ -37,14 +37,14 @@ export default function FormField({
       {type === 'select' ? (
         <select
           name={name}
-          value={value}
+          value={value || ''}
           onChange={onChange}
           disabled={disabled}
           className={baseInputClasses}
           required={required}
         >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
+          {options.map((option, index) => (
+            <option key={option.value || `option-${index}`} value={option.value}>
               {option.label}
             </option>
           ))}
@@ -54,10 +54,10 @@ export default function FormField({
           name={name}
           value={value}
           onChange={onChange}
-          rows={rows}
           disabled={disabled}
           className={baseInputClasses}
           required={required}
+          rows={rows || 4}
         />
       ) : (
         <input
@@ -71,13 +71,13 @@ export default function FormField({
         />
       )}
 
-      {error ? (
+      {error && (
         <p className="mt-1 text-sm text-red-500">{error}</p>
-      ) : helperText ? (
-        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-          {helperText}
-        </p>
-      ) : null}
+      )}
+
+      {helperText && !error && (
+        <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{helperText}</p>
+      )}
     </div>
   );
 }

@@ -31,8 +31,13 @@ const userBasicInfo = new Schema(
     joiningDate: { type: Date, required: true },
     totalTeachingExperience: { type: Number, required: true },
     totalIndustryExperience: { type: Number, required: true },
-    briefDescription: { type: String, required: true },
+    dateofJoiningService: { type: Date, required: true },
+    bloodGroup: { type: String, required: true },
     websiteUrl: { type: String, required: true },
+    googleScholarUrl: { type: String, required: true },
+    webofscienceUrl: { type: String, required: true },
+    scopusUrl: { type: String, required: true },
+    briefDescription: { type: String, required: true },
   },
   {
     timestamps: true, // Automatically handle createdAt and updatedAt fields
