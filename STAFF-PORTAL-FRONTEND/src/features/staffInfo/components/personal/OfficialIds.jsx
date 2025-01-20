@@ -7,13 +7,21 @@ import { useOfficialIds } from "../../hooks/useOfficialIds";
 
 export default function OfficialIds() {
   const { user } = useUser();
-  const { data, isLoading, error, isEditing, handleEdit, handleSave, handleCancel } =
-    useOfficialIds(user?.userId);
+  const {
+    data,
+    isLoading,
+    error,
+    isEditing,
+    handleEdit,
+    handleSave,
+    handleCancel,
+  } = useOfficialIds(user?.userId);
 
   const [formData, setFormData] = useState({
     panCardNumber: "",
     aadharNumber: "",
     penNumber: "",
+    ktuId: "",
   });
   const [errors, setErrors] = useState({});
   const [isDirty, setIsDirty] = useState(false);
@@ -35,7 +43,8 @@ export default function OfficialIds() {
     if (!formData.panCardNumber?.trim()) {
       newErrors.panCardNumber = "PAN Card number is required";
     } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panCardNumber)) {
-      newErrors.panCardNumber = "Invalid PAN Card number format (e.g., ABCDE1234F)";
+      newErrors.panCardNumber =
+        "Invalid PAN Card number format (e.g., ABCDE1234F)";
     }
 
     // Aadhar validation (12 digits)
@@ -49,7 +58,16 @@ export default function OfficialIds() {
     if (!formData.penNumber?.trim()) {
       newErrors.penNumber = "PEN number is required";
     } else if (!/^[A-Z0-9]{1,20}$/.test(formData.penNumber)) {
-      newErrors.penNumber = "Invalid PEN number format (max 20 alphanumeric characters)";
+      newErrors.penNumber =
+        "Invalid PEN number format (max 20 alphanumeric characters)";
+    }
+
+    // KTU ID validation (alphanumeric, max 20 chars)
+    if (!formData.ktuId?.trim()) {
+      newErrors.ktuId = "KTU ID is required";
+    } else if (!/^[A-Z0-9]{1,20}$/.test(formData.ktuId)) {
+      newErrors.ktuId =
+        "Invalid KTU ID format (max 20 alphanumeric characters)";
     }
 
     setErrors(newErrors);
@@ -69,6 +87,9 @@ export default function OfficialIds() {
         formattedValue = value.replace(/\D/g, "").slice(0, 12);
         break;
       case "penNumber":
+        formattedValue = value.toUpperCase();
+        break;
+      case "ktuId":
         formattedValue = value.toUpperCase();
         break;
     }
@@ -95,9 +116,9 @@ export default function OfficialIds() {
       if (result.success) {
         setIsDirty(false);
       } else {
-        setErrors(prev => ({
+        setErrors((prev) => ({
           ...prev,
-          submit: result.error
+          submit: result.error,
         }));
       }
     }
@@ -106,11 +127,14 @@ export default function OfficialIds() {
   return (
     <div className="space-y-8 animate-fadeIn">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
           <span className="block sm:inline">{error}</span>
         </div>
       )}
-      
+
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
@@ -160,6 +184,26 @@ export default function OfficialIds() {
 
           <div className="grid grid-cols-1 gap-6">
             <FormField
+              label="PEN Number"
+              name="penNumber"
+              value={formData.penNumber}
+              onChange={handleChange}
+              error={errors.penNumber}
+              disabled={!isEditing}
+              required
+              placeholder="Enter your PEN number"
+            />
+            <FormField
+              label="KTU ID"
+              name="ktuId"
+              value={formData.ktuId}
+              onChange={handleChange}
+              error={errors.ktuId}
+              disabled={!isEditing}
+              required
+              placeholder="Enter your KTU ID"
+            />
+            <FormField
               label="PAN Card Number"
               name="panCardNumber"
               value={formData.panCardNumber}
@@ -179,17 +223,6 @@ export default function OfficialIds() {
               disabled={!isEditing}
               required
               placeholder="123456789012"
-            />
-
-            <FormField
-              label="PEN Number"
-              name="penNumber"
-              value={formData.penNumber}
-              onChange={handleChange}
-              error={errors.penNumber}
-              disabled={!isEditing}
-              required
-              placeholder="Enter your PEN number"
             />
           </div>
         </form>

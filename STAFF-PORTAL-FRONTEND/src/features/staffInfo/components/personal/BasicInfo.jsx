@@ -59,6 +59,9 @@ export default function BasicInfo() {
       setFormData({
         ...formData,
         ...data,
+        // Set college and department IDs from the nested objects
+        college: data.college?.collegeId || data.college?.id || "",
+        department: data.department?.departmentId || data.department?.id || "",
         // Ensure dates are in correct format
         dateOfBirth: data.dateOfBirth
           ? new Date(data.dateOfBirth).toISOString().split("T")[0]
@@ -72,7 +75,7 @@ export default function BasicInfo() {
       });
       setIsDirty(false);
     }
-  }, [data]);
+  }, [data, colleges, departments]);
 
   const fetchMasterData = async () => {
     try {
@@ -129,6 +132,24 @@ export default function BasicInfo() {
 
   const handleEditClick = async () => {
     await fetchMasterData();
+    // After fetching master data, find the matching IDs
+    if (data) {
+      const selectedCollege = colleges.find(c => 
+        c.name === data.college?.collegeName || 
+        c.collegeName === data.college?.collegeName
+      );
+      const selectedDepartment = departments.find(d => 
+        d.name === data.department?.departmentName || 
+        d.departmentName === data.department?.departmentName
+      );
+
+      // Update form data with IDs for the select boxes
+      setFormData(prev => ({
+        ...prev,
+        college: selectedCollege?._id || selectedCollege?.collegeId || prev.college,
+        department: selectedDepartment?._id || selectedDepartment?.departmentId || prev.department,
+      }));
+    }
     handleEdit();
   };
 
@@ -257,9 +278,16 @@ export default function BasicInfo() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let updatedValue = value;
+
+    // Special handling for boolean values
+    if (name === 'isKtuPhdGuide') {
+      updatedValue = value === 'true';
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: updatedValue,
     }));
     setIsDirty(true);
 
@@ -275,9 +303,27 @@ export default function BasicInfo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      const result = await handleSave(formData);
+      // Convert dates to ISO format for API
+      const formattedData = {
+        ...formData,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
+        joiningDate: formData.joiningDate ? new Date(formData.joiningDate).toISOString() : null,
+        dateofJoiningService: formData.dateofJoiningService ? new Date(formData.dateofJoiningService).toISOString() : null,
+      };
+
+      // Get the college and department objects for reference after save
+      const selectedCollege = colleges.find(c => c._id === formData.college || c.collegeId === formData.college);
+      const selectedDepartment = departments.find(d => d._id === formData.department || d.departmentId === formData.department);
+
+      const result = await handleSave(formattedData);
       if (result.success) {
         setIsDirty(false);
+        // Update the form data with the names instead of IDs for display
+        setFormData(prev => ({
+          ...prev,
+          college: selectedCollege?.name || selectedCollege?.collegeName || prev.college,
+          department: selectedDepartment?.name || selectedDepartment?.departmentName || prev.department,
+        }));
         setToastMessage("Information updated successfully!");
         setToastType("success");
         setShowToast(true);
@@ -401,21 +447,19 @@ export default function BasicInfo() {
                     <FormField
                       label="College"
                       name="college"
-                      type="select"
-                      value={formData.college || ""}
+                      type={isEditing ? "select" : "text"}
+                      value={isEditing ? (formData.college || "") : (data?.college?.collegeName || "")}
                       onChange={handleChange}
                       disabled={!isEditing || isMasterDataLoading}
                       error={errors.college}
-                      options={[
+                      options={isEditing ? [
                         { value: "", label: "Select college" },
                         ...(colleges || []).map((college) => {
-                          console.log('Mapping college:', college);
-                          return {
-                            value: college._id || college.id || college.collegeId,
-                            label: college.name || college.collegeName,
-                          };
+                          const value = college._id || college.collegeId;
+                          const label = college.name || college.collegeName;
+                          return { value, label };
                         }),
-                      ]}
+                      ] : []}
                       required
                       fullWidth
                     />
@@ -425,21 +469,19 @@ export default function BasicInfo() {
                     <FormField
                       label="Department"
                       name="department"
-                      type="select"
-                      value={formData.department || ""}
+                      type={isEditing ? "select" : "text"}
+                      value={isEditing ? (formData.department || "") : (data?.department?.departmentName || "")}
                       onChange={handleChange}
                       disabled={!isEditing || isMasterDataLoading}
                       error={errors.department}
-                      options={[
+                      options={isEditing ? [
                         { value: "", label: "Select department" },
                         ...(departments || []).map((dept) => {
-                          console.log('Mapping department:', dept);
-                          return {
-                            value: dept._id || dept.id || dept.departmentId,
-                            label: dept.name || dept.departmentName,
-                          };
+                          const value = dept._id || dept.departmentId;
+                          const label = dept.name || dept.departmentName;
+                          return { value, label };
                         }),
-                      ]}
+                      ] : []}
                       required
                       fullWidth
                     />
@@ -450,22 +492,22 @@ export default function BasicInfo() {
                       label="Designation"
                       name="designation"
                       type="select"
-                      value={formData.designation}
+                      value={formData.designation || ""}
                       onChange={handleChange}
                       disabled={!isEditing}
                       error={errors.designation}
                       options={[
-                        { key: "select-designation", value: "", label: "Select designation" },
-                        { key: "professor", value: "Professor", label: "Professor" },
-                        { key: "associate-professor", value: "Associate Professor", label: "Associate Professor" },
-                        { key: "assistant-professor", value: "Assistant Professor", label: "Assistant Professor" },
-                        { key: "head-of-department", value: "Head of Department", label: "Head of Department" },
-                        { key: "programmer", value: "Programmer", label: "Programmer" },
-                        { key: "lab-assistant", value: "Lab Assistant", label: "Lab Assistant" },
-                        { key: "technical-assistant", value: "Technical Assistant", label: "Technical Assistant" },
-                        { key: "system-administrator", value: "System Administrator", label: "System Administrator" },
-                        { key: "research-associate", value: "Research Associate", label: "Research Associate" },
-                        { key: "teaching-assistant", value: "Teaching Assistant", label: "Teaching Assistant" },
+                        { value: "", label: "Select designation" },
+                        { value: "Professor", label: "Professor" },
+                        { value: "Associate Professor", label: "Associate Professor" },
+                        { value: "Assistant Professor", label: "Assistant Professor" },
+                        { value: "Head of Department", label: "Head of Department" },
+                        { value: "Programmer", label: "Programmer" },
+                        { value: "Lab Assistant", label: "Lab Assistant" },
+                        { value: "Technical Assistant", label: "Technical Assistant" },
+                        { value: "System Administrator", label: "System Administrator" },
+                        { value: "Research Associate", label: "Research Associate" },
+                        { value: "Teaching Assistant", label: "Teaching Assistant" },
                       ]}
                       required
                       fullWidth
@@ -541,16 +583,16 @@ export default function BasicInfo() {
 
                   <Grid item xs={12} md={6}>
                     <FormField
-                      label="KTU Approved PhD Guide"
+                      label="KTU PhD Guide"
                       name="isKtuPhdGuide"
                       type="select"
-                      value={formData.isKtuPhdGuide}
+                      value={String(formData.isKtuPhdGuide)}
                       onChange={handleChange}
                       disabled={!isEditing}
                       options={[
-                        { key: "select-ktu-phd-guide", value: "", label: "Select option" },
-                        { key: "no", value: false, label: "No" },
-                        { key: "yes", value: true, label: "Yes" },
+                        { value: "", label: "Select option" },
+                        { value: "true", label: "Yes" },
+                        { value: "false", label: "No" },
                       ]}
                       required
                       fullWidth

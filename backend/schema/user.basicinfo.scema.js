@@ -44,6 +44,15 @@ const userBasicInfo = new Schema(
   }
 );
 
+// Pre hook to populate `college` and `department` fields
+userBasicInfo.pre(/^find/, function (next) {
+  this.populate("college", "collegeName").populate(
+    "department",
+    "departmentName"
+  );
+  next();
+});
+
 // Set schema options for better JSON output
 userBasicInfo.set("toJSON", {
   getters: true,
@@ -51,9 +60,11 @@ userBasicInfo.set("toJSON", {
   versionKey: false, // Removes __v from JSON output
   transform: (doc, ret) => {
     ret.basicInfoId = ret._id;
+    //ret.college = ret.college?.collegeName || "N/A"; // Rename `college` to `collegeName`
+    //ret.department = ret.department?.departmentName || "N/A"; // Rename `department` to `departmentName`
     delete ret._id; // Removes _id from JSON output
     delete ret.id;
-    delete ret.password; // Removes password from JSON output for security reasons
+    //delete ret.password; // Removes password from JSON output for security reasons
     return ret;
   },
 });
