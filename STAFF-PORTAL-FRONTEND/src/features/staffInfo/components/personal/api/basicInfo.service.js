@@ -1,6 +1,5 @@
-import { getAuthHeader } from "../../utils/auth";
-import { handleUnauthorized } from "../../utils/auth/authUtils";
-import ApiClient from './apiClient';
+import { handleUnauthorized } from "../../../../../utils/auth/authUtils";
+import ApiClient from "../../../../../services/api/apiClient";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 const BASE_URL = `${API_URL}`;
@@ -22,7 +21,7 @@ export const basicInfoService = {
       console.log("🔍 Fetching basic info for user:", id);
       const response = await client.get(`/findbyuserid?id=${id}`);
       console.log("📡 Response status:", response.status);
-      
+
       if (response.status === 404) {
         console.log("ℹ️ No basic info found for user:", id);
         return null;
@@ -46,7 +45,7 @@ export const basicInfoService = {
     try {
       console.log("💾 Upserting basic info for user:", id);
       console.log("📤 Sending data:", data);
-      
+
       const response = await client.post(`/upsert?id=${id}`, data);
       const responseData = await response.json();
       console.log("📥 Received response:", responseData);
