@@ -23,22 +23,31 @@ export default function Toast({ show, type = 'success', message, onClose }) {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed bottom-4 right-4 z-50">
         <div className="flex items-center p-4 space-x-4 bg-white rounded-lg shadow-lg border">
-          {type === 'success' ? (
-            <FiCheckCircle className="w-6 h-6 text-green-500" />
-          ) : (
-            <FiXCircle className="w-6 h-6 text-red-500" />
-          )}
-          <p className={`text-sm font-medium ${type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
-            {message}
-          </p>
-          <button
-            onClick={onClose}
-            className="inline-flex text-gray-400 hover:text-gray-500 focus:outline-none"
-          >
-            <FiX className="w-5 h-5" />
-          </button>
+          <div className="flex-shrink-0">
+            {type === 'success' ? (
+              <FiCheckCircle className="w-5 h-5 text-green-500" />
+            ) : (
+              <FiXCircle className="w-5 h-5 text-red-500" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className={`text-sm font-medium ${
+              type === 'success' ? 'text-green-800' : 'text-red-800'
+            }`}>
+              {message}
+            </p>
+          </div>
+          <div className="flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md"
+            >
+              <span className="sr-only">Close</span>
+              <FiX className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </Transition>

@@ -24,8 +24,14 @@ const BasicInfoRequest = Yup.object()
     isKtuPhdGuide: Yup.boolean().required("isKtuPhdGuide is required"), // Removed .trim()
     publicationCount: Yup.number().required("Publication count is required"), // Removed .trim()
     projectCount: Yup.number().required("Project count is required"), // Removed .trim()
-    religion: Yup.string().required("Religion is required").trim(),
-    caste: Yup.string().required("Caste is required").trim(),
+    religion: Yup.string()
+      .required("Religion is required")
+      .trim()
+      .transform((value) => value.toUpperCase()), //want to convert to Capital
+    caste: Yup.string()
+      .required("Caste is required")
+      .trim()
+      .transform((value) => value.toUpperCase()),
     joiningDate: Yup.date().required("Joining date is required"), // Removed .trim()
     dateofJoiningService: Yup.date().required(
       "Date of joining service is required"
