@@ -8,6 +8,7 @@ const departmentModel = require("../../models/admin/departments/dbmodels/departm
 const userbasicinfoModel = require("../../models/users/dbmodels/user.basicinfo.model");
 const usercontactdetailsModel = require("../../models/users/dbmodels/user.contactdetails.model.js");
 const userofficialidsModel = require("../../models/users/dbmodels/user.OfficialIds.model.js");
+const userfamilyModel = require("../../models/users/dbmodels/user.family.model.js");
 //access the models:
 
 const modelHandlers = {
@@ -17,6 +18,7 @@ const modelHandlers = {
   userbasicinfo: userbasicinfoModel,
   usercontactdetails: usercontactdetailsModel,
   userofficialids: userofficialidsModel,
+  userfamily: userfamilyModel,
 };
 const validParams = {
   //agencyfileuploads: ["year", "month", "agencyName", "status"],

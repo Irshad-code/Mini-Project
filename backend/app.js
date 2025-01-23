@@ -15,6 +15,7 @@ const departmentsRouter = require("./routes/department.routes");
 const userBasicInfoRouter = require("./routes/user.basicinfo.routes");
 const userContactDetailsRouter = require("./routes/user.contactdetails.routes");
 const userOfficialIdsRouter = require("./routes/user.officialids.routes");
+const userFamilyRouter = require("./routes/user.family.routes");
 
 // Load database and cached data
 const db = require("./db/db");
@@ -114,6 +115,7 @@ app.use("/api/departments", departmentsRouter);
 app.use("/api/userbasicinfo", userBasicInfoRouter);
 app.use("/api/usercontactdetails", userContactDetailsRouter);
 app.use("/api/userofficialids", userOfficialIdsRouter);
+app.use("/api/userfamily", userFamilyRouter);
 
 // Serve Swagger UI
 if (process.env.NODE_ENV === "development") {

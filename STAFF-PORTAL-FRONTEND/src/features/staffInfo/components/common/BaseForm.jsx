@@ -190,8 +190,8 @@ export function BaseFormLayout({
 
           {/* Action buttons at bottom */}
           {isEditing && (
-            <div className="bg-white border-t border-gray-200 py-4 mt-8">
-              <div className="flex justify-end space-x-2">
+            <div className="sticky bottom-0 bg-[var(--color-bg-primary)] border-t border-[var(--color-border-primary)] shadow-sm py-4 px-6 mt-8">
+              <div className="flex justify-end space-x-3">
                 <Button
                   variant="secondary"
                   onClick={handleCancel}
