@@ -23,8 +23,8 @@ export default function Toast({ show, type = 'success', message, onClose }) {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="fixed bottom-4 right-4 z-50">
-        <div className="flex items-center p-4 space-x-4 bg-white rounded-lg shadow-lg border">
+      <div className="max-w-sm w-full bg-white rounded-lg shadow-lg border">
+        <div className="flex items-center p-4 space-x-4">
           <div className="flex-shrink-0">
             {type === 'success' ? (
               <FiCheckCircle className="w-5 h-5 text-green-500" />
