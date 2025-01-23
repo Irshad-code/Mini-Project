@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { officialIdsService } from '../../../services/api/officialIds.service';
+import { useState, useEffect } from "react";
+import { officialIdsService } from "../components/personal/api/officialIds.service";
 
 export function useOfficialIds(id) {
   const [state, setState] = useState({
@@ -10,6 +10,7 @@ export function useOfficialIds(id) {
   });
 
   useEffect(() => {
+    console.log(" useOfficialIds effect triggered with id:", id);
     if (id) {
       fetchOfficialIds();
     }
@@ -17,53 +18,60 @@ export function useOfficialIds(id) {
 
   const fetchOfficialIds = async () => {
     try {
-      setState(prev => ({ ...prev, isLoading: true }));
+      console.log(" Fetching official IDs for user:", id);
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
       const data = await officialIdsService.findByUserId(id);
-      setState(prev => ({
+      console.log(" Received official IDs:", data);
+      setState((prev) => ({
         ...prev,
-        data,
+        data: data,
         isLoading: false,
         error: null,
       }));
     } catch (error) {
-      console.error("Error in fetchOfficialIds:", error);
-      setState(prev => ({
+      console.error(" Error in fetchOfficialIds:", error);
+      setState((prev) => ({
         ...prev,
-        error: error.message,
+        error: error.message || "Failed to fetch official IDs",
         isLoading: false,
       }));
     }
   };
 
   const handleEdit = () => {
-    setState(prev => ({ ...prev, isEditing: true }));
+    console.log(" Entering edit mode");
+    setState((prev) => ({ ...prev, isEditing: true }));
   };
 
   const handleSave = async (updatedData) => {
-    setState(prev => ({ ...prev, isLoading: true }));
+    console.log(" Saving official IDs:", updatedData);
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
       const response = await officialIdsService.upsert(id, updatedData);
-      setState(prev => ({
+      console.log(" Save successful:", response);
+      setState((prev) => ({
         ...prev,
-        data: response.record,
+        data: response,
         isLoading: false,
         isEditing: false,
         error: null,
       }));
       return { success: true };
     } catch (error) {
-      console.error("Error in handleSave:", error);
-      setState(prev => ({
+      console.error(" Save failed:", error);
+      const errorMessage = error.message || "Failed to save official IDs";
+      setState((prev) => ({
         ...prev,
-        error: error.message || 'Failed to save official IDs',
         isLoading: false,
+        error: errorMessage,
       }));
-      return { success: false, error: error.message };
+      return { success: false, error: errorMessage };
     }
   };
 
   const handleCancel = () => {
-    setState(prev => ({ ...prev, isEditing: false }));
+    console.log(" Canceling edit");
+    setState((prev) => ({ ...prev, isEditing: false, error: null }));
   };
 
   return {
