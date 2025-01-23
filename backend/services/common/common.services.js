@@ -6,7 +6,8 @@ const userModel = require("../../models/users/dbmodels/user.model");
 const collegeModel = require("../../models/admin/colleges/dbmodels/college.model");
 const departmentModel = require("../../models/admin/departments/dbmodels/department.model");
 const userbasicinfoModel = require("../../models/users/dbmodels/user.basicinfo.model");
-const usercontactdetailsModel = require("../../models/users/dbmodels/user.contactdetails.model");
+const usercontactdetailsModel = require("../../models/users/dbmodels/user.contactdetails.model.js");
+const userofficialidsModel = require("../../models/users/dbmodels/user.OfficialIds.model.js");
 //access the models:
 
 const modelHandlers = {
@@ -15,6 +16,7 @@ const modelHandlers = {
   departments: departmentModel,
   userbasicinfo: userbasicinfoModel,
   usercontactdetails: usercontactdetailsModel,
+  userofficialids: userofficialidsModel,
 };
 const validParams = {
   //agencyfileuploads: ["year", "month", "agencyName", "status"],
@@ -47,11 +49,17 @@ async function upsertByUserId(model, userId, data) {
   logger.info("modelHandler", modelHandlers[model]);
   logger.info("data stored", data);
 
-  return await modelHandlers[model].findOneAndUpdate(
-    { userId: new mongoose.Types.ObjectId(userId) },
-    { $set: data },
-    { upsert: true, new: true } // Upsert: create if not found, new: return updated document
-  );
+  const existingDoc = await modelHandlers[model].findOne({ userId: userId });
+
+  if (existingDoc) {
+    // Update existing document
+    Object.assign(existingDoc, data);
+    return await existingDoc.save();
+  } else {
+    // Create a new document
+    const newDoc = new modelHandlers[model]({ userId, ...data });
+    return await newDoc.save();
+  }
 }
 
 async function getapproximatecount(model) {

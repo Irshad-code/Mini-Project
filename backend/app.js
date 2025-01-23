@@ -14,6 +14,7 @@ const collegesRouter = require("./routes/college.routes");
 const departmentsRouter = require("./routes/department.routes");
 const userBasicInfoRouter = require("./routes/user.basicinfo.routes");
 const userContactDetailsRouter = require("./routes/user.contactdetails.routes");
+const userOfficialIdsRouter = require("./routes/user.officialids.routes");
 
 // Load database and cached data
 const db = require("./db/db");
@@ -112,6 +113,7 @@ app.use("/api/colleges", collegesRouter);
 app.use("/api/departments", departmentsRouter);
 app.use("/api/userbasicinfo", userBasicInfoRouter);
 app.use("/api/usercontactdetails", userContactDetailsRouter);
+app.use("/api/userofficialids", userOfficialIdsRouter);
 
 // Serve Swagger UI
 if (process.env.NODE_ENV === "development") {
