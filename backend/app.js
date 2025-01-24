@@ -16,6 +16,7 @@ const userBasicInfoRouter = require("./routes/user.basicinfo.routes");
 const userContactDetailsRouter = require("./routes/user.contactdetails.routes");
 const userOfficialIdsRouter = require("./routes/user.officialids.routes");
 const userFamilyRouter = require("./routes/user.family.routes");
+const userPhotoRouter = require("./routes/user.profilephoto.routes");
 
 // Load database and cached data
 const db = require("./db/db");
@@ -46,6 +47,16 @@ app.set("view engine", "ejs");
 
 // Set up middleware
 app.use(express.json());
+if (process.env.NODE_ENV === "development") {
+  app.use(
+    cors({
+      origin: "*", // Allows all origins
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow all methods
+      allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+    })
+  );
+  app.options("*", cors()); // Handle preflight requests
+}
 // Apply helmet for all environments
 //app.use(helmet());
 
@@ -96,18 +107,10 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests.
 app.use(limiter);
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 app.use(requestLogger);
 //allow requests from all origin now
-if (process.env.NODE_ENV === "development") {
-  app.use(
-    cors({
-      origin: "*", // Allows all origins
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow all methods
-      allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
-    })
-  );
-}
 
 app.use("/api/users", usersRouter);
 app.use("/api/colleges", collegesRouter);
@@ -116,6 +119,7 @@ app.use("/api/userbasicinfo", userBasicInfoRouter);
 app.use("/api/usercontactdetails", userContactDetailsRouter);
 app.use("/api/userofficialids", userOfficialIdsRouter);
 app.use("/api/userfamily", userFamilyRouter);
+app.use("/api/userprofilephoto", userPhotoRouter);
 
 // Serve Swagger UI
 if (process.env.NODE_ENV === "development") {

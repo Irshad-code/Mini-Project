@@ -1,6 +1,7 @@
 const { query } = require("express");
 const mongoose = require("mongoose");
 const userModel = require("../models/users/dbmodels/user.model");
+const profilePhoto = require("../models/users/dbmodels/user.profilephoto.model");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -142,7 +143,22 @@ async function search(user, page, limit, role, username, email) {
     throw new Error(error.message);
   }
 }
-
+async function uploadProfilePhoto(userId, filePath) {
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    //if user exist i need to upsert the image to the profilephoto collection
+    const profilePhoto = await profilePhoto.findOneAndUpdate(
+      { userId: userId },
+      { filePath: filePath },
+      { upsert: true, new: true }
+    );
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 module.exports = {
   getUserByVerificationToken,
   verifyUserEmail,
@@ -156,4 +172,5 @@ module.exports = {
   list,
   search,
   updateUserById,
+  uploadProfilePhoto,
 };

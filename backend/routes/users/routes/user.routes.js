@@ -1,7 +1,7 @@
 const express = require("express");
 //const { check, body, validationResult } = require("express-validator");
 const usersController = require("../../../controllers/user.controller");
-const fileUpload = require("../middleware/userfileUpload.middleware");
+const fileUpload = require("../../../middlewares/userfileUpload.middleware");
 const router = express.Router();
 const passport = require("../../../passport/jwtStrategy.passport");
 const {
@@ -49,4 +49,12 @@ router.post(
 // Route for resetting password
 
 ////////////////////////////////////////////////////////////
+router.post(
+  "/photoupload",
+  commonLimiter,
+  passport.authenticate("jwt", { session: false }), // Authenticate the request with Passport JWT
+  fileUpload.single("file"),
+  usersController.uploadphto
+);
+
 module.exports = router;
