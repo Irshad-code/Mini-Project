@@ -4,16 +4,23 @@ import { Menu, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import ThemeToggle from '../ui/ThemeToggle';
 import { useUser } from '../../contexts/UserContext';
+import { useProfilePhoto } from '../../features/staffInfo/hooks/useProfilePhoto';
+import { usePhoto } from '../../contexts/PhotoContext';
 
 export default function Header({ onMobileMenuToggle, isMobileNavOpen }) {
   const [notifications] = useState(3);
-  const { signout } = useUser();
+  const { user, signout } = useUser();
+  const { photoUrl } = useProfilePhoto(user?.userId);
+  const { lastUpdate } = usePhoto();
 
   const menuItems = [
     { label: 'Profile', onClick: () => console.log('Profile clicked') },
     { label: 'Settings', onClick: () => console.log('Settings clicked') },
     { label: 'Sign out', onClick: signout },
   ];
+
+  // Add timestamp to photo URL to prevent caching
+  const photoUrlWithTimestamp = photoUrl ? `${photoUrl}?t=${lastUpdate}` : null;
 
   return (
     <header className="fixed w-full bg-[var(--color-bg-secondary)] border-b border-[var(--color-border-primary)]">
@@ -46,8 +53,18 @@ export default function Header({ onMobileMenuToggle, isMobileNavOpen }) {
           </button>
 
           <Menu as="div" className="relative">
-            <Menu.Button className="flex items-center space-x-2 p-2 rounded-full hover:bg-[var(--color-bg-white-opacity)]">
-              <FiUser className="w-6 h-6 text-[var(--color-text-secondary)]" />
+            <Menu.Button className="flex items-center space-x-2 p-1 rounded-full hover:bg-[var(--color-bg-white-opacity)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)]">
+              {photoUrlWithTimestamp ? (
+                <img 
+                  src={photoUrlWithTimestamp}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover border border-[var(--color-border-primary)]"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] flex items-center justify-center">
+                  <FiUser className="w-5 h-5 text-[var(--color-text-secondary)]" />
+                </div>
+              )}
             </Menu.Button>
 
             <Transition
@@ -60,6 +77,32 @@ export default function Header({ onMobileMenuToggle, isMobileNavOpen }) {
             >
               <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right glass-effect rounded-md shadow-lg focus:outline-none">
                 <div className="py-1">
+                  {/* User Info Section */}
+                  <div className="px-4 py-2 border-b border-[var(--color-border-primary)]">
+                    <div className="flex items-center space-x-3">
+                      {photoUrlWithTimestamp ? (
+                        <img 
+                          src={photoUrlWithTimestamp}
+                          alt="Profile"
+                          className="w-10 h-10 rounded-full object-cover border border-[var(--color-border-primary)]"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] flex items-center justify-center">
+                          <FiUser className="w-6 h-6 text-[var(--color-text-secondary)]" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-sm font-medium text-[var(--color-text-primary)]">
+                          {user?.name || 'User'}
+                        </div>
+                        <div className="text-xs text-[var(--color-text-secondary)]">
+                          {user?.email || ''}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
                   {menuItems.map((item) => (
                     <Menu.Item key={item.label}>
                       {({ active }) => (

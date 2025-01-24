@@ -1,16 +1,21 @@
 import { useState, useEffect } from "react";
 import { useProfilePhoto } from "../../hooks/useProfilePhoto";
 import { useUser } from "../../../../contexts/UserContext";
+import { usePhoto } from "../../../../contexts/PhotoContext";
 import { FiUpload, FiImage, FiCamera } from "react-icons/fi";
 import Button from "../../../../components/ui/Button";
 
 export default function ProfilePhoto() {
   const { user } = useUser();
   const { photoUrl, isLoading, error, uploadPhoto, refresh } = useProfilePhoto(user?.userId);
+  const { refreshPhoto, lastUpdate } = usePhoto();
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Add timestamp to photo URL to prevent caching
+  const photoUrlWithTimestamp = photoUrl ? `${photoUrl}?t=${lastUpdate}` : null;
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -49,8 +54,9 @@ export default function ProfilePhoto() {
         setSelectedFile(null);
         setPreviewUrl(null);
         setUploadError(null);
-        // Refresh to get the latest photo
+        // Refresh both local and global photo state
         await refresh();
+        refreshPhoto();
       } else {
         setUploadError(result.error || 'Failed to upload photo');
       }
@@ -82,10 +88,10 @@ export default function ProfilePhoto() {
       <div className="mb-8">
         <h3 className="text-lg font-medium text-[var(--color-text-primary)] mb-4">Profile Photo</h3>
         <div className="flex justify-center">
-          {photoUrl ? (
+          {photoUrlWithTimestamp ? (
             <div className="relative group">
               <img
-                src={photoUrl + '?' + new Date().getTime()} // Add timestamp to prevent caching
+                src={photoUrlWithTimestamp}
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover border-2 border-[var(--color-border-primary)]"
               />

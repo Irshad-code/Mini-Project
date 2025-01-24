@@ -8,6 +8,7 @@ import {
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { UserProvider } from "./contexts/UserContext";
+import { PhotoProvider } from "./contexts/PhotoContext";
 import Layout from "./components/layout/Layout";
 import LoginPage from "./pages/Auth/LoginPage";
 import SignupPage from "./pages/Auth/SignupPage";
@@ -47,9 +48,11 @@ export default function App() {
     <Router>
       <ThemeProvider>
         <UserProvider>
-          <NavigationProvider>
-            <AppContent />
-          </NavigationProvider>
+          <PhotoProvider>
+            <NavigationProvider>
+              <AppContent />
+            </NavigationProvider>
+          </PhotoProvider>
         </UserProvider>
       </ThemeProvider>
     </Router>
