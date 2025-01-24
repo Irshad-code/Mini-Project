@@ -128,9 +128,9 @@ export default function Responsibilities() {
     isEditing = false,
     id = null
   ) => (
-    <div className="mb-4 p-4 border border-[var(--color-border-primary)] rounded-lg bg-[var(--color-bg-secondary)] shadow-sm">
+    <div className="mb-4 p-3 sm:p-4 border border-[var(--color-border-primary)] rounded-lg bg-[var(--color-bg-secondary)] shadow-sm">
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12}>
           <FormField
             label="Title"
             value={responsibility.title}
@@ -150,7 +150,7 @@ export default function Responsibilities() {
             fullWidth
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12}>
           <FormField
             label="Description"
             value={responsibility.description}
@@ -172,20 +172,22 @@ export default function Responsibilities() {
             rows={3}
           />
         </Grid>
-        <Grid item xs={12} className="flex justify-end space-x-2">
+        <Grid item xs={12} className="flex justify-end space-x-2 mt-2">
           <Button
             variant="secondary"
             onClick={isEditing ? handleCancelEdit : handleCancelAdd}
-            icon={<FiX className="w-4 h-4" />}
+            icon={<FiX className="w-3 h-3 sm:w-4 sm:h-4" />}
             size="sm"
+            className="min-w-[80px] sm:min-w-[100px]"
           >
             Cancel
           </Button>
           <Button
             variant="primary"
             onClick={isEditing ? () => handleSaveEdit(id) : handleSaveNew}
-            icon={<FiCheck className="w-4 h-4" />}
+            icon={<FiCheck className="w-3 h-3 sm:w-4 sm:h-4" />}
             size="sm"
+            className="min-w-[80px] sm:min-w-[100px]"
           >
             Save
           </Button>
@@ -197,41 +199,41 @@ export default function Responsibilities() {
   const renderResponsibilityItem = (responsibility) => (
     <div
       key={responsibility._id}
-      className="mb-4 p-4 border border-[var(--color-border-primary)] rounded-lg bg-[var(--color-bg-secondary)] shadow-sm hover:shadow-md transition-all duration-200"
+      className="mb-4 p-3 sm:p-4 border border-[var(--color-border-primary)] rounded-lg bg-[var(--color-bg-secondary)] shadow-sm hover:shadow-md transition-all duration-200"
     >
       {editingId === responsibility._id ? (
         renderResponsibilityForm(newResponsibility, true, responsibility._id)
       ) : (
-        <Grid container spacing={2}>
-          <Grid item xs={12} className="flex justify-between items-start">
-            <div>
-              <h4 className="text-lg font-medium text-[var(--color-text-primary)]">
-                {responsibility.title}
-              </h4>
-              <p className="text-[var(--color-text-secondary)] mt-1">
-                {responsibility.description}
-              </p>
-            </div>
-            <div className="flex space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => handleEdit(responsibility)}
-                icon={<FiEdit2 className="w-4 h-4" />}
-                size="sm"
-              >
-                Edit
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => handleDelete(responsibility._id)}
-                icon={<FiTrash2 className="w-4 h-4" />}
-                size="sm"
-              >
-                Delete
-              </Button>
-            </div>
-          </Grid>
-        </Grid>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <h4 className="text-base sm:text-lg font-medium text-[var(--color-text-primary)] truncate">
+              {responsibility.title}
+            </h4>
+            <p className="text-sm sm:text-base text-[var(--color-text-secondary)] mt-1 line-clamp-2 sm:line-clamp-none">
+              {responsibility.description}
+            </p>
+          </div>
+          <div className="flex justify-end space-x-2 mt-2 sm:mt-0">
+            <Button
+              variant="secondary"
+              onClick={() => handleEdit(responsibility)}
+              icon={<FiEdit2 className="w-3 h-3 sm:w-4 sm:h-4" />}
+              size="sm"
+              className="min-w-[80px] sm:min-w-[100px]"
+            >
+              Edit
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => handleDelete(responsibility._id)}
+              icon={<FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4" />}
+              size="sm"
+              className="min-w-[80px] sm:min-w-[100px]"
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -246,11 +248,12 @@ export default function Responsibilities() {
         {isAddingNew ? (
           renderResponsibilityForm(newResponsibility)
         ) : (
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-4 sm:mt-6">
             <Button
               variant="primary"
               onClick={handleAddNew}
-              icon={<FiPlus className="w-4 h-4" />}
+              icon={<FiPlus className="w-3 h-3 sm:w-4 sm:h-4" />}
+              className="w-full sm:w-auto"
             >
               Add Responsibility
             </Button>
@@ -262,19 +265,20 @@ export default function Responsibilities() {
 
   if (!responsibilitiesHook.data && !isAddingNew) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <div className="text-center">
-          <h3 className="text-lg font-medium text-[var(--color-text-primary)] mb-2">
+      <div className="flex flex-col items-center justify-center space-y-4 py-6 sm:py-8">
+        <div className="text-center px-4">
+          <h3 className="text-base sm:text-lg font-medium text-[var(--color-text-primary)] mb-2">
             No Responsibilities Added
           </h3>
-          <p className="text-[var(--color-text-secondary)] mb-4">
+          <p className="text-sm sm:text-base text-[var(--color-text-secondary)] mb-4">
             Add your roles and responsibilities one by one.
           </p>
         </div>
         <Button
           variant="primary"
           onClick={handleAddNew}
-          icon={<FiPlus className="w-4 h-4" />}
+          icon={<FiPlus className="w-3 h-3 sm:w-4 sm:h-4" />}
+          className="w-full sm:w-auto mx-4 sm:mx-0"
         >
           Add First Responsibility
         </Button>
@@ -283,8 +287,8 @@ export default function Responsibilities() {
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-[var(--color-primary-500)] mb-6">
+    <div className="space-y-4 sm:space-y-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-primary-500)] mb-4 sm:mb-6 px-1">
         Roles & Responsibilities
       </h2>
       {renderContent()}
