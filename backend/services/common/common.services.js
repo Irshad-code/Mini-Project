@@ -10,6 +10,7 @@ const usercontactdetailsModel = require("../../models/users/dbmodels/user.contac
 const userofficialidsModel = require("../../models/users/dbmodels/user.OfficialIds.model.js");
 const userfamilyModel = require("../../models/users/dbmodels/user.family.model.js");
 const userprofilephotoModel = require("../../models/users/dbmodels/user.profilephoto.model.js");
+const userresponsibilityModel = require("../../models/users/dbmodels/user.Responsibility.model.js");
 //access the models:
 
 const modelHandlers = {
@@ -21,6 +22,7 @@ const modelHandlers = {
   userofficialids: userofficialidsModel,
   userfamily: userfamilyModel,
   userprofilephoto: userprofilephotoModel,
+  userresponsibility: userresponsibilityModel,
 };
 const validParams = {
   //agencyfileuploads: ["year", "month", "agencyName", "status"],

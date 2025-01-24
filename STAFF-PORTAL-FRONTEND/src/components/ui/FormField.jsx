@@ -13,6 +13,8 @@ export default function FormField({
   onChange,
   options = [],
   rows,
+  placeholder,
+  multiline = false
 }) {
   const baseInputClasses = clsx(
     'mt-1 block w-full rounded-md shadow-sm transition-all duration-200',
@@ -23,6 +25,7 @@ export default function FormField({
     'border-[var(--color-border-primary)]',
     'bg-[var(--color-bg-primary)]',
     'text-[var(--color-text-primary)]',
+    'placeholder:text-[var(--color-text-tertiary)]',
     error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
     className
   );
@@ -49,7 +52,7 @@ export default function FormField({
             </option>
           ))}
         </select>
-      ) : type === 'textarea' ? (
+      ) : multiline || type === 'textarea' ? (
         <textarea
           name={name}
           value={value}
@@ -58,6 +61,7 @@ export default function FormField({
           className={baseInputClasses}
           required={required}
           rows={rows || 4}
+          placeholder={placeholder}
         />
       ) : (
         <input
@@ -68,6 +72,7 @@ export default function FormField({
           disabled={disabled}
           className={baseInputClasses}
           required={required}
+          placeholder={placeholder}
         />
       )}
 
