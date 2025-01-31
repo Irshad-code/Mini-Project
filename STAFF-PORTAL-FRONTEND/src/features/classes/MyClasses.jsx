@@ -123,7 +123,7 @@ export default function MyClasses() {
             Manage your current and archived classes
           </p>
         </div>
-        <Button variant="primary" icon={<FiPlus className="w-4 h-4" />}>
+        <Button onClick={()=>console.log("clciked on btn")} variant="primary" icon={<FiPlus className="w-4 h-4" />}>
           Add New Class
         </Button>
       </div>
