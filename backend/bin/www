@@ -43,19 +43,19 @@ if (process.env.NODE_ENV === "production1") {
   // Start the HTTPS server on the specified port
   server = https.createServer(httpsOptions, app);
   server.listen(httpsPort);
-  console.log(`HTTPS Server running on port ${httpsPort}`);
+  console.log(`HTTPS Server running on port ${httpsPort} (backEnd)`);
 } else {
   // In non-production environments, create an HTTP server
   server = http.createServer(app);
   server.listen(httpPort);
-  console.log(`HTTP Server running on port ${httpPort}`);
+  console.log(`HTTP Server running on port ${httpPort} (backEnd)`);
 }
 
 /**
  * Attach error and listening event listeners to the server.
  */
 server.on("error", onError);
-server.on("listening", onListening);
+server.on("listening", onListening); 
 
 /**
  * Normalize a port into a number, string, or false.

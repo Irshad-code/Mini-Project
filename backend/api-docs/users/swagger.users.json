@@ -302,6 +302,86 @@
         }
       }
     },
+    "/api/usermyclasses":{
+       "post":{
+          "summary":"Create new class by the user",
+          "description":"Create a class which contains the basic details about the class",
+          "consumes":["multipart/formData"],
+          
+          "parameters":[
+             {
+              "name":"subject",
+              "type":"string",
+              "description":"blank",
+              "required":true,
+              "in":"formData"
+             },
+     {
+        "name": "code",
+        "in": "formData",
+        "type": "string",
+        "description": "Unique code for the subject",
+        "required": true
+      },
+      {
+        "name": "semester",
+        "in": "formData",
+        "type": "string",
+        "description": "Semester during which the class is offered",
+        "required": true
+      },
+      {
+        "name": "branch",
+        "in": "formData",
+        "type": "string",
+        "description": "Branch of study for the class",
+        "required": true
+      },
+      {
+        "name": "students",
+        "in": "formData",
+        "type": "integer",
+        "description": "Number of students enrolled in the class (must be at least 1)",
+        "required": true
+      },
+      {
+        "name": "schedule",
+        "in": "formData",
+        "type": "string",
+        "description": "Class schedule (days and times)",
+        "required": true
+      },
+      {
+        "name": "syllabus",
+        "in": "formData",
+        "type": "string",
+        "description": "Path or URL to the syllabus document",
+        "required": true
+      },
+      {
+        "name": "courseOutcome",
+        "in": "formData",
+        "type": "string",
+        "description": "Path or URL to the course outcome document",
+        "required": true
+      }
+     ],
+     "responses":{
+      "200":{
+        "description":"New class created successfully."
+      },
+      "400": {
+            "description": "Invalid data or unauthorized."
+          },
+      "404": {
+            "description": "User not found."
+          },
+      "500": {
+            "description": "Internal server error."
+          }
+     }
+       }
+    },
     "/api/users/{id}": {
       "put": {
         "summary": "Update User",

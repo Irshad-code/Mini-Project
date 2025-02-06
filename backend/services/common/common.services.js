@@ -11,7 +11,7 @@ const userofficialidsModel = require("../../models/users/dbmodels/user.OfficialI
 const userfamilyModel = require("../../models/users/dbmodels/user.family.model.js");
 const userprofilephotoModel = require("../../models/users/dbmodels/user.profilephoto.model.js");
 const userresponsibilityModel = require("../../models/users/dbmodels/user.Responsibility.model.js");
-const userClassesModel = require("../../models/users/dbmodels/user.classes.model.js");
+const userMyClassesModel = require("../../models/users/dbmodels/user.myclasses.model.js");
 //access the models:
      
 const modelHandlers = {
@@ -24,7 +24,7 @@ const modelHandlers = {
   userfamily: userfamilyModel,
   userprofilephoto: userprofilephotoModel,
   userresponsibility: userresponsibilityModel,
-  userclasses: userClassesModel,
+  usermyclasses: userMyClassesModel,
 };
 const validParams = {
   //agencyfileuploads: ["year", "month", "agencyName", "status"],
@@ -180,7 +180,7 @@ async function updateById(model, id, updateData) {
     throw new Error(error.message);
   }
 }
-async function create(model, input) {
+async function create(model, input) {//mongoose direct saving functions
   try {
     model = removeapi(model);
     logger.debug("model name :", model);

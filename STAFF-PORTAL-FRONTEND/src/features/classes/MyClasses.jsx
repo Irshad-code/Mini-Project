@@ -1,57 +1,63 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { Tab } from "@headlessui/react";
 import { FiPlus, FiCalendar, FiUsers, FiBook, FiArchive } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import TabButton from "../../components/ui/TabButton";
+import axios from 'axios';
 
 const tabs = [
   { id: "current", name: "Current Classes", icon: FiCalendar },
   { id: "archived", name: "Archived Classes", icon: FiArchive },
 ];
 
+ const BACKEND_LINK = process.env.VITE_API_URL;
+
 export default function MyClasses() {
   const [classes, setClasses] = useState({
-    current: [
-      {
-        id: 1,
-        subject: "Data Structures",
-        code: "CS201",
-        semester: "S3",
-        branch: "CSE",
-        students: 60,
-        schedule: "Monday, Wednesday 10:00 AM",
-        syllabus: "path/to/syllabus.pdf",
-        courseOutcome: "path/to/co.pdf",
-      },
-      {
-        id: 2,
-        subject: "Database Management",
-        code: "CS202",
-        semester: "S4",
-        branch: "CSE",
-        students: 55,
-        schedule: "Tuesday, Thursday 2:00 PM",
-        syllabus: "path/to/syllabus.pdf",
-        courseOutcome: "path/to/co.pdf",
-      },
-    ],
-    archived: [
-      {
-        id: 3,
-        subject: "Programming in Python",
-        code: "CS101",
-        semester: "S2",
-        branch: "CSE",
-        students: 62,
-        year: "2023",
-        result: "95% Pass",
-        syllabus: "path/to/syllabus.pdf",
-        courseOutcome: "path/to/co.pdf",
-        finalReport: "path/to/report.pdf",
-      },
-    ],
+    current: [],
+    archived: [],
   });
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try{
+        const response = await axios.get(`${BACKEND_LINK}/classes`);
+        const data = response.data;
+
+        const current=data.filter(cls=>!cls.isArchived);
+        const archived = data.filter(cls => cls.isArchived);
+        
+        setClasses({
+          current,
+          archived
+        });
+      }catch(error){
+        console.error('Error fetching classes:', error);
+      };
+    }
+      fetchClasses();
+  },[]);
+
+  async function onAdd_class(){
+
+    const newClassCard = {
+        sid: 1,
+        subject: "",
+        code: "",
+        semester: "",
+        branch: "",
+        students: 1,
+        schedule: "",
+        syllabus: "",
+        courseOutcome: "",
+    };
+    const response = await axios.post(BACKEND_LINK+"/classes",newClassCard);
+    setClasses(
+      [...classes, response.data]
+    );
+    
+ }
 
   const renderClassCard = (classItem, type) => (
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
@@ -123,7 +129,10 @@ export default function MyClasses() {
             Manage your current and archived classes
           </p>
         </div>
-        <Button onClick={()=>console.log("clciked on btn")} variant="primary" icon={<FiPlus className="w-4 h-4" />}>
+        <Button onClick={()=>{
+          onAdd_class();
+          console.log("clicked on Add_new_classbtn");
+          }} variant="primary" icon={<FiPlus className="w-4 h-4" />}>
           Add New Class
         </Button>
       </div>

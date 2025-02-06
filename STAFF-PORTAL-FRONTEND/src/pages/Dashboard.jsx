@@ -8,7 +8,9 @@ import FeaturePlaceholder from "../components/placeholder/FeaturePlaceholder";
 const StaffInfoFeature = lazy(() =>
   import("../features/staffInfo/StaffInfoFeature")
 );
-const MyClasses = lazy(() => import("../features/classes/MyClasses"));
+const MyClasses = lazy(() => 
+  import("../features/classes/MyClasses")
+);
 const TaxManagementFeature = lazy(() =>
   import("../features/taxManagement/TaxManagementFeature")
 );

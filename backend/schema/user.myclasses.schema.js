@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const Schema = mongoose.Schema;
 
-const ClassesSchema = new Schema(
+const MyClassesSchema = new Schema(
   {
     id: { type: Number, required: true, unique: true },
     subject: { type: String, required: true },
@@ -18,7 +18,7 @@ const ClassesSchema = new Schema(
 );
 
 // Set schema options for better JSON output
-ClassesSchema.set("toJSON", {
+MyClassesSchema.set("toJSON", {
   getters: true,
   virtuals: true,
   versionKey: false, // Removes __v from JSON output
@@ -31,8 +31,8 @@ ClassesSchema.set("toJSON", {
 });
 
 // Apply the uniqueValidator plugin to the userContactDetails schema
-ClassesSchema.plugin(uniqueValidator, {
+MyClassesSchema.plugin(uniqueValidator, {
   message: "{PATH} must be unique.",
 });
 
-module.exports = ClassesSchema;
+module.exports = MyClassesSchema;

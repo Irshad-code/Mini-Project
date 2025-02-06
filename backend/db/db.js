@@ -12,6 +12,6 @@ const uri = process.env.MONGODB_URI;
 module.exports = mongoose
   .connect(uri, { autoIndex: true })
   .then((result) => {
-    console.log("successful connection! established");
+    console.log("successful connection with Mongoose! DataBase established");
   })
   .catch((error) => console.log(error));
