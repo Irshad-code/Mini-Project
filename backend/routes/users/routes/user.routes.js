@@ -32,7 +32,7 @@ const {
 //router for signup
 router.post(
   "/signup",
-  commonLimiter,
+  commonLimiter, 
   validateAndTransformRequest(SignupRequest),
   usersController.signup
 );

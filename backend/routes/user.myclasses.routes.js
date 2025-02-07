@@ -8,12 +8,14 @@ const { validateAndTransformRequest } = require("../middlewares/validation.middl
 const { CreateMyClassRequest } = require("../models/users/requests/user.MyClasssesRequest");
 
 router.post(
-  "/create",
+  "/create", 
   commonLimiter,
-  passport.authenticate("jwt", { session: false }),
-  authorizeAdminUser,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
   validateAndTransformRequest(CreateMyClassRequest),
   commonController.create
 );
+
+
  
 module.exports = router;

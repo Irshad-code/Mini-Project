@@ -302,7 +302,7 @@
         }
       }
     },
-    "/api/usermyclasses":{
+    "/api/usermyclasses/create":{
        "post":{
           "summary":"Create new class by the user",
           "description":"Create a class which contains the basic details about the class",
@@ -330,7 +330,7 @@
         "description": "Semester during which the class is offered",
         "required": true
       },
-      {
+      { 
         "name": "branch",
         "in": "formData",
         "type": "string",

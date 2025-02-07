@@ -30,6 +30,10 @@ router.post(
   validateAndTransformRequest(CreateRequest),
   commonController.create
 );
-router.get("/completelist", commonLimiter, commonController.completeList);
+router.get(
+    "/completelist", 
+    commonLimiter, 
+    commonController.completeList
+ );
 ////////////////////////////////////////////////////////////
 module.exports = router;
