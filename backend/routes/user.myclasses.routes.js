@@ -5,7 +5,7 @@ const commonController = require("../controllers/common.controller");
 const { commonLimiter } = require("../middlewares/ratelimit.middleware");
 const { authorizeAdminUser } = require("../passport/authorizationMiddleware");
 const { validateAndTransformRequest, validateId } = require("../middlewares/validation.middleware");
-const { MyClassRequest,DeleteMyClassRequest} = require("../models/users/requests/user.MyClasssesRequest");
+const { MyClassRequest } = require("../models/users/requests/user.MyClasssesRequest");
 
 router.post(
   "/create", 

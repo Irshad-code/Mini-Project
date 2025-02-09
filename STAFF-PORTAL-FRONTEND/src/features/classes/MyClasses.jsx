@@ -11,7 +11,7 @@ const tabs = [
   { id: "archived", name: "Archived Classes", icon: FiArchive },
 ];
 
- const BACKEND_LINK = import.meta.env.VITE_API_URL;
+ const BACKEND_LINK = import.meta.env.VITE_API_URL + "/usermyclasses";
 
 export default function MyClasses() {
   const [classes, setClasses] = useState({
@@ -22,7 +22,7 @@ export default function MyClasses() {
   useEffect(() => {
     const fetchClasses = async () => {
       try{
-        const response = await axios.get(`${BACKEND_LINK}/usermyclasses`);
+        const response = await axios.get(BACKEND_LINK);
         const data = response.data;
 
         const current=data.filter(cls=>!cls.isArchived);
@@ -32,6 +32,9 @@ export default function MyClasses() {
           current,
           archived
         });
+
+        console.log(data);
+
       }catch(error){
         console.error('Error fetching classes:', error);
       };
@@ -42,21 +45,41 @@ export default function MyClasses() {
   async function onAdd_class(){
 
     const newClassCard = {
-        sid: 1,
-        subject: "",
-        code: "",
-        semester: "",
-        branch: "",
-        students: 1,
-        schedule: "",
-        syllabus: "",
-        courseOutcome: "",
+        "subject": "subject name",
+        "code": "subject code",
+        "semester": "semester",
+        "branch": "branch",
+        
+        "students": 1,
+        "schedule": "schedule date and time",
+        "syllabus": "syllabus_link",
+        "courseOutcome": "courseOutcome_link"
     };
-    const response = await axios.post(BACKEND_LINK+"/classes",newClassCard);
-    setClasses(
-      [...classes, response.data]
-    );
+    console.log("before response got\nsending data is ="+JSON.stringify(newClassCard));
+    const response = await axios.post(`${BACKEND_LINK}/create`,newClassCard);
+    console.log("response got is="+response.data);
+
+    if (!response.data || !response.data.id) {
+      console.error("Invalid response from server:", response);
+      return;
+    }
+
+     setClasses((Classes) => ({
+      current: [...Classes.current, response.data],  // ✅ Add to current classes
+      archived: Classes.archived                     // Keep archived unchanged
+    }));
     
+ }
+
+ async function onDelete_class(classID){
+        try {
+          const response = await axios.delete(`${BACKEND_LINK}/delete/${classID}`);
+          if(response){
+            console.log("Class deleted successfully.");
+          }
+        } catch (error) {
+          console.log(error);
+        }
  }
 
   const renderClassCard = (classItem, type) => (
@@ -82,7 +105,16 @@ export default function MyClasses() {
             <p className="text-[var(--color-text-secondary)] flex items-center space-x-2">
               <FiCalendar className="w-4 h-4" />
               <span>{classItem.schedule}</span>
+              <Button 
+              onClick={()=>{
+                console.log("id= ",classItem.userclassesId);
+                onDelete_class(classItem.userclassesId);
+              }} 
+              className="bg-black"
+              >Delete
+              </Button>
             </p>
+            
             <div className="grid grid-cols-2 gap-4">
               <Button variant="secondary" className="w-full">
                 Course Files

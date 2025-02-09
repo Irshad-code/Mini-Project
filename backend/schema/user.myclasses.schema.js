@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const MyClassesSchema = new Schema(
   {
     subject: { type: String, required: true },
-    code: { type: String, required: true, unique: true },
+    code: { type: String, required: true },//may set Unique 
     semester: { type: String, required: true },
     branch: { type: String, required: true },
     students: { type: Number, required: true, min: 1 },
