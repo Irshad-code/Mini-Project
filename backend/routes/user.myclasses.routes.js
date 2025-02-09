@@ -4,8 +4,8 @@ const passport = require("../passport/jwtStrategy.passport");
 const commonController = require("../controllers/common.controller");
 const { commonLimiter } = require("../middlewares/ratelimit.middleware");
 const { authorizeAdminUser } = require("../passport/authorizationMiddleware");
-const { validateAndTransformRequest } = require("../middlewares/validation.middleware");
-const { CreateMyClassRequest } = require("../models/users/requests/user.MyClasssesRequest");
+const { validateAndTransformRequest, validateId } = require("../middlewares/validation.middleware");
+const { CreateMyClassRequest, DeleteMyClassRequest } = require("../models/users/requests/user.MyClasssesRequest");
 
 router.post(
   "/create", 
@@ -15,7 +15,14 @@ router.post(
   validateAndTransformRequest(CreateMyClassRequest),
   commonController.create
 );
-
-
+ 
+router.delete(
+  "/delete/:id",
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  validateId,
+  commonController.deleteById
+); 
  
 module.exports = router;

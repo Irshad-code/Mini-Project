@@ -118,6 +118,7 @@ module.exports.deleteById = async function (req, res) {
     }
     res.json({ message: " deleted successfully" });
   } catch (error) {
+    console.log(error)
     return handleError(
       res,
       500,

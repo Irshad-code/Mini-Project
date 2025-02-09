@@ -15,4 +15,13 @@ const CreateMyClassRequest = Yup.object()
   })
   .noUnknown(true); // This strips any unknown keys from the request
 
-module.exports = { CreateMyClassRequest };
+  const DeleteMyClassRequest = Yup.object()
+    .shape({
+      //  id: Yup.string().required(),
+    })
+    .noUnknown(true);
+
+module.exports = { 
+  CreateMyClassRequest,
+  DeleteMyClassRequest
+ };
