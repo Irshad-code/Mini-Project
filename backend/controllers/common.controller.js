@@ -63,11 +63,12 @@ module.exports.completeList = async function (req, res) {
   try {
     logger.debug("I am logging req", req.baseUrl.substring(1));
     const modelname = req.baseUrl.substring(1).toLowerCase();
-    logger.info(`Fetching  list for ${modelname}`);
+    logger.debug(`Fetching  list for ${modelname}`);
     var result = await commonService.completeList(modelname);
     if (isEmptyList(result)) {
       return handleError(res, 404, "result not found");
     }
+    console.log(res.json(result));
     return res.json(result);
   } catch (error) {
     return handleError(res, 500, "Internal server error", error);

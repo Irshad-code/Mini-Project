@@ -94,6 +94,7 @@ async function completeList(model) {
       .select(projectfieldsforList[model])
       .sort(sortmethod[model])
       .exec();
+      console.log(result)
     return result;
   } catch (error) {
     logger.error("Error in completelist:", error);
