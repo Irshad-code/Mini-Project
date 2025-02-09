@@ -19,8 +19,7 @@ export default function MyClasses() {
     archived: [],
   });
 
-  useEffect(() => {
-    const fetchClasses = async () => {
+const fetchClasses = async () => {
       try{
         const response = await axios.get(BACKEND_LINK);
         const data = response.data;
@@ -39,6 +38,8 @@ export default function MyClasses() {
         console.error('Error fetching classes:', error);
       };
     }
+
+  useEffect(() => {
       fetchClasses();
   },[]);
 
@@ -68,6 +69,8 @@ export default function MyClasses() {
       current: [...Classes.current, response.data],  // ✅ Add to current classes
       archived: Classes.archived                     // Keep archived unchanged
     }));
+
+    fetchClasses();  //update the UI
     
  }
 
@@ -77,6 +80,7 @@ export default function MyClasses() {
           if(response){
             console.log("Class deleted successfully.");
           }
+          fetchClasses();  //update the UI
         } catch (error) {
           console.log(error);
         }
