@@ -36,4 +36,4 @@ current: [
         courseOutcome: "path/to/co.pdf",
         finalReport: "path/to/report.pdf",
       },
-    ],
+    ],     

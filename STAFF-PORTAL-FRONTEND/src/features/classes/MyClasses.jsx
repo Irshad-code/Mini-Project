@@ -11,7 +11,7 @@ const tabs = [
   { id: "archived", name: "Archived Classes", icon: FiArchive },
 ];
 
- const BACKEND_LINK = process.env.VITE_API_URL;
+ const BACKEND_LINK = import.meta.env.VITE_API_URL;
 
 export default function MyClasses() {
   const [classes, setClasses] = useState({
@@ -22,7 +22,7 @@ export default function MyClasses() {
   useEffect(() => {
     const fetchClasses = async () => {
       try{
-        const response = await axios.get(`${BACKEND_LINK}/classes`);
+        const response = await axios.get(`${BACKEND_LINK}/usermyclasses`);
         const data = response.data;
 
         const current=data.filter(cls=>!cls.isArchived);

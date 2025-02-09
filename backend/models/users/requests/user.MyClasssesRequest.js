@@ -1,7 +1,7 @@
 const Yup = require("yup");
 
 // Define the request schema for the validation of requests
-const CreateMyClassRequest = Yup.object()
+const MyClassRequest = Yup.object()
   .shape({
   //  id: Yup.string().required(),
    subject: Yup.string().required(),
@@ -22,6 +22,6 @@ const CreateMyClassRequest = Yup.object()
     .noUnknown(true);
 
 module.exports = { 
-  CreateMyClassRequest,
+  MyClassRequest,
   DeleteMyClassRequest
  };

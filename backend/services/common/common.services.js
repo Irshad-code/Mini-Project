@@ -59,7 +59,7 @@ async function upsertByUserId(model, userId, data) {
 
   const existingDoc = await modelHandlers[model].findOne({ userId: userId });
 
-  if (existingDoc) {
+  if (!existingDoc) {
     // Update existing document
     Object.assign(existingDoc, data);
     return await existingDoc.save();

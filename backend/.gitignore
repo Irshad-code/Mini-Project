@@ -11,7 +11,7 @@ backend/nohup.out
 
 # testing
 /coverage
-/SampletestIngbyJesvin
+/aTestingByJesvin
 
 # production
 /build

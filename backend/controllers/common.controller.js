@@ -35,10 +35,11 @@ module.exports.upsertByUserId = async function (req, res) {
     if (isEmptyList(result)) {
       return handleError(res, 404, " not saved");
     }
-    return res
+    return res 
       .status(201)
       .json({ message: "Record inserted successfully", record: result });
   } catch (error) {
+    console.log(`error is : ${error}`);
     return handleError(res, 500, "Internal server error", error);
   }
 };
@@ -98,7 +99,7 @@ module.exports.updateById = async function (req, res, next) {
       updateData
     );
     if (isEmptyList(updatedRecord)) {
-      return handleError(res, 404, "object not found");
+      return handleError(res, 404, "(Id) object not found");
     }
     res.status(200).json({ message: updatedRecord });
   } catch (error) {
@@ -116,7 +117,7 @@ module.exports.deleteById = async function (req, res) {
     if (isEmptyList(result)) {
       return handleError(res, 404, "id not found");
     }
-    res.json({ message: " deleted successfully" });
+    res.json({ message: `deleted ${id} successfully` });
   } catch (error) {
     console.log(error)
     return handleError(
