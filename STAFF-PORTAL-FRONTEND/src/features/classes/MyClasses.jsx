@@ -32,8 +32,8 @@ const fetchClasses = async () => {
           archived
         });
 
-        console.log(data);
-
+        console.log("fetch classes: ",data);
+      
       }catch(error){
         console.error('Error fetching classes:', error);
       };
@@ -43,75 +43,33 @@ const fetchClasses = async () => {
       fetchClasses();
   },[]);
 
-async function onAdd_class() {
-  const newClassCard = {
-    subject: "subject name",
-    code: "subject code",
-    semester: "semester",
-    branch: "branch",
+  async function onAdd_class(){
 
-    students: 1,
-    schedule: "schedule date and time",
-    syllabus: "syllabus_link",
-    courseOutcome: "courseOutcome_link"
-  };
-
-  // Optimistically update the UI
-  setClasses((prev) => ({
-    current: [...prev.current, newClassCard], // Add new class locally
-    archived: prev.archived
-  }));
-
-  try {
-    const response = await axios.post(`${BACKEND_LINK}/create`, newClassCard);
-    
-    if (response.data && response.data.id) {
-      // Update with actual server response
-      setClasses((prev) => ({
-        current: prev.current.map(cls => 
-          cls === newClassCard ? response.data : cls // Replace placeholder with actual class
-        ),
-        archived: prev.archived
-      }));
-    } else {
-      console.error("Invalid response:", response);
-    }
-  } catch (error) {
-    console.error("Error adding class:", error);
-    fetchClasses(); // Fallback if error occurs
-  }
-}
-
-//   async function onAdd_class(){
-
-//     const newClassCard = {
-//         "subject": "subject name",
-//         "code": "subject code",
-//         "semester": "semester",
-//         "branch": "branch",
+    const newClassCard = {
+        "subject": "subject name",
+        "code": "subject code",
+        "semester": "semester",
+        "branch": "branch",
         
-//         "students": 1,
-//         "schedule": "schedule date and time",
-//         "syllabus": "syllabus_link",
-//         "courseOutcome": "courseOutcome_link"
-//     };
-//     console.log("before response got\nsending data is ="+JSON.stringify(newClassCard));
-//     const response = await axios.post(`${BACKEND_LINK}/create`,newClassCard);
-//     console.log("response got is="+response.data);
+        "students": 1,
+        "schedule": "schedule date and time",
+        "syllabus": "syllabus_link",
+        "courseOutcome": "courseOutcome_link"
+    };
+   
 
-//     if (!response.data || !response.data.id) {
-//       console.error("Invalid response from server:", response);
-//       return;
-//     }
+    console.log("before response got \n sending data is ="+JSON.stringify(newClassCard));
+    const response = await axios.post(`${BACKEND_LINK}/create`,newClassCard);
+    console.log("response got is=",response.data.record);
 
-//      setClasses((Classes) => ({
-//       current: [...Classes.current, response.data],  // ✅ Add to current classes
-//       archived: Classes.archived                     // Keep archived unchanged
-//     }));
+     setClasses((Classes) => ({
+      current: [...Classes.current, response.data.record],  // ✅ Add to current classes
+      archived: Classes.archived                     // Keep archived unchanged
+    }));
 
-//     //fetchClasses();  //update the UI
+    fetchClasses();  //update the UI
     
-//  }
+ }
 
  async function onDelete_class(classID){
         try {
@@ -210,7 +168,7 @@ async function onAdd_class() {
           }} variant="primary" icon={<FiPlus className="w-4 h-4" />}>
           Add New Class
         </Button>
-      </div>
+      </div> 
 
       <Tab.Group onChange={()=>fetchClasses()}>
         <Tab.List className="flex space-x-2 border-b border-[var(--color-border-primary)]">

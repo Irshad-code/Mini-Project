@@ -13,16 +13,16 @@ const userprofilephotoModel = require("../../models/users/dbmodels/user.profilep
 const userresponsibilityModel = require("../../models/users/dbmodels/user.Responsibility.model.js");
 const userMyClassesModel = require("../../models/users/dbmodels/user.myclasses.model.js");
 //access the models:
-     
+      
 const modelHandlers = {
   users: userModel,
   colleges: collegeModel, 
   departments: departmentModel,
-  userbasicinfo: userbasicinfoModel,
-  usercontactdetails: usercontactdetailsModel,
-  userofficialids: userofficialidsModel,
+  userbasicinfo: userbasicinfoModel, 
+  usercontactdetails: usercontactdetailsModel,  
+  userofficialids: userofficialidsModel, 
   userfamily: userfamilyModel,
-  userprofilephoto: userprofilephotoModel,
+  userprofilephoto: userprofilephotoModel, 
   userresponsibility: userresponsibilityModel,
   usermyclasses: userMyClassesModel,
 };
@@ -186,7 +186,7 @@ async function create(model, input) {//mongoose direct saving functions
     model = removeapi(model);
     logger.debug("model name :", model);
     logger.debug("Inserting object:", input);
-    const newRecord = new modelHandlers[model](input);
+    const newRecord = new modelHandlers[model](input);//taking record as input
     const recordSaved = await newRecord.save();
     return recordSaved;
   } catch (error) {
