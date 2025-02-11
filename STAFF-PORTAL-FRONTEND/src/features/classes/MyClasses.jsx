@@ -1,6 +1,6 @@
 import { useState ,useEffect} from "react";
 import { Tab } from "@headlessui/react";
-import { FiPlus, FiCalendar, FiUsers, FiBook, FiArchive } from "react-icons/fi";
+import { FiPlus, FiCalendar, FiUsers, FiBook, FiArchive, FiX, FiEdit } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import TabButton from "../../components/ui/TabButton";
@@ -15,19 +15,176 @@ const tabs = [
  const BACKEND_LINK = import.meta.env.VITE_API_URL + "/usermyclasses";
 
 export default function MyClasses() {
-  const [isModelOpen, setisModelOpen] = useState(false);
-  const [isModelUpdateOpen,setisModelUpdateOpen] = useState(false);
-  const [newClassData, setNewClassData] = useState({
+  const [showForm, setShowForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingClassId, setEditingClassId] = useState(null);
+  const [newClass, setNewClass] = useState({
     subject: "",
     code: "",
     semester: "",
     branch: "",
     students: "",
-    schedule: "",
-    syllabus: "",
-    courseOutcome: "",
-});
+    schedule: ""
+  });
+
   const [classes, setClasses] = useState({
+    current: [
+      {
+        id: 1,
+        subject: "Data Structures",
+        code: "CS201", 
+        semester: "S3",
+        branch: "CSE",
+        students: 60,
+        schedule: "Monday, Wednesday 10:00 AM",
+        syllabus: "path/to/syllabus.pdf",
+        courseOutcome: "path/to/co.pdf",
+      },
+      {
+        id: 2,
+        subject: "Database Management",
+        code: "CS202",
+        semester: "S4",
+        branch: "CSE",
+        students: 55,
+        schedule: "Tuesday, Thursday 2:00 PM",
+        syllabus: "path/to/syllabus.pdf",
+        courseOutcome: "path/to/co.pdf",
+      },
+    ],
+    archived: [
+      {
+        id: 3,
+        subject: "Programming in Python",
+        code: "CS101",
+        semester: "S2",
+        branch: "CSE",
+        students: 62,
+        year: "2023",
+        result: "95% Pass",
+        syllabus: "path/to/syllabus.pdf",
+        courseOutcome: "path/to/co.pdf",
+        finalReport: "path/to/report.pdf",
+      },
+    ],
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewClass(prev => ({
+      ...prev,
+      [name]: value.trim()
+    }));
+  };
+
+  const handleEdit = (classItem) => {
+    setIsEditing(true);
+    setEditingClassId(classItem.id);
+    setNewClass({
+      subject: classItem.subject,
+      code: classItem.code,
+      semester: classItem.semester,
+      branch: classItem.branch,
+      students: classItem.students.toString(),
+      schedule: classItem.schedule
+    });
+    setShowForm(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Check if any field is empty or contains only whitespace
+    const hasEmptyFields = Object.values(newClass).some(value => !value.toString().trim());
+    
+    if (hasEmptyFields) {
+      alert("Please fill in all fields properly");
+      return;
+    }
+
+    // Validate number of students is greater than 0
+    const numStudents = parseInt(newClass.students);
+    if (numStudents <= 0) {
+      alert("Number of students must be greater than 0");
+      return;
+    }
+
+    if (isEditing) {
+      try {
+        // Update the class in the backend
+        // const response = await fetch(`/api/classes/${editingClassId}`, {
+        //   method: 'PUT',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify({
+        //     ...newClass,
+        //     students: numStudents
+        //   }),
+        // });
+        
+        // if (!response.ok) throw new Error('Failed to update class');
+
+        // Update local state
+        setClasses(prev => ({
+          ...prev,
+          current: prev.current.map(c => 
+            c.id === editingClassId ? {
+              ...c,
+              ...newClass,
+              students: numStudents
+            } : c
+          )
+        }));
+      } catch (error) {
+        alert("Failed to update class. Please try again.");
+        return;
+      }
+    } else {
+      try {
+        const newId = Math.max(...classes.current.map(c => c.id)) + 1;
+        const classToAdd = {
+          id: newId,
+          ...newClass,
+          students: numStudents,
+          syllabus: "path/to/syllabus.pdf",
+          courseOutcome: "path/to/co.pdf",
+        };
+
+        // Add the class to the backend
+        // const response = await fetch('/api/classes', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify(classToAdd),
+        // });
+        
+        // if (!response.ok) throw new Error('Failed to add class');
+        
+        // Update local state
+        setClasses(prev => ({
+          ...prev,
+          current: [...prev.current, classToAdd]
+        }));
+      } catch (error) {
+        alert("Failed to add class. Please try again.");
+        return;
+      }
+    }
+    
+    setShowForm(false);
+    setIsEditing(false);
+    setEditingClassId(null);
+    setNewClass({
+      subject: "",
+      code: "",
+      semester: "",
+      branch: "",
+      students: "",
+      schedule: ""
+    });
+  };
     current: [],
     archived: [],
   });
@@ -102,7 +259,7 @@ const fetchClasses = async () => {
  }
 
   const renderClassCard = (classItem, type) => (
-    <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
+    <Card key={classItem.id} className={`p-6 hover:shadow-lg transition-shadow ${showForm ? 'opacity-50 pointer-events-none' : ''}`}>
       <div className="space-y-4">
         <div className="flex justify-between items-start">
           <div>
@@ -113,9 +270,19 @@ const fetchClasses = async () => {
               {classItem.code} • {classItem.semester} {classItem.branch}
             </p>
           </div>
-          <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
-            <FiUsers className="w-4 h-4" />
-            <span>{classItem.students} students</span>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
+              <FiUsers className="w-4 h-4" />
+              <span>{classItem.students} students</span>
+            </div>
+            {type === "current" && (
+              <Button
+                variant="ghost"
+                onClick={() => handleEdit(classItem)}
+                icon={<FiEdit className="w-4 h-4" />}
+                className="hover:bg-gray-100 rounded-full"
+              />
+            )}
           </div>
         </div>
 
@@ -196,12 +363,144 @@ const fetchClasses = async () => {
             Manage your current and archived classes
           </p>
         </div>
-        <Button onClick={()=>{
-          setisModelOpen(true);
-          }} variant="primary" icon={<FiPlus className="w-4 h-4" />}>
+        <Button 
+          variant="primary" 
+          icon={<FiPlus className="w-4 h-4" />}
+          onClick={() => setShowForm(true)}
+        >
           Add New Class
         </Button>
-      </div> 
+      </div>
+
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-lg p-6 bg-white rounded-lg shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-semibold text-[var(--color-text-primary)]">
+                {isEditing ? 'Edit Class' : 'Add New Class'}
+              </h3>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setShowForm(false);
+                  setIsEditing(false);
+                  setEditingClassId(null);
+                  setNewClass({
+                    subject: "",
+                    code: "",
+                    semester: "",
+                    branch: "",
+                    students: "",
+                    schedule: ""
+                  });
+                }}
+                icon={<FiX className="w-5 h-5" />}
+                className="hover:bg-gray-100 rounded-full"
+              />
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[var(--color-text-secondary)]">Subject</label>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={newClass.subject}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[var(--color-text-secondary)]">Course Code</label>
+                  <input
+                    type="text"
+                    name="code"
+                    value={newClass.code}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[var(--color-text-secondary)]">Semester</label>
+                  <input
+                    type="text"
+                    name="semester"
+                    value={newClass.semester}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[var(--color-text-secondary)]">Branch</label>
+                  <input
+                    type="text"
+                    name="branch"
+                    value={newClass.branch}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[var(--color-text-secondary)]">Number of Students</label>
+                  <input
+                    type="number"
+                    name="students"
+                    value={newClass.students}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="1"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-[var(--color-text-secondary)]">Schedule</label>
+                  <input
+                    type="text"
+                    name="schedule"
+                    value={newClass.schedule}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex space-x-4 pt-4">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full py-3"
+                  onClick={() => {
+                    setShowForm(false);
+                    setIsEditing(false);
+                    setEditingClassId(null);
+                    setNewClass({
+                      subject: "",
+                      code: "",
+                      semester: "",
+                      branch: "",
+                      students: "",
+                      schedule: ""
+                    });
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="w-full py-3"
+                >
+                  {isEditing ? 'Update Class' : 'Add Class'}
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
 
       <Tab.Group onChange={()=>fetchClasses()}>
         <Tab.List className="flex space-x-2 border-b border-[var(--color-border-primary)]">
