@@ -185,9 +185,7 @@ export default function MyClasses() {
       schedule: ""
     });
   };
-    current: [],
-    archived: [],
-  });
+   
 
 const handleChange = (e) => {
     setNewClassData({ ...newClassData, [e.target.name]: e.target.value });
