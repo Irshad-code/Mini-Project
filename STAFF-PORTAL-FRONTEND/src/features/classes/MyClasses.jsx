@@ -5,6 +5,7 @@ import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import TabButton from "../../components/ui/TabButton";
 import axios from 'axios';
+import { Form } from "./Form.jsx";
 
 const tabs = [
   { id: "current", name: "Current Classes", icon: FiCalendar },
@@ -14,10 +15,26 @@ const tabs = [
  const BACKEND_LINK = import.meta.env.VITE_API_URL + "/usermyclasses";
 
 export default function MyClasses() {
+  const [isModelOpen, setisModelOpen] = useState(false);
+  const [isModelUpdateOpen,setisModelUpdateOpen] = useState(false);
+  const [newClassData, setNewClassData] = useState({
+    subject: "",
+    code: "",
+    semester: "",
+    branch: "",
+    students: "",
+    schedule: "",
+    syllabus: "",
+    courseOutcome: "",
+});
   const [classes, setClasses] = useState({
     current: [],
     archived: [],
   });
+
+const handleChange = (e) => {
+    setNewClassData({ ...newClassData, [e.target.name]: e.target.value });
+};
 
 const fetchClasses = async () => {
       try{
@@ -44,31 +61,32 @@ const fetchClasses = async () => {
   },[]);
 
   async function onAdd_class(){
-
-    const newClassCard = {
-        "subject": "subject name",
-        "code": "subject code",
-        "semester": "semester",
-        "branch": "branch",
-        
-        "students": 1,
-        "schedule": "schedule date and time",
-        "syllabus": "syllabus_link",
-        "courseOutcome": "courseOutcome_link"
-    };
-   
-
-    console.log("before response got \n sending data is ="+JSON.stringify(newClassCard));
-    const response = await axios.post(`${BACKEND_LINK}/create`,newClassCard);
+    setisModelOpen(false); 
+    console.log("before response got \n sending data is ="+JSON.stringify(newClassData));
+    const response = await axios.post(`${BACKEND_LINK}/create`,newClassData);
     console.log("response got is=",response.data.record);
 
      setClasses((Classes) => ({
       current: [...Classes.current, response.data.record],  // ✅ Add to current classes
       archived: Classes.archived                     // Keep archived unchanged
     }));
+  
+    setNewClassData({ // Reset the form
+            subject: "",
+            code: "",
+            semester: "",
+            branch: "",
+            students: "",
+            schedule: "",
+            syllabus: "",
+            courseOutcome: "",
+        });
+ }
 
-    fetchClasses();  //update the UI
-    
+ async function onUpdate_class(updatedClassData){
+  -
+  //const response = await axios.put(`${BACKEND_LINK}/update/${classID}`,updatedClassData);
+  console.log("class update ")
  }
 
  async function onDelete_class(classID){
@@ -113,6 +131,22 @@ const fetchClasses = async () => {
               }} 
               className="bg-black"
               >Delete
+              </Button>
+
+              {/* <Button onClick={
+                ()=>{
+                  setisModelUpdateOpen(true);
+                  console.log(`clicked update btn and IsModelUpdateOpen is ${isModelUpdateOpen}`);
+                   }
+              }>edit On
+              </Button> */}
+
+              <Button onClick={()=>{
+                setisModelUpdateOpen(true);
+               // setisModelOpen(true);
+                console.log("IsModelUpdateOpen :",isModelUpdateOpen);
+              }}>
+                Update
               </Button>
             </p>
             
@@ -163,8 +197,7 @@ const fetchClasses = async () => {
           </p>
         </div>
         <Button onClick={()=>{
-          onAdd_class();
-          console.log("clicked on Add_new_classbtn");
+          setisModelOpen(true);
           }} variant="primary" icon={<FiPlus className="w-4 h-4" />}>
           Add New Class
         </Button>
@@ -176,6 +209,20 @@ const fetchClasses = async () => {
             <TabButton key={tab.id} index={index} name={tab.name} />
           ))}
         </Tab.List>
+
+{isModelUpdateOpen && <Form
+          setIsModelOpen={setisModelOpen}
+
+          isModelUpdateOpen={isModelUpdateOpen} 
+          setIsModelUpdateOpen={setisModelUpdateOpen}
+
+          onAdd_class={onAdd_class}
+          onUpdate_class={onUpdate_class}
+
+          newClassData={newClassData}
+
+          handleChange={handleChange}
+        />}
 
         <Tab.Panels className="mt-6">
           <Tab.Panel>
