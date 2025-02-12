@@ -21,7 +21,9 @@ export default function MyClasses() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
-  const [newClass, setNewClass] = useState({
+  const [numClasses, setNumClasses] = useState(1);
+  const [showNumClassesPrompt, setShowNumClassesPrompt] = useState(false);
+  const [newClasses, setNewClasses] = useState([{
     subject: "",
     code: "",
     semester: "",
@@ -30,12 +32,12 @@ export default function MyClasses() {
     schedule: "",
     syllabus: "",
     courseOutcome: ""
-  });
+  }]);
 
   const fetchClasses = async () => {
     try {
       const response = await axios.get(BACKEND_LINK);
-      const data = response.data || []; // Handle empty response
+      const data = response.data || [];
 
       const current = data.filter(cls => !cls.isArchived);
       const archived = data.filter(cls => cls.isArchived);
@@ -49,7 +51,6 @@ export default function MyClasses() {
 
     } catch (error) {
       console.error('Error fetching classes:', error);
-      // Set empty arrays if error occurs
       setClasses({
         current: [],
         archived: []
@@ -61,28 +62,54 @@ export default function MyClasses() {
     fetchClasses();
   }, []);
 
-  async function onAdd_class(e) {
+  const handleNumClassesSubmit = () => {
+    setNewClasses(Array(numClasses).fill({
+      subject: "",
+      code: "",
+      semester: "",
+      branch: "", 
+      students: "",
+      schedule: "",
+      syllabus: "",
+      courseOutcome: ""
+    }));
+    setShowNumClassesPrompt(false);
+    setShowAddForm(true);
+  }
+
+  const updateNewClass = (index, field, value) => {
+    const updatedClasses = [...newClasses];
+    updatedClasses[index] = {
+      ...updatedClasses[index],
+      [field]: value
+    };
+    setNewClasses(updatedClasses);
+  }
+
+  async function onAdd_classes(e) {
     e.preventDefault();
 
-    // Validate students field
-    if (!newClass.students || isNaN(newClass.students) || parseInt(newClass.students) <= 0) {
-      console.error("Number of students must be greater than 0");
-      return;
+    // Validate all classes
+    for (let classData of newClasses) {
+      if (!classData.students || isNaN(classData.students) || parseInt(classData.students) <= 0) {
+        console.error("Number of students must be greater than 0 for all classes");
+        return;
+      }
     }
 
-    const classData = {
-      ...newClass,
-      students: parseInt(newClass.students)
-    };
-
     try {
-      const response = await axios.post(`${BACKEND_LINK}/create`, classData);
-      console.log("response got is=", response.data.record);
+      // Add all classes sequentially
+      for (let classData of newClasses) {
+        const formattedData = {
+          ...classData,
+          students: parseInt(classData.students)
+        };
+        await axios.post(`${BACKEND_LINK}/create`, formattedData);
+      }
 
-      await fetchClasses(); // Fetch updated data from backend
-
+      await fetchClasses();
       setShowAddForm(false);
-      setNewClass({
+      setNewClasses([{
         subject: "",
         code: "",
         semester: "",
@@ -91,10 +118,10 @@ export default function MyClasses() {
         schedule: "",
         syllabus: "",
         courseOutcome: ""
-      });
+      }]);
       
     } catch (error) {
-      console.error("Error adding class:", error);
+      console.error("Error adding classes:", error);
     }
   }
 
@@ -129,7 +156,6 @@ export default function MyClasses() {
       const response = await axios.delete(`${BACKEND_LINK}/delete/${classID}`);
       if (response) {
         console.log("Class deleted successfully.");
-        // Immediately update the UI by filtering out the deleted class
         setClasses(prevClasses => ({
           current: prevClasses.current.filter(cls => cls.userclassesId !== classID),
           archived: prevClasses.archived.filter(cls => cls.userclassesId !== classID)
@@ -219,7 +245,38 @@ export default function MyClasses() {
 
   return (
     <div className="space-y-6">
-      {!showAddForm && !showEditForm ? (
+      {showNumClassesPrompt ? (
+        <Card className="p-6">
+          <div className="space-y-4">
+            <label className="block text-sm font-medium mb-1">
+              How many classes would you like to add?
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={numClasses}
+              onChange={(e) => setNumClasses(parseInt(e.target.value))}
+              className="w-full p-2 border rounded"
+            />
+            <div className="flex justify-end space-x-2">
+              <Button 
+                type="button" 
+                variant="secondary" 
+                onClick={() => setShowNumClassesPrompt(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="button" 
+                variant="primary"
+                onClick={handleNumClassesSubmit}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        </Card>
+      ) : !showAddForm && !showEditForm ? (
         <>
           <div className="flex justify-between items-center">
             <div>
@@ -231,11 +288,11 @@ export default function MyClasses() {
               </p>
             </div>
             <Button
-              onClick={() => setShowAddForm(true)}
+              onClick={() => setShowNumClassesPrompt(true)}
               variant="primary"
               icon={<FiPlus className="w-4 h-4" />}
             >
-              Add New Class
+              Add New Classes
             </Button>
           </div>
 
@@ -266,96 +323,108 @@ export default function MyClasses() {
         </>
       ) : showAddForm ? (
         <Card className="p-6">
-          <form onSubmit={onAdd_class} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Subject Name</label>
-                <input
-                  type="text"
-                  value={newClass.subject}
-                  onChange={(e) => setNewClass({...newClass, subject: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Subject Code</label>
-                <input
-                  type="text"
-                  value={newClass.code}
-                  onChange={(e) => setNewClass({...newClass, code: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Semester</label>
-                <input
-                  type="text"
-                  value={newClass.semester}
-                  onChange={(e) => setNewClass({...newClass, semester: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Branch</label>
-                <input
-                  type="text"
-                  value={newClass.branch}
-                  onChange={(e) => setNewClass({...newClass, branch: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Number of Students</label>
-                <input
-                  type="number"
-                  value={newClass.students}
-                  onChange={(e) => setNewClass({...newClass, students: e.target.value})}
-                  min="1"
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Schedule</label>
-                <input
-                  type="text"
-                  value={newClass.schedule}
-                  onChange={(e) => setNewClass({...newClass, schedule: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Syllabus</label>
-                <input
-                  type="text"
-                  value={newClass.syllabus}
-                  onChange={(e) => setNewClass({...newClass, syllabus: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Course Outcome</label>
-                <input
-                  type="text"
-                  value={newClass.courseOutcome}
-                  onChange={(e) => setNewClass({...newClass, courseOutcome: e.target.value})}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
+          <form onSubmit={onAdd_classes} className="space-y-4">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2">Subject Name</th>
+                    <th className="px-4 py-2">Subject Code</th>
+                    <th className="px-4 py-2">Semester</th>
+                    <th className="px-4 py-2">Branch</th>
+                    <th className="px-4 py-2">Students</th>
+                    <th className="px-4 py-2">Schedule</th>
+                    <th className="px-4 py-2">Syllabus</th>
+                    <th className="px-4 py-2">Course Outcome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {newClasses.map((classData, index) => (
+                    <tr key={index}>
+                      <td className="px-2 py-1">
+                        <input
+                          type="text"
+                          value={classData.subject}
+                          onChange={(e) => updateNewClass(index, 'subject', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          required
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          type="text"
+                          value={classData.code}
+                          onChange={(e) => updateNewClass(index, 'code', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          required
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          type="text"
+                          value={classData.semester}
+                          onChange={(e) => updateNewClass(index, 'semester', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          required
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          type="text"
+                          value={classData.branch}
+                          onChange={(e) => updateNewClass(index, 'branch', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          required
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          type="number"
+                          value={classData.students}
+                          onChange={(e) => updateNewClass(index, 'students', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          min="1"
+                          required
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          type="text"
+                          value={classData.schedule}
+                          onChange={(e) => updateNewClass(index, 'schedule', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          required
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          type="text"
+                          value={classData.syllabus}
+                          onChange={(e) => updateNewClass(index, 'syllabus', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          required
+                        />
+                      </td>
+                      <td className="px-2 py-1">
+                        <input
+                          type="text"
+                          value={classData.courseOutcome}
+                          onChange={(e) => updateNewClass(index, 'courseOutcome', e.target.value)}
+                          className="w-full p-1 border rounded"
+                          required
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="secondary" onClick={() => setShowAddForm(false)}>
                 Cancel
               </Button>
               <Button type="submit" variant="primary">
-                Add Class
+                Add Classes
               </Button>
             </div>
           </form>
