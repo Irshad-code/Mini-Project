@@ -29,43 +29,9 @@ export default function MyClasses() {
 
   const [classes, setClasses] = useState({
     current: [
-      {
-        id: 1,
-        subject: "Data Structures",
-        code: "CS201", 
-        semester: "S3",
-        branch: "CSE",
-        students: 60,
-        schedule: "Monday, Wednesday 10:00 AM",
-        syllabus: "path/to/syllabus.pdf",
-        courseOutcome: "path/to/co.pdf",
-      },
-      {
-        id: 2,
-        subject: "Database Management",
-        code: "CS202",
-        semester: "S4",
-        branch: "CSE",
-        students: 55,
-        schedule: "Tuesday, Thursday 2:00 PM",
-        syllabus: "path/to/syllabus.pdf",
-        courseOutcome: "path/to/co.pdf",
-      },
+     
     ],
     archived: [
-      {
-        id: 3,
-        subject: "Programming in Python",
-        code: "CS101",
-        semester: "S2",
-        branch: "CSE",
-        students: 62,
-        year: "2023",
-        result: "95% Pass",
-        syllabus: "path/to/syllabus.pdf",
-        courseOutcome: "path/to/co.pdf",
-        finalReport: "path/to/report.pdf",
-      },
     ],
   });
 
@@ -216,7 +182,6 @@ const fetchClasses = async () => {
   },[]);
 
   async function onAdd_class(){
-    setisModelOpen(false); 
     console.log("before response got \n sending data is ="+JSON.stringify(newClassData));
     const response = await axios.post(`${BACKEND_LINK}/create`,newClassData);
     console.log("response got is=",response.data.record);
@@ -516,7 +481,7 @@ const fetchClasses = async () => {
           onAdd_class={onAdd_class}
           onUpdate_class={onUpdate_class}
 
-          newClassData={newClassData}
+          newClass={newClass}
 
           handleChange={handleChange}
         />}
