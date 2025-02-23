@@ -5,6 +5,7 @@ import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import TabButton from "../../components/ui/TabButton";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const tabs = [
   { id: "current", name: "Current Classes", icon: FiCalendar },
@@ -14,6 +15,7 @@ const tabs = [
 const BACKEND_LINK = import.meta.env.VITE_API_URL + "/usermyclasses";
 
 export default function MyClasses() {
+  const navigate = useNavigate();
   const [classes, setClasses] = useState({
     current: [],
     archived: [],
@@ -212,7 +214,11 @@ export default function MyClasses() {
               <Button variant="secondary" className="w-full">
                 Course Files
               </Button>
-              <Button variant="secondary" className="w-full">
+              <Button 
+                variant="secondary" 
+                className="w-full"
+                onClick={() => navigate(`/attendance/${classItem.userclassesId}`)}
+              >
                 Attendance
               </Button>
               <Button variant="secondary" className="w-full">

@@ -10,9 +10,11 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { UserProvider } from "./contexts/UserContext";
 import { PhotoProvider } from "./contexts/PhotoContext";
 import Layout from "./components/layout/Layout";
+
 import LoginPage from "./pages/Auth/LoginPage";
 import SignupPage from "./pages/Auth/SignupPage";
 import Dashboard from "./pages/Dashboard";
+import Attendance from "./features/classes/Attendance"
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -34,6 +36,16 @@ function AppContent() {
           <ProtectedRoute>
             <Layout>
               <Dashboard />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/attendance/:classId"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Attendance />
             </Layout>
           </ProtectedRoute>
         }
