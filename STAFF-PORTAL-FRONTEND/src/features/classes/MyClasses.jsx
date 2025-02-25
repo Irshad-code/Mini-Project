@@ -38,6 +38,8 @@ export default function MyClasses() {
     },
   ]);
 
+  
+
   const fetchClasses = async () => {
     try {
       const response = await axios.get(BACKEND_LINK);
@@ -59,10 +61,14 @@ export default function MyClasses() {
         archived: [],
       });
     }
+
+
+    
   };
 
   useEffect(() => {
     fetchClasses();
+  
   }, []);
 
   const handleNumClassesSubmit = () => {
@@ -156,7 +162,8 @@ export default function MyClasses() {
     setManually(false);
   };
 
-  function uploadExcelOrManually() {
+const [numStudents,setNumStudents] = useState(0);
+  function uploadExcelOrManually(numOfStudents) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
@@ -177,6 +184,7 @@ export default function MyClasses() {
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
                 setUpload(false);
+                setNumStudents(numOfStudents);
                 setManually(true);
                 console.log("Upload by Manually");
               }}
@@ -189,7 +197,7 @@ export default function MyClasses() {
     );
   }
 
-  const UploadManually = ({ numStudents}) => {
+  const UploadManually = ({}) => {
     const [localStudents, setLocalStudents] = useState(
      
          Array.from({ length: numStudents }, () => ({ id: "", name: "", phone: "", photo: "", address: "" }))
@@ -336,6 +344,8 @@ export default function MyClasses() {
           <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
             <FiUsers className="w-4 h-4" />
             <span>{classItem.students} students</span>
+           
+          
           </div>
         </div>
 
@@ -366,7 +376,7 @@ export default function MyClasses() {
               <Button onClick={() => setUpload(true)} className="bg-blue-500">
                 UploadStudents
               </Button>
-              {upload && uploadExcelOrManually()}
+              {upload && uploadExcelOrManually(classItem.students)}
             </p>
 
             <div className="grid grid-cols-2 gap-4">
@@ -476,15 +486,16 @@ export default function MyClasses() {
                   {classes.current.map((classItem) =>
                     renderClassCard(classItem, "current")
                   )}
-
-                 
+                        
                 </div>
 
-                {manually &&  <UploadManually
-        numStudents={2}
-        setManually={setManually}
-        
-      />}
+                {
+                     
+                manually &&  <UploadManually
+    
+      />
+      
+      }
               </Tab.Panel>
               <Tab.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
