@@ -150,17 +150,7 @@ export default function MyClasses() {
   
   ]);
 
-  const handleInputChange = (index, field, value) => {
-    const updatedStudents = [...students];
-    updatedStudents[index][field] = value;
-    setStudents(updatedStudents);
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Student Details:", students);
-    setManually(false);
-  };
 
 const [numStudents,setNumStudents] = useState(0);
   function uploadExcelOrManually(numOfStudents) {
