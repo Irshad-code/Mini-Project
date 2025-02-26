@@ -511,13 +511,13 @@ export default function MyClasses() {
       {/* Input Field for Students */}
       <input
         type="number"
-        min="1"
+        min={1}
         max={myClass.students} // Limit the maximum number
         value={numStudents}
         onChange={(e) => {
           let value = parseInt(e.target.value, 10);
-          // if (value > myClass.students) value = myClass.students; // Prevent exceeding max
-          // if (value < 1) value = 1; // Prevent going below min
+          if (value > myClass.students) value = myClass.students; // Prevent exceeding max
+          if (value < 1) value = 1; // Prevent going below min
           setNumStudents(value);
         }}
         className="w-full border-2 border-gray-300 p-2 rounded-lg focus:ring focus:ring-blue-200"
