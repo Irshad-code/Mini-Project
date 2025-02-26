@@ -141,9 +141,11 @@ export default function MyClasses() {
   const [upload, setUpload] = useState(false);
   const [manually, setManually] = useState(false);
   const [students, setStudents] = useState([]);
+
+
   const [myClass,setMyClass] = useState(null);
 
-  const [numStudents, setNumStudents] = useState(0);
+  
   function uploadExcelOrManually(myClass) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -189,7 +191,7 @@ export default function MyClasses() {
 
   const UploadManually = ({}) => {
     const [localStudents, setLocalStudents] = useState(
-      Array.from({ length: numStudents }, () => ({
+      Array.from({ length: myClass.students }, () => ({
         id: "",
         name: "",
         phone: "",
@@ -384,7 +386,6 @@ export default function MyClasses() {
               <Button
                 onClick={() => {
                   setUpload(true);
-                  setNumStudents(classItem.students);
                   setMyClass(classItem);
                   console.log(myClass);
                 }}
