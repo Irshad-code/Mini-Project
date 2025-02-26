@@ -140,10 +140,13 @@ export default function MyClasses() {
   //To updload student details
   const [upload, setUpload] = useState(false);
   const [manually, setManually] = useState(false);
+  const [openManually,setOpenManually]=useState(false);
   const [students, setStudents] = useState([]);
 
 
   const [myClass,setMyClass] = useState(null);
+
+  const [numStudents,setNumStudents]=useState(0);
 
   
   function uploadExcelOrManually(myClass) {
@@ -189,9 +192,10 @@ export default function MyClasses() {
     );
   }
 
-  const UploadManually = ({}) => {
+  // upload manully dynamically changes the number  of students
+  const UploadManually = () => {
     const [localStudents, setLocalStudents] = useState(
-      Array.from({ length: myClass.students }, () => ({
+      Array.from({ length: numStudents }, () => ({
         id: "",
         name: "",
         phone: "",
@@ -199,35 +203,38 @@ export default function MyClasses() {
         address: "",
       }))
     );
-
-    // useEffect(() => {
-
-    //     setLocalStudents(Array.from({ length: numStudents }, () => ({ id: "", name: "", phone: "", photo: "", address: "" })));
-
-    //   }, [numStudents, students]);
-
+  
+    useEffect(() => {
+      setLocalStudents(
+        Array.from({ length: numStudents }, () => ({
+          id: "",
+          name: "",
+          phone: "",
+          photo: "",
+          address: "",
+        }))
+      );
+    }, [numStudents]);
+  
     const handleInputChange = (index, field, value) => {
-      const updatedStudents = [...localStudents];
-      updatedStudents[index] = { ...updatedStudents[index], [field]: value };
-      setLocalStudents(updatedStudents);
+      setLocalStudents((prev) =>
+        prev.map((student, i) => (i === index ? { ...student, [field]: value } : student))
+      );
     };
-
+  
     const handleSubmit = (e) => {
       e.preventDefault();
       setStudents(localStudents);
-      console.log("Updated Student Details:", localStudents);
+      console.log("Submitted Student Details:", localStudents);
       setManually(false);
+      setOpenManually(false);
     };
-
+  
     return (
-      
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        {/* <h1>{myClass.name}</h1> */}
         <div className="bg-white p-6 rounded-2xl shadow-lg w-[1000px] max-h-[80vh] overflow-auto">
-          <h1 className="text-xl font-bold mb-4 text-center">
-            Upload Manually
-          </h1>
-
+          <h1 className="text-xl font-bold mb-4 text-center">Upload Manually</h1>
+  
           <form onSubmit={handleSubmit}>
             <table className="w-full border-collapse border border-gray-300">
               <thead>
@@ -247,9 +254,7 @@ export default function MyClasses() {
                         type="text"
                         className="border p-2 rounded-lg w-full"
                         value={student.id}
-                        onChange={(e) =>
-                          handleInputChange(index, "id", e.target.value)
-                        }
+                        onChange={(e) => handleInputChange(index, "id", e.target.value)}
                         required
                       />
                     </td>
@@ -258,9 +263,7 @@ export default function MyClasses() {
                         type="text"
                         className="border p-2 rounded-lg w-full"
                         value={student.name}
-                        onChange={(e) =>
-                          handleInputChange(index, "name", e.target.value)
-                        }
+                        onChange={(e) => handleInputChange(index, "name", e.target.value)}
                         required
                       />
                     </td>
@@ -269,9 +272,7 @@ export default function MyClasses() {
                         type="tel"
                         className="border p-2 rounded-lg w-full"
                         value={student.phone}
-                        onChange={(e) =>
-                          handleInputChange(index, "phone", e.target.value)
-                        }
+                        onChange={(e) => handleInputChange(index, "phone", e.target.value)}
                         required
                       />
                     </td>
@@ -280,9 +281,7 @@ export default function MyClasses() {
                         type="text"
                         className="border p-2 rounded-lg w-full"
                         value={student.photo}
-                        onChange={(e) =>
-                          handleInputChange(index, "photo", e.target.value)
-                        }
+                        onChange={(e) => handleInputChange(index, "photo", e.target.value)}
                         required
                       />
                     </td>
@@ -290,9 +289,7 @@ export default function MyClasses() {
                       <textarea
                         className="border p-2 rounded-lg w-full"
                         value={student.address}
-                        onChange={(e) =>
-                          handleInputChange(index, "address", e.target.value)
-                        }
+                        onChange={(e) => handleInputChange(index, "address", e.target.value)}
                         required
                       />
                     </td>
@@ -300,17 +297,17 @@ export default function MyClasses() {
                 ))}
               </tbody>
             </table>
-
+  
             <div className="flex justify-between mt-4">
-              <button
-                type="submit"
-                className="bg-green-500 text-white py-2 w-[48%] rounded-lg"
-              >
+              <button type="submit" className="bg-green-500 text-white py-2 w-[48%] rounded-lg">
                 Submit
               </button>
               <button
                 type="button"
-                onClick={() => setManually(false)}
+                onClick={() => {
+                  setOpenManually(false);
+                  setManually(false);
+                }}
                 className="bg-red-500 text-white py-2 w-[48%] rounded-lg"
               >
                 Cancel
@@ -321,6 +318,7 @@ export default function MyClasses() {
       </div>
     );
   };
+  
 
   async function onDelete_class(classID) {
     try {
@@ -505,8 +503,45 @@ export default function MyClasses() {
                 </div>
 
                 {upload && uploadExcelOrManually(myClass)}
+{manually && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
+      <h1 className="text-xl font-bold mb-4 text-center">Enter Number of Students</h1>
 
-                {manually && <UploadManually />}
+      {/* Input Field for Students */}
+      <input
+        type="number"
+        min="1"
+        max={myClass.students} // Limit the maximum number
+        value={numStudents}
+        onChange={(e) => {
+          let value = parseInt(e.target.value, 10);
+          // if (value > myClass.students) value = myClass.students; // Prevent exceeding max
+          // if (value < 1) value = 1; // Prevent going below min
+          setNumStudents(value);
+        }}
+        className="w-full border-2 border-gray-300 p-2 rounded-lg focus:ring focus:ring-blue-200"
+        placeholder={`Max: ${myClass.students}`}
+      />
+
+      <div className="flex flex-col gap-4 mt-4">
+        {/* Submit Button */}
+        <button
+          className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+          onClick={() => {
+            console.log("Number of students:", numStudents)
+            setOpenManually(true)
+          }}
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+       {openManually && <UploadManually/>}
+
               </Tab.Panel>
               <Tab.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
