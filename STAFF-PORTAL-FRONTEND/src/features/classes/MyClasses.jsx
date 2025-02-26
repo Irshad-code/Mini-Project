@@ -146,7 +146,7 @@ export default function MyClasses() {
 
   const [myClass,setMyClass] = useState(null);
 
-  const [numStudents,setNumStudents]=useState(0);
+  const [numStudents,setNumStudents]=useState(1);
 
   
   function uploadExcelOrManually(myClass) {
@@ -515,6 +515,7 @@ export default function MyClasses() {
         max={myClass.students} // Limit the maximum number
         value={numStudents}
         onChange={(e) => {
+        
           let value = parseInt(e.target.value, 10);
           if (value > myClass.students) value = myClass.students; // Prevent exceeding max
           if (value < 1) value = 1; // Prevent going below min
