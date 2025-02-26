@@ -153,7 +153,7 @@ export default function MyClasses() {
 
 
 const [numStudents,setNumStudents] = useState(0);
-  function uploadExcelOrManually(numOfStudents) {
+  function uploadExcelOrManually() {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
@@ -174,7 +174,7 @@ const [numStudents,setNumStudents] = useState(0);
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
                 setUpload(false);
-                setNumStudents(numOfStudents);
+              
                 setManually(true);
                 console.log("Upload by Manually");
               }}
@@ -193,12 +193,12 @@ const [numStudents,setNumStudents] = useState(0);
          Array.from({ length: numStudents }, () => ({ id: "", name: "", phone: "", photo: "", address: "" }))
     );
   
-    useEffect(() => {
+    // useEffect(() => {
       
-        setLocalStudents(Array.from({ length: numStudents }, () => ({ id: "", name: "", phone: "", photo: "", address: "" })));
+    //     setLocalStudents(Array.from({ length: numStudents }, () => ({ id: "", name: "", phone: "", photo: "", address: "" })));
     
       
-      }, [numStudents, students]);
+    //   }, [numStudents, students]);
   
     const handleInputChange = (index, field, value) => {
       const updatedStudents = [...localStudents];
@@ -320,6 +320,8 @@ const [numStudents,setNumStudents] = useState(0);
   }
 
   const renderClassCard = (classItem, type) => (
+         
+
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
         <div className="flex justify-between items-start">
@@ -363,10 +365,10 @@ const [numStudents,setNumStudents] = useState(0);
                 Delete
               </Button>
 
-              <Button onClick={() => setUpload(true)} className="bg-blue-500">
+              <Button onClick={() =>{setUpload(true);  setNumStudents(classItem.students)}} className="bg-blue-500">
                 UploadStudents
               </Button>
-              {upload && uploadExcelOrManually(classItem.students)}
+              
             </p>
 
             <div className="grid grid-cols-2 gap-4">
@@ -478,6 +480,8 @@ const [numStudents,setNumStudents] = useState(0);
                   )}
                         
                 </div>
+
+                {upload && uploadExcelOrManually()}
 
                 {
                      
