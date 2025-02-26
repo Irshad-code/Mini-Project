@@ -224,7 +224,7 @@ export default function MyClasses() {
   
     const handleSubmit = (e) => {
       e.preventDefault();
-      setStudents(localStudents);
+      setStudents((prevStudents) => [...prevStudents, ...localStudents]); // Append new students
       console.log("Submitted Student Details:", localStudents);
       setManually(false);
       setOpenManually(false);
