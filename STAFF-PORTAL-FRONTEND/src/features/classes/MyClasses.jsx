@@ -38,8 +38,6 @@ export default function MyClasses() {
     },
   ]);
 
-  
-
   const fetchClasses = async () => {
     try {
       const response = await axios.get(BACKEND_LINK);
@@ -61,14 +59,10 @@ export default function MyClasses() {
         archived: [],
       });
     }
-
-
-    
   };
 
   useEffect(() => {
     fetchClasses();
-  
   }, []);
 
   const handleNumClassesSubmit = () => {
@@ -146,19 +140,16 @@ export default function MyClasses() {
   //To updload student details
   const [upload, setUpload] = useState(false);
   const [manually, setManually] = useState(false);
-  const [students, setStudents] = useState([
-  
-  ]);
+  const [students, setStudents] = useState([]);
+  const [myClass,setMyClass] = useState(null);
 
-
-
-const [numStudents,setNumStudents] = useState(0);
-  function uploadExcelOrManually() {
+  const [numStudents, setNumStudents] = useState(0);
+  function uploadExcelOrManually(myClass) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
           <h1 className="text-xl font-bold mb-4 text-center">
-            Upload Students
+            Upload Students {myClass.subject}
           </h1>
           <div className="flex flex-col gap-4">
             <button
@@ -174,24 +165,21 @@ const [numStudents,setNumStudents] = useState(0);
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
                 setUpload(false);
-              
+
                 setManually(true);
                 console.log("Upload by Manually");
               }}
             >
               Upload Manually
             </button>
-          
+
             <button
               className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
               onClick={() => {
                 setUpload(false);
-              
-            
-                
               }}
             >
-            cancel
+              cancel
             </button>
           </div>
         </div>
@@ -201,35 +189,43 @@ const [numStudents,setNumStudents] = useState(0);
 
   const UploadManually = ({}) => {
     const [localStudents, setLocalStudents] = useState(
-     
-         Array.from({ length: numStudents }, () => ({ id: "", name: "", phone: "", photo: "", address: "" }))
+      Array.from({ length: numStudents }, () => ({
+        id: "",
+        name: "",
+        phone: "",
+        photo: "",
+        address: "",
+      }))
     );
-  
+
     // useEffect(() => {
-      
+
     //     setLocalStudents(Array.from({ length: numStudents }, () => ({ id: "", name: "", phone: "", photo: "", address: "" })));
-    
-      
+
     //   }, [numStudents, students]);
-  
+
     const handleInputChange = (index, field, value) => {
       const updatedStudents = [...localStudents];
       updatedStudents[index] = { ...updatedStudents[index], [field]: value };
       setLocalStudents(updatedStudents);
     };
-  
+
     const handleSubmit = (e) => {
       e.preventDefault();
       setStudents(localStudents);
       console.log("Updated Student Details:", localStudents);
       setManually(false);
     };
-  
+
     return (
+      
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        {/* <h1>{myClass.name}</h1> */}
         <div className="bg-white p-6 rounded-2xl shadow-lg w-[1000px] max-h-[80vh] overflow-auto">
-          <h1 className="text-xl font-bold mb-4 text-center">Upload Manually</h1>
-  
+          <h1 className="text-xl font-bold mb-4 text-center">
+            Upload Manually
+          </h1>
+
           <form onSubmit={handleSubmit}>
             <table className="w-full border-collapse border border-gray-300">
               <thead>
@@ -249,7 +245,9 @@ const [numStudents,setNumStudents] = useState(0);
                         type="text"
                         className="border p-2 rounded-lg w-full"
                         value={student.id}
-                        onChange={(e) => handleInputChange(index, "id", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(index, "id", e.target.value)
+                        }
                         required
                       />
                     </td>
@@ -258,7 +256,9 @@ const [numStudents,setNumStudents] = useState(0);
                         type="text"
                         className="border p-2 rounded-lg w-full"
                         value={student.name}
-                        onChange={(e) => handleInputChange(index, "name", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(index, "name", e.target.value)
+                        }
                         required
                       />
                     </td>
@@ -267,7 +267,9 @@ const [numStudents,setNumStudents] = useState(0);
                         type="tel"
                         className="border p-2 rounded-lg w-full"
                         value={student.phone}
-                        onChange={(e) => handleInputChange(index, "phone", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(index, "phone", e.target.value)
+                        }
                         required
                       />
                     </td>
@@ -276,7 +278,9 @@ const [numStudents,setNumStudents] = useState(0);
                         type="text"
                         className="border p-2 rounded-lg w-full"
                         value={student.photo}
-                        onChange={(e) => handleInputChange(index, "photo", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(index, "photo", e.target.value)
+                        }
                         required
                       />
                     </td>
@@ -284,7 +288,9 @@ const [numStudents,setNumStudents] = useState(0);
                       <textarea
                         className="border p-2 rounded-lg w-full"
                         value={student.address}
-                        onChange={(e) => handleInputChange(index, "address", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(index, "address", e.target.value)
+                        }
                         required
                       />
                     </td>
@@ -292,9 +298,12 @@ const [numStudents,setNumStudents] = useState(0);
                 ))}
               </tbody>
             </table>
-  
+
             <div className="flex justify-between mt-4">
-              <button type="submit" className="bg-green-500 text-white py-2 w-[48%] rounded-lg">
+              <button
+                type="submit"
+                className="bg-green-500 text-white py-2 w-[48%] rounded-lg"
+              >
                 Submit
               </button>
               <button
@@ -310,7 +319,6 @@ const [numStudents,setNumStudents] = useState(0);
       </div>
     );
   };
-  
 
   async function onDelete_class(classID) {
     try {
@@ -332,8 +340,6 @@ const [numStudents,setNumStudents] = useState(0);
   }
 
   const renderClassCard = (classItem, type) => (
-         
-
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
         <div className="flex justify-between items-start">
@@ -348,8 +354,6 @@ const [numStudents,setNumStudents] = useState(0);
           <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
             <FiUsers className="w-4 h-4" />
             <span>{classItem.students} students</span>
-           
-          
           </div>
         </div>
 
@@ -377,10 +381,17 @@ const [numStudents,setNumStudents] = useState(0);
                 Delete
               </Button>
 
-              <Button onClick={() =>{setUpload(true);  setNumStudents(classItem.students)}} className="bg-blue-500">
+              <Button
+                onClick={() => {
+                  setUpload(true);
+                  setNumStudents(classItem.students);
+                  setMyClass(classItem);
+                  console.log(myClass);
+                }}
+                className="bg-blue-500"
+              >
                 UploadStudents
               </Button>
-              
             </p>
 
             <div className="grid grid-cols-2 gap-4">
@@ -490,18 +501,11 @@ const [numStudents,setNumStudents] = useState(0);
                   {classes.current.map((classItem) =>
                     renderClassCard(classItem, "current")
                   )}
-                        
                 </div>
 
-                {upload && uploadExcelOrManually()}
+                {upload && uploadExcelOrManually(myClass)}
 
-                {
-                     
-                manually &&  <UploadManually
-    
-      />
-      
-      }
+                {manually && <UploadManually />}
               </Tab.Panel>
               <Tab.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -645,9 +649,7 @@ const [numStudents,setNumStudents] = useState(0);
             </div>
           </form>
         </Card>
-      ) 
-      
-        :(
+      ) : (
         <Card className="p-6">
           <form onSubmit={onEdit_class} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
