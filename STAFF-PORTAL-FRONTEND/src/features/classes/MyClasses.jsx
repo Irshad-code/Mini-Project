@@ -181,6 +181,18 @@ const [numStudents,setNumStudents] = useState(0);
             >
               Upload Manually
             </button>
+          
+            <button
+              className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+              onClick={() => {
+                setUpload(false);
+              
+            
+                
+              }}
+            >
+            cancel
+            </button>
           </div>
         </div>
       </div>
