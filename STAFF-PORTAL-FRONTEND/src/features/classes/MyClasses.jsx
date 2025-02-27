@@ -6,6 +6,7 @@ import Card from "../../components/ui/Card";
 import TabButton from "../../components/ui/TabButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { UploadManually } from "./UploadManually";
 
 const tabs = [
   { id: "current", name: "Current Classes", icon: FiCalendar },
@@ -193,131 +194,7 @@ export default function MyClasses() {
   }
 
   // upload manully dynamically changes the number  of students
-  const UploadManually = () => {
-    const [localStudents, setLocalStudents] = useState(
-      Array.from({ length: numStudents }, () => ({
-        id: "",
-        name: "",
-        phone: "",
-        photo: "",
-        address: "",
-      }))
-    );
-  
-    useEffect(() => {
-      setLocalStudents(
-        Array.from({ length: numStudents }, () => ({
-          id: "",
-          name: "",
-          phone: "",
-          photo: "",
-          address: "",
-        }))
-      );
-    }, [numStudents]);
-  
-    const handleInputChange = (index, field, value) => {
-      setLocalStudents((prev) =>
-        prev.map((student, i) => (i === index ? { ...student, [field]: value } : student))
-      );
-    };
-  
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      setStudents((prevStudents) => [...prevStudents, ...localStudents]); // Append new students
-      console.log("Submitted Student Details:", localStudents);
-      setManually(false);
-      setOpenManually(false);
-    };
-  
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-2xl shadow-lg w-[1000px] max-h-[80vh] overflow-auto">
-          <h1 className="text-xl font-bold mb-4 text-center">Upload Manually</h1>
-  
-          <form onSubmit={handleSubmit}>
-            <table className="w-full border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Phone Number</th>
-                  <th>Photo</th>
-                  <th>Address</th>
-                </tr>
-              </thead>
-              <tbody>
-                {localStudents.map((student, index) => (
-                  <tr key={index}>
-                    <td>
-                      <input
-                        type="text"
-                        className="border p-2 rounded-lg w-full"
-                        value={student.id}
-                        onChange={(e) => handleInputChange(index, "id", e.target.value)}
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        className="border p-2 rounded-lg w-full"
-                        value={student.name}
-                        onChange={(e) => handleInputChange(index, "name", e.target.value)}
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="tel"
-                        className="border p-2 rounded-lg w-full"
-                        value={student.phone}
-                        onChange={(e) => handleInputChange(index, "phone", e.target.value)}
-                        required
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        className="border p-2 rounded-lg w-full"
-                        value={student.photo}
-                        onChange={(e) => handleInputChange(index, "photo", e.target.value)}
-                        required
-                      />
-                    </td>
-                    <td>
-                      <textarea
-                        className="border p-2 rounded-lg w-full"
-                        value={student.address}
-                        onChange={(e) => handleInputChange(index, "address", e.target.value)}
-                        required
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-  
-            <div className="flex justify-between mt-4">
-              <button type="submit" className="bg-green-500 text-white py-2 w-[48%] rounded-lg">
-                Submit
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setOpenManually(false);
-                  setManually(false);
-                }}
-                className="bg-red-500 text-white py-2 w-[48%] rounded-lg"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  };
+ 
   
 
   async function onDelete_class(classID) {
@@ -541,7 +418,22 @@ export default function MyClasses() {
   </div>
 )}
 
-       {openManually && <UploadManually/>}
+
+    
+
+       {openManually && <UploadManually
+  numStudents={numStudents}
+  columns={[
+    { label: "ID", key: "id", type: "text" },
+    { label: "Name", key: "name", type: "text" },
+    { label: "Phone Number", key: "phone", type: "tel" },
+    { label: "Photo", key: "photo", type: "file" }, // Image upload
+    { label: "Address", key: "address", type: "textarea" }
+  ]}
+  setStudents={setStudents}
+  setOpenManually={setOpenManually}
+  setManually={setManually}
+/>}
 
               </Tab.Panel>
               <Tab.Panel>
