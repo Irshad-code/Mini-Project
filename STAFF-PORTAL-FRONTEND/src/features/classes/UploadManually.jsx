@@ -1,6 +1,6 @@
 import{useState,useEffect} from 'react'
 
-export const UploadManually = ({ numStudents, columns, setStudents, setOpenManually, setManually }) => {
+export const UploadManually = ({ numStudents, columns, setStudents,  setManually }) => {
     const [localStudents, setLocalStudents] = useState([]);
   
     useEffect(() => {
@@ -23,7 +23,7 @@ export const UploadManually = ({ numStudents, columns, setStudents, setOpenManua
       setStudents((prevStudents) => [...prevStudents, ...localStudents]); // Append new data
       console.log("Submitted Student Details:", localStudents);
       setManually(false);
-      setOpenManually(false);
+    
     };
   
     return (
@@ -75,7 +75,7 @@ export const UploadManually = ({ numStudents, columns, setStudents, setOpenManua
               <button
                 type="button"
                 onClick={() => {
-                  setOpenManually(false);
+        
                   setManually(false);
                 }}
                 className="bg-red-500 text-white py-2 w-[48%] rounded-lg"

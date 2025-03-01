@@ -35,7 +35,7 @@ async function handleUploadExcel(req, res) {
     const id = req.params.id; // Get 'id' from URL
     console.log("Received ID:", id);
 
-  upload.single("excelFile")(req, res, (err) => {
+  upload.single("excelFile")(req, res, async (err) => {
     if (err) {
       return res.status(500).json({ error: "File upload failed" });
     }
@@ -54,10 +54,28 @@ async function handleUploadExcel(req, res) {
       // Delete file after processing (optional)
       fs.unlinkSync(filePath);
 
+      const studentRecords = jsonData.map((student) => ({
+        classId: classId,
+        name: student["Name"],
+        rollNumber: student["Roll Number"],
+        email: student["Email"],
+        phone: student["Phone"],
+      }));
+      const insertedStudents = await Student.insertMany(studentRecords);
+      const studentIds = insertedStudents.map((s) => s._id);
+      // Update the class to store student references
+      await MyClass.findByIdAndUpdate(
+        classId,
+        { $push: { studentList: { $each: studentIds } } },
+        { new: true }
+      );
+
       return res
         .status(201)
-        .json({ message: `Excel uploaded successfully on id= ${id}`, 
-                 record: jsonData });
+        .json({
+          message: `Excel uploaded successfully for class id= ${id}`,
+          record: insertedStudents,
+        });
     } catch (error) {
       return res.status(500).json({ error: "Error processing file." });
     }

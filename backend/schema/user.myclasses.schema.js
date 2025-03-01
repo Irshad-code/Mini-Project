@@ -12,6 +12,7 @@ const MyClassesSchema = new Schema(
     schedule: { type: String, required: true },
     syllabus: { type: String, required: true }, // File path or URL
     courseOutcome: { type: String, required: true }, // File path or URL
+    studentList: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }], // Store student IDs
   },
   { timestamps: true }
 );

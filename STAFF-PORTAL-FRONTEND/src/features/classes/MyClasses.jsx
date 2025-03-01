@@ -139,15 +139,14 @@ export default function MyClasses() {
   }
 
   //To updload student details
-  const [upload, setUpload] = useState(false);
+  const [uploadClassID, setUploadClassID]= useState(null);
   const [manually, setManually] = useState(false);
-  const [openManually,setOpenManually]=useState(false);
   const [students, setStudents] = useState([]);
 
 
   const [myClass,setMyClass] = useState(null);
 
-  const [numStudents,setNumStudents]=useState(1);
+  
 
   
   function uploadExcelOrManually(myClass) {
@@ -170,7 +169,7 @@ export default function MyClasses() {
             <button
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
-                setUpload(false);
+                setUploadClassID(myClass.userclassesId);
 
                 setManually(true);
                 console.log("Upload by Manually");
@@ -182,7 +181,7 @@ export default function MyClasses() {
             <button
               className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
               onClick={() => {
-                setUpload(false);
+                setUploadClassID(null);
               }}
             >
               cancel
@@ -291,7 +290,7 @@ export default function MyClasses() {
 
               <Button
                 onClick={() => {
-                  setUpload(true);
+                  setUploadClassID(classItem.userclassesId);
                   setMyClass(classItem);
                   console.log(myClass);
                 }}
@@ -315,6 +314,8 @@ export default function MyClasses() {
   className="mt-2"
   />
   )}
+
+    {uploadClassID===classItem.userclassesId && (uploadExcelOrManually(myClass))}
 </label>
             </p>
 
@@ -427,50 +428,13 @@ export default function MyClasses() {
                   )}
                 </div>
 
-                {upload && uploadExcelOrManually(myClass)}
-{manually && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
-      <h1 className="text-xl font-bold mb-4 text-center">Enter Number of Students</h1>
 
-      {/* Input Field for Students */}
-      <input
-        type="number"
-        min={1}
-        max={myClass.students} // Limit the maximum number
-        value={numStudents}
-        onChange={(e) => {
-        
-          let value = parseInt(e.target.value, 10);
-          if (value > myClass.students) value = myClass.students; // Prevent exceeding max
-          if (value < 1) value = 1; // Prevent going below min
-          setNumStudents(value);
-        }}
-        className="w-full border-2 border-gray-300 p-2 rounded-lg focus:ring focus:ring-blue-200"
-        placeholder={`Max: ${myClass.students}`}
-      />
-
-      <div className="flex flex-col gap-4 mt-4">
-        {/* Submit Button */}
-        <button
-          className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-          onClick={() => {
-            console.log("Number of students:", numStudents)
-            setOpenManually(true)
-          }}
-        >
-          Submit
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
 
     
 
-       {openManually && <UploadManually
-  numStudents={numStudents}
+       {manually && <UploadManually
+  numStudents={myClass.students}
   columns={[
     { label: "ID", key: "id", type: "text" },
     { label: "Name", key: "name", type: "text" },
@@ -479,7 +443,6 @@ export default function MyClasses() {
     { label: "Address", key: "address", type: "textarea" }
   ]}
   setStudents={setStudents}
-  setOpenManually={setOpenManually}
   setManually={setManually}
 />}
 
@@ -628,7 +591,7 @@ export default function MyClasses() {
         </Card>
       ) : (
         <Card className="p-6">
-          <form onSubmit={onEdit_class} className="space-y-4">
+          <form  className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">
