@@ -5,3 +5,9 @@ commoncontroller
 request.js (validates the request)
 router
 app.js( all the backend)
+
+
+//////////////////
+function isValidObjectId(id) {
+  return mongoose.Types.ObjectId.isValid(id);
+}   from validation.middleware

@@ -167,7 +167,38 @@ export default function MyClasses() {
       console.log(error);
     }
   }
+  
+  async function handleStudentExcelDataUpload(classID,file){
+     if (!file) {
+    console.error("No file selected");
+    return;
+  }
 
+  const formData = new FormData();
+  formData.append("excelFile", file); // 'excelFile' should match the backend's expected key
+
+        try {
+      const response = await axios.post(`${BACKEND_LINK}/upload/${classID}`,
+            formData, 
+          {
+             headers: {
+             "Content-Type": "multipart/form-data",
+                },
+          });
+
+      if (response) {
+        console.log("Students excel sheet uploaded successfully.\n DATA= ",response.data.record);
+        // setClasses(prevClasses => ({
+        //   current: prevClasses.current.filter(cls => cls.userclassesId !== classID),
+        //   archived: prevClasses.archived.filter(cls => cls.userclassesId !== classID)
+        // }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const [uploadingClassId,setUploadingClassId]=useState(null);
   const renderClassCard = (classItem, type) => (
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
@@ -208,6 +239,23 @@ export default function MyClasses() {
                 className="bg-black"
               >Delete
               </Button>
+              <label className="cursor-pointer">
+               <Button
+                onClick={() => {
+                  setUploadingClassId(classItem.userclassesId);
+                  console.log("id= ", classItem.userclassesId);
+                }}
+                className="bg-blue"
+              >Upload Xcel students
+              </Button>
+            {uploadingClassId === classItem.userclassesId && (  <input
+  type="file"
+  accept=".xlsx, .xls"
+  onChange={(e) => handleStudentExcelDataUpload(classItem.userclassesId, e.target.files[0])}
+  className="mt-2"
+  />
+  )}
+</label>
             </p>
 
             <div className="grid grid-cols-2 gap-4">
@@ -223,8 +271,8 @@ export default function MyClasses() {
               </Button>
               <Button variant="secondary" className="w-full">
                 Internal Marks
-              </Button>
-              <Button variant="secondary" className="w-full">
+              </Button>  
+              <Button variant="secondary" className="w-full"> 
                 Series Marks
               </Button>
             </div>
@@ -401,7 +449,7 @@ export default function MyClasses() {
                           className="w-full p-1 border rounded"
                           required
                         />
-                      </td>
+                      </td> 
                       <td className="px-2 py-1">
                         <input
                           type="text"

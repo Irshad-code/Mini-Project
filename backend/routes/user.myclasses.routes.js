@@ -6,6 +6,7 @@ const { commonLimiter } = require("../middlewares/ratelimit.middleware");
 const { authorizeAdminUser } = require("../passport/authorizationMiddleware");
 const { validateAndTransformRequest, validateId } = require("../middlewares/validation.middleware");
 const { MyClassRequest } = require("../models/users/requests/user.MyClasssesRequest");
+const myClassesController = require("../controllers/user.myclasses.controller");
 
 router.post(
   "/create", 
@@ -15,7 +16,7 @@ router.post(
   validateAndTransformRequest(MyClassRequest),
   commonController.create
 );
- 
+
 router.get(
   "/",
   commonLimiter,
@@ -43,4 +44,13 @@ router.delete(
   commonController.deleteById
 ); 
  
-module.exports = router;
+router.post(
+  "/upload/:id",
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  validateId,
+  myClassesController.handleUploadExcel
+);
+
+module.exports = router; 

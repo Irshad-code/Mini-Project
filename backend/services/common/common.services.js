@@ -13,7 +13,7 @@ const userprofilephotoModel = require("../../models/users/dbmodels/user.profilep
 const userresponsibilityModel = require("../../models/users/dbmodels/user.Responsibility.model.js");
 const userMyClassesModel = require("../../models/users/dbmodels/user.myclasses.model.js");
 //access the models:
-      
+       
 const modelHandlers = {
   users: userModel,
   colleges: collegeModel, 
