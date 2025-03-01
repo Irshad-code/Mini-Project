@@ -140,8 +140,10 @@ export default function MyClasses() {
 
   //To updload student details
   const [uploadClassID, setUploadClassID]= useState(null);
-  const [manually, setManually] = useState(false);
   const [students, setStudents] = useState([]);
+  
+
+  const[showform,setShowform]=useState(null);
 
 
   const [myClass,setMyClass] = useState(null);
@@ -154,25 +156,33 @@ export default function MyClasses() {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
           <h1 className="text-xl font-bold mb-4 text-center">
-            Upload Students {myClass.subject}
+            Upload Students
           </h1>
           <div className="flex flex-col gap-4">
             <button
               className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
               onClick={() => {
-                setUpload(false);
-                console.log("Upload by Excel");
-              }}
+                  setShowform((prev) => (prev === "excel" ? null : "excel"));
+
+                  console.log("id= ", classItem.userclassesId);
+                }}
             >
               Upload Excel
             </button>
+                 { showform==='excel' && (  <input
+  type="file"
+  accept=".xlsx, .xls"
+  onChange={(e) => handleStudentExcelDataUpload(classItem.userclassesId, e.target.files[0])}
+  className="mt-2"
+  />
+  )}
             <button
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
                 setUploadClassID(myClass.userclassesId);
 
-                setManually(true);
-                console.log("Upload by Manually");
+                setShowform('Manually');
+                console.log(`Upload by ${showform}` );
               }}
             >
               Upload Manually
@@ -182,6 +192,8 @@ export default function MyClasses() {
               className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
               onClick={() => {
                 setUploadClassID(null);
+                setShowform(null);
+
               }}
             >
               cancel
@@ -245,7 +257,7 @@ export default function MyClasses() {
     }
   }
 
-  const [uploadingClassId,setUploadingClassId]=useState(null);
+  
   const renderClassCard = (classItem, type) => (
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
@@ -299,21 +311,6 @@ export default function MyClasses() {
                 UploadStudents
               </Button>
               <label className="cursor-pointer">
-               <Button
-                onClick={() => {
-                  setUploadingClassId(classItem.userclassesId);
-                  console.log("id= ", classItem.userclassesId);
-                }}
-                className="bg-blue"
-              >Upload Xcel students
-              </Button>
-            {uploadingClassId === classItem.userclassesId && (  <input
-  type="file"
-  accept=".xlsx, .xls"
-  onChange={(e) => handleStudentExcelDataUpload(classItem.userclassesId, e.target.files[0])}
-  className="mt-2"
-  />
-  )}
 
     {uploadClassID===classItem.userclassesId && (uploadExcelOrManually(myClass))}
 </label>
@@ -428,12 +425,7 @@ export default function MyClasses() {
                   )}
                 </div>
 
-
-
-
-    
-
-       {manually && <UploadManually
+      { (showform === 'Manually') && <UploadManually
   numStudents={myClass.students}
   columns={[
     { label: "ID", key: "id", type: "text" },
@@ -443,7 +435,7 @@ export default function MyClasses() {
     { label: "Address", key: "address", type: "textarea" }
   ]}
   setStudents={setStudents}
-  setManually={setManually}
+  setShowform={setShowform}
 />}
 
               </Tab.Panel>
