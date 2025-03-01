@@ -1,16 +1,16 @@
 import{useState,useEffect} from 'react'
 
-export const UploadManually = ({ numStudents, columns, setStudents,  setShowform }) => {
+export const UploadManually = ({ myClass, columns, setStudents,  setShowform }) => {
     const [localStudents, setLocalStudents] = useState([]);
   
     useEffect(() => {
       // Initialize state dynamically based on columns
       setLocalStudents(
-        Array.from({ length: numStudents }, () =>
+        Array.from({ length: myClass.students }, () =>
           Object.fromEntries(columns.map(({ key }) => [key, ""])) // Create empty fields
         )
       );
-    }, [numStudents, columns]);
+    }, [myClass.students, columns]);
   
     const handleInputChange = (index, field, value) => {
       setLocalStudents((prev) =>
@@ -22,7 +22,8 @@ export const UploadManually = ({ numStudents, columns, setStudents,  setShowform
       e.preventDefault();
       setStudents((prevStudents) => [...prevStudents, ...localStudents]); // Append new data
       console.log("Submitted Student Details:", localStudents);
-      setShowform(null)
+      setShowform(myClass.userClassesid)
+    
     
     };
   
@@ -76,7 +77,8 @@ export const UploadManually = ({ numStudents, columns, setStudents,  setShowform
                 type="button"
                 onClick={() => {
         
-                  setShowform(null);
+                  setShowform(myClass.userClassesid);
+                  console.log(myClass.userClassesid)
                 }}
                 className="bg-red-500 text-white py-2 w-[48%] rounded-lg"
               >

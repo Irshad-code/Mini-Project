@@ -139,7 +139,8 @@ export default function MyClasses() {
   }
 
   //To updload student details
-  const [uploadClassID, setUploadClassID]= useState(null);
+  
+
   const [students, setStudents] = useState([]);
   
 
@@ -151,7 +152,7 @@ export default function MyClasses() {
   
 
   
-  function uploadExcelOrManually(myClass) {
+  function uploadExcelOrManually(classItem) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
@@ -169,20 +170,15 @@ export default function MyClasses() {
             >
               Upload Excel
             </button>
-                 { showform==='excel' && (  <input
-  type="file"
-  accept=".xlsx, .xls"
-  onChange={(e) => handleStudentExcelDataUpload(classItem.userclassesId, e.target.files[0])}
-  className="mt-2"
-  />
-  )}
+   
             <button
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
-                setUploadClassID(myClass.userclassesId);
+                
 
                 setShowform('Manually');
                 console.log(`Upload by ${showform}` );
+                
               }}
             >
               Upload Manually
@@ -191,7 +187,6 @@ export default function MyClasses() {
             <button
               className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
               onClick={() => {
-                setUploadClassID(null);
                 setShowform(null);
 
               }}
@@ -204,7 +199,7 @@ export default function MyClasses() {
     );
   }
 
-  // upload manully dynamically changes the number  of students
+  
  
   
 
@@ -302,7 +297,7 @@ export default function MyClasses() {
 
               <Button
                 onClick={() => {
-                  setUploadClassID(classItem.userclassesId);
+                  setShowform(classItem.userclassesId);
                   setMyClass(classItem);
                   console.log(myClass);
                 }}
@@ -312,7 +307,7 @@ export default function MyClasses() {
               </Button>
               <label className="cursor-pointer">
 
-    {uploadClassID===classItem.userclassesId && (uploadExcelOrManually(myClass))}
+    {showform===classItem.userclassesId && (uploadExcelOrManually(myClass))}
 </label>
             </p>
 
@@ -426,7 +421,7 @@ export default function MyClasses() {
                 </div>
 
       { (showform === 'Manually') && <UploadManually
-  numStudents={myClass.students}
+  myClass={myClass}
   columns={[
     { label: "ID", key: "id", type: "text" },
     { label: "Name", key: "name", type: "text" },
@@ -437,6 +432,34 @@ export default function MyClasses() {
   setStudents={setStudents}
   setShowform={setShowform}
 />}
+
+{showform === "excel" && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-md">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h3 className="text-lg font-semibold">Upload Excel File</h3>
+      
+      <input
+        type="file"
+        accept=".xlsx, .xls"
+        onChange={(e) =>
+          handleStudentExcelDataUpload(classItem.userclassesId, e.target.files[0])
+        }
+        className="mt-3 border p-2 rounded w-full"
+      />
+      
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={() => setShowform(myClass.userclassesId)}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
 
               </Tab.Panel>
               <Tab.Panel>
