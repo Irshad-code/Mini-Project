@@ -58,17 +58,17 @@ async function handleUploadExcel(req, res) {
       // Extract rollNumbers & emails from Excel data
       const rollNumbers = jsonData.map((student) => student["Roll Number"]);
       const emails = jsonData.map((student) => student["Email"]);
-      console.log("Roll Numbers:", rollNumbers);
-      console.log("Emails:", emails);
-      // Step 1: Check existing students in DB with same rollNumber or email
+      // Step 1: Check existing students in Db with same rollNumber or email
       const existingStudents = await studentModel.find({
         $or: [{ rollNumber: { $in: rollNumbers } }, { email: { $in: emails } }],
       });
 
-      // Step 2: Filter out duplicate students
+      // Step 2: Filter out from duplicate students
       const existingRollNumbers = new Set(existingStudents.map((s) => s.rollNumber));
 
       const existingEmails = new Set(existingStudents.map((s) => s.email));
+
+      const existingStudentIdList = new Set(existingStudents.map((s) => s._id));
 
       const uniqueStudents = jsonData.filter(
         (student) =>
@@ -77,9 +77,28 @@ async function handleUploadExcel(req, res) {
       );
 
       if (uniqueStudents.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "No unique students found to insert." });
+        // Step 3: Add the studentId to the existing class's studentList
+        const existingClass = await UserMyClassesModel.findById(classId);
+        // Add existing student IDs to the class's studentList
+        existingClass.studentList = [
+          ...new Set([
+            ...existingClass.studentList,
+            ...Array.from(existingStudentIdList),
+          ]),
+        ];
+
+        await existingClass.save(); // Explicitly save the class
+
+        // Add the classId to each student's classList (ensuring no duplicates)
+        await studentModel.updateMany(
+          { _id: { $in: Array.from(existingStudentIdList) } }, // Match all existing students
+          { $addToSet: { classList: classId } } // Add classId to the classList of all corresponding students without duplicates
+        );
+
+        return res.status(203).json({
+          message:
+            "No unique students found, and inserted existing students Id to class from Excel",
+        });
       }
 
       const studentRecords = uniqueStudents.map((student) => ({
@@ -208,34 +227,31 @@ async function insertStudentIdToCorrespondingClass(req,res){
   }
 }
 
-async function deleteClassIdFromAllTheCorrespondingStudents(req, res) {
+async function deleteClassIdFromAllTheCorrespondingStudents(req, res, next) {
   try{
     const classId = req.params.id;
-    const { studentsList } = await UserMyClassesModel.findById(classId);
-    if (!studentsList.length) {
-      return res
-        .status(404)
-        .json({ message: "No students found in this class" });
+    const { studentList } = await UserMyClassesModel.findById(classId);
+
+    if (!studentList.length) {
+      // If no students are in the class, skip student update and proceed to class deletion
+      return next();
     }
 
-    // Step 2: Update all students to remove the class reference
-    await Promise.all(
-      studentsList.map(async (studentId) => {
-        await studentModel.findByIdAndUpdate(
-          studentId,
-          { 
-            $unset: { classId: "" },
-          });
-      })
+     // Step 2: Remove classId from all corresponding students in a single query
+    await studentModel.updateMany(
+      { _id: { $in: studentList } }, // Match all students in the studentList
+      { $pull: { classList: classId } } // Remove the classId from their classList
     );
+   //Move to the next middleware (which is commonController.deleteById)
+    return next();
 
-    // Step 3: Respond with success
-    return res.status(200).json({
-      message: `Class ID ${classId} removed from all corresponding students.`,
-      updatedStudents: studentsList,
-    });
   }catch(error){
-    
+    return res
+      .status(500)
+      .json({
+        message: "Error deleting classId from all it's students",
+        error: error.message,
+      });
   }
 }
 // ✅ Ensure the function is exported correctly

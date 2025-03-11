@@ -15,6 +15,7 @@ function isValidObjectId(id) {
 
 To do: 
 upload excel ;
+reduntant data containig excel upload on different classes is possible;
 upload one by one;
 
-delete 
+delete one by one of student;

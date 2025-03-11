@@ -41,8 +41,9 @@ router.delete(
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
   validateId,
-  commonController.deleteById,
-  myClassesController.deleteClassIdFromAllTheCorrespondingStudents
+  myClassesController.deleteClassIdFromAllTheCorrespondingStudents,
+  commonController.deleteById,//delete the classObject
+  
 ); 
  //upload student 
 router.post(
