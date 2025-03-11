@@ -42,7 +42,7 @@ router.delete(
   // authorizeAdminUser,
   validateId,
   myClassesController.deleteStudentIdFromAllClasses, // deleted that student Id from all the classes which he enrolled
-  //commonController.deleteById, //delete the student from Db( actually it is done on the previous step for the time being.)
+  commonController.deleteById, //delete the student Object from Db
 );
 
 

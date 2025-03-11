@@ -124,7 +124,7 @@ module.exports.deleteById = async function (req, res) {
     return handleError(
       res,
       500,
-      "Internal server error from delete query",
+      "Internal server error from Object delete query",
       error
     );
   }
@@ -143,9 +143,9 @@ module.exports.create = async function (req, res) {
 
     return res
       .status(201)
-      .json({ message: "Record inserted successfully",
+      .json({ message: "Record inserted successfully by create query",
               record: result });
   } catch (error) {
-    return handleError(res, 500, "Internal server error", error);
+    return handleError(res, 500, "Internal server error by create query", error);
   }
 };
