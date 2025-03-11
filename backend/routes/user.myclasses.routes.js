@@ -7,6 +7,7 @@ const { authorizeAdminUser } = require("../passport/authorizationMiddleware");
 const { validateAndTransformRequest, validateId } = require("../middlewares/validation.middleware");
 const { MyClassRequest } = require("../models/users/requests/user.MyClasssesRequest");
 const myClassesController = require("../controllers/user.myclasses.controller");
+const { MyClassesStudentRequest } = require("../models/users/requests/user.MyClassesStudentRequest");
 
 router.post(
   "/create", 
@@ -22,7 +23,6 @@ router.get(
   commonLimiter,
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
-  //validateAndTransformRequest(MyClassRequest),
   commonController.completeList
 );
 
@@ -41,15 +41,17 @@ router.delete(
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
   validateId,
-  commonController.deleteById
+  commonController.deleteById,
+  myClassesController.deleteClassIdFromAllTheCorrespondingStudents
 ); 
- 
+ //upload student 
 router.post(
   "/upload/:id",
   commonLimiter,
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
   validateId,
+  //validateAndTransformRequest(MyClassesStudentRequest),
   myClassesController.handleUploadExcel
 );
 

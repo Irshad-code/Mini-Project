@@ -5,14 +5,14 @@ const Schema = mongoose.Schema;
 const MyClassesSchema = new Schema(
   {
     subject: { type: String, required: true },
-    code: { type: String, required: true },//may set Unique 
+    code: { type: String, required: true }, //may set Unique
     semester: { type: String, required: true },
     branch: { type: String, required: true },
     students: { type: Number, required: true, min: 1 },
     schedule: { type: String, required: true },
     syllabus: { type: String, required: true }, // File path or URL
     courseOutcome: { type: String, required: true }, // File path or URL
-    studentList: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }], // Store student IDs
+    studentList: [{ type: mongoose.Schema.Types.ObjectId, default: [] }], // Store student IDs
   },
   { timestamps: true }
 );

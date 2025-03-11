@@ -12,6 +12,7 @@ const userfamilyModel = require("../../models/users/dbmodels/user.family.model.j
 const userprofilephotoModel = require("../../models/users/dbmodels/user.profilephoto.model.js");
 const userresponsibilityModel = require("../../models/users/dbmodels/user.Responsibility.model.js");
 const userMyClassesModel = require("../../models/users/dbmodels/user.myclasses.model.js");
+const studentModel = require("../../models/users/dbmodels/user.myclasses.student.model.js");
 //access the models:
        
 const modelHandlers = {
@@ -25,6 +26,7 @@ const modelHandlers = {
   userprofilephoto: userprofilephotoModel, 
   userresponsibility: userresponsibilityModel,
   usermyclasses: userMyClassesModel,
+  student: studentModel,
 };
 const validParams = {
   //agencyfileuploads: ["year", "month", "agencyName", "status"],

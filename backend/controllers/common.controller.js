@@ -100,7 +100,7 @@ module.exports.updateById = async function (req, res, next) {
       updateData
     );
     if (isEmptyList(updatedRecord)) {
-      return handleError(res, 404, "(Id) object not found");
+      return handleError(res, 404, `(Id) Object(${modelname}) not found`);
     }
     res.status(200).json({ message: updatedRecord });
   } catch (error) {
@@ -140,9 +140,11 @@ module.exports.create = async function (req, res) {
     if (isEmptyList(result)) {
       return handleError(res, 404, " not saved");
     }
+
     return res
       .status(201)
-      .json({ message: "Record inserted successfully", record: result });
+      .json({ message: "Record inserted successfully",
+              record: result });
   } catch (error) {
     return handleError(res, 500, "Internal server error", error);
   }

@@ -442,7 +442,7 @@ export default function MyClasses() {
         type="file"
         accept=".xlsx, .xls"
         onChange={(e) =>
-          handleStudentExcelDataUpload(classItem.userclassesId, e.target.files[0])
+          handleStudentExcelDataUpload(myClass.userclassesId, e.target.files[0])//excel upload fails here
         }
         className="mt-3 border p-2 rounded w-full"
       />

@@ -4,12 +4,18 @@ const Schema = mongoose.Schema;
 const StudentSchema = new Schema(
   {
     name: { type: String, required: true },
-    rollNumber: { type: String, required: true, unique: true },
+    rollNumber: { type: Number, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
-    classId: {
-      type: mongoose.Schema.Types.ObjectId, ref: "MyClass",required: true,
-    }, // Reference to thier class
+
+    branch: { type: String, required: true },
+    semester: { type: String, required: true },
+    classList: [
+      { type: mongoose.Schema.Types.ObjectId, 
+        ref: "MyClass", 
+        default: [] 
+      },
+    ], // Reference to thier class and Store class IDs
   },
   { timestamps: true }
 );
@@ -27,4 +33,4 @@ StudentSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Student", StudentSchema);
+module.exports = StudentSchema;
