@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require("../passport/jwtStrategy.passport");
 const { commonLimiter } = require("../middlewares/ratelimit.middleware");
 const { authorizeAdminUser } = require("../passport/authorizationMiddleware");
-const { validateAndTransformRequest, validateId } = require("../middlewares/validation.middleware");
+const { validateAndTransformRequest, validateId, validateMultipleId } = require("../middlewares/validation.middleware");
 const myClassesController = require("../controllers/user.myclasses.controller");
 const commonController = require("../controllers/common.controller");
 const { MyClassesStudentRequest } = require("../models/users/requests/user.MyClassesStudentRequest");
@@ -45,5 +45,14 @@ router.delete(
   commonController.deleteById, //delete the student Object from Db
 );
 
+router.delete(
+  "/deleteAll", // id of the student
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  validateMultipleId,
+  myClassesController.deleteMultipleStudentsFromAllClasses, // deleted that student Id from all the classes which he enrolled
+  commonController.multiDeleteByIdList //delete multiple student Objects from Db using idList
+);
 
 module.exports = router;

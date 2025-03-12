@@ -68,7 +68,7 @@ async function handleUploadExcel(req, res) {
 
       const existingEmails = new Set(existingStudents.map((s) => s.email));
 
-      const existingStudentIdList = new Set(existingStudents.map((s) => s._id));
+      const existingStudentIdList = new Set(existingStudents.map((s) => s._id));// Extract student IDs from the student collection in Db
 
       const uniqueStudents = jsonData.filter(
         (student) =>
@@ -79,25 +79,35 @@ async function handleUploadExcel(req, res) {
       if (uniqueStudents.length === 0) {
         // Step 3: Add the studentId to the existing class's studentList
         const existingClass = await UserMyClassesModel.findById(classId);
-        // Add existing student IDs to the class's studentList
-        existingClass.studentList = [
-          ...new Set([
+        // Get student IDs that are NOT already in the class's studentList
+        const newStudentIdsToInsertFromDb = Array.from(
+          existingStudentIdList
+        ).filter((studentId) => !existingClass.studentList.includes(studentId));
+        
+        if (!newStudentIdsToInsertFromDb.length) {
+          return res.status(202).json({
+            message:
+              "These students are already present in the class, so nothing is inserted.",
+          });
+        }
+          // Update the class with new student IDs from existing students data from Db
+          existingClass.studentList = [
             ...existingClass.studentList,
-            ...Array.from(existingStudentIdList),
-          ]),
-        ];
+            ...newStudentIdsToInsertFromDb,
+          ];
 
         await existingClass.save(); // Explicitly save the class
 
         // Add the classId to each student's classList (ensuring no duplicates)
         await studentModel.updateMany(
-          { _id: { $in: Array.from(existingStudentIdList) } }, // Match all existing students
+          { _id: { $in: Array.from(newStudentIdsToInsertFromDb) } }, // Match all existing students
           { $addToSet: { classList: classId } } // Add classId to the classList of all corresponding students without duplicates
         );
 
         return res.status(203).json({
           message:
-            "No unique students found, and inserted existing students Id to class from Excel",
+            "No students found outside of the Db, so inserted existing students Id from Db to the class as mentioned in Excel",
+          studentIdList: newStudentIdsToInsertFromDb,
         });
       }
 
@@ -161,6 +171,37 @@ async function deleteStudentIdFromAllClasses(req,res,next){
      }catch(error){
           return res.status(500).json({error: "Error deleting student id from all classes"})
      }
+}
+
+async function deleteMultipleStudentsFromAllClasses(req, res,next) {
+  const studentIds = req.body.idList;
+  try {
+    // Step 1: Find all classes that contain the studentIds
+    const classes = await UserMyClassesModel.find({
+      studentList: { $in: studentIds },
+    });
+
+    if (!classes.length) {
+      console.log( "No classes found." );
+      return next();
+    }
+
+    // Step 2: Remove studentIds from each class’s studentList
+    const updatePromises = classes.map((cls) =>
+      UserMyClassesModel.findByIdAndUpdate(cls._id, {
+        $pull: { studentList: { $in: studentIds } },
+      })
+    );
+
+    await Promise.all(updatePromises); // Execute all updates in parallel
+    next();
+
+  }catch(error){
+    return res.status(500).json(
+      { message: "Error deleting multiple student ids from all classes",
+        errors:error.errors
+      })
+}
 }
 
 async function insertStudentIdToCorrespondingClass(req,res){
@@ -254,6 +295,7 @@ module.exports = {
   deleteStudentIdFromAllClasses,
   insertStudentIdToCorrespondingClass,
   deleteClassIdFromAllTheCorrespondingStudents,
+  deleteMultipleStudentsFromAllClasses,
 };
 
   
