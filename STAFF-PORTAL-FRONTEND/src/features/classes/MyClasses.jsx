@@ -716,16 +716,16 @@ export default function MyClasses() {
               <Tab.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {classes.current.map((classItem) =>(
-                    // renderClassCard(classItem, "current")
-                    <RenderClassCard
-                    classItem={classItem}
-                    type="current"
-                    setEditingClass={setEditingClass}
-                    setActiveForm={setActiveForm}
-                    setMyClass={setMyClass}
-                    FormType={FormType}
-                    onDelete_class={onDelete_class}
-                    />
+                    renderClassCard(classItem, "current")
+                    // <RenderClassCard
+                    // classItem={classItem}
+                    // type="current"
+                    // setEditingClass={setEditingClass}
+                    // setActiveForm={setActiveForm}
+                    // setMyClass={setMyClass}
+                    // FormType={FormType}
+                    // onDelete_class={onDelete_class}
+                    // />
                   )
                   )}
                 </div>
