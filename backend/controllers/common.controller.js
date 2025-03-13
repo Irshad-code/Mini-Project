@@ -124,11 +124,38 @@ module.exports.deleteById = async function (req, res) {
     return handleError(
       res,
       500,
-      "Internal server error from delete query",
+      "Internal server error from Object delete query",
       error
     );
   }
 };
+
+module.exports.multiDeleteByIdList = async function(req,res){
+   try {
+     let {idList} = req.body;
+     logger.info(`request   IdList: ${idList}`);
+     logger.debug("I am logging req", req.baseUrl.substring(1));
+     const modelname = req.baseUrl.substring(1).toLowerCase();
+     var result = await commonService.deleteMultipleByIds(modelname, idList);
+     if (isEmptyList(result)) {
+       return handleError(res, 404, `Multi Deletion not Done\n idList: ${idList} and result: ${result}`);
+     }
+     return res.status(200).json({
+        message: `Deleted ${idList.length} records successfully.`,
+        deletedIds: idList,
+      });
+
+   } catch (error) {
+     console.log(error);
+     return handleError(
+       res,
+       500,
+       "Internal server error from Multi Object delete query",
+       error.errors
+     );
+   }
+};
+
 module.exports.create = async function (req, res) {
   try {
     logger.info("Creating new object");
@@ -143,9 +170,9 @@ module.exports.create = async function (req, res) {
 
     return res
       .status(201)
-      .json({ message: "Record inserted successfully",
+      .json({ message: "Record inserted successfully by create query",
               record: result });
   } catch (error) {
-    return handleError(res, 500, "Internal server error", error);
+    return handleError(res, 500, "Internal server error by create query", error);
   }
 };

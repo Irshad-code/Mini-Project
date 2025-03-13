@@ -162,6 +162,23 @@ async function deleteById(model, id) {
     throw new Error(error.message);
   }
 }
+
+async function deleteMultipleByIds(model, idList) {//multiple objects deletion
+  try {
+    model = removeapi(model);
+    logger.debug(`Deleting  by idList: ${idList} in model ${model}`);
+    var result = await modelHandlers[model].deleteMany({
+      _id: { $in: idList },
+    });
+    logger.debug(`Deleted items in ${model} with idList: ${idList}\n result passed : ${result}`);
+    return result;
+
+  } catch (error) {
+    logger.error("Error in deleteMultipleByIds service:", error);
+    throw new Error(error.message);
+  }
+}
+
 async function updateById(model, id, updateData) {
   try {
     model = removeapi(model);
@@ -213,6 +230,7 @@ module.exports = {
   list,
   getById,
   deleteById,
+  deleteMultipleByIds,
   updateById,
   create,
   completeList,

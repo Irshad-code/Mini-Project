@@ -34,4 +34,22 @@ const validateAndTransformRequest = (request) => {
     }
   };
 };
-module.exports = { validateAndTransformRequest, validateId };
+
+ function validateMultipleId(req,res,next) {
+      const { idList } = req.body;
+      logger.info("requestIdList: ", idList);
+      idList.forEach((id) => {
+        if (!isValidObjectId(id)) {
+          return res.status(400).json({ 
+            message: "Invalid ObjectId: "+id,
+            errors: error.errors
+           });
+        }
+      });
+      logger.info(`${idList.length} Id's are Validated`);
+      next();
+}
+module.exports = { 
+  validateAndTransformRequest, 
+  validateId,
+  validateMultipleId,};
