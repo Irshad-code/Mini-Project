@@ -1,6 +1,6 @@
 import{useState,useEffect} from 'react'
 
-export const UploadManually = ({ myClass, columns, setStudents,  setShowform }) => {
+export const UploadManually = ({ myClass, columns, setStudents,  setActiveForm, FormType }) => {
     const [localStudents, setLocalStudents] = useState([]);
   
     useEffect(() => {
@@ -22,7 +22,7 @@ export const UploadManually = ({ myClass, columns, setStudents,  setShowform }) 
       e.preventDefault();
       setStudents((prevStudents) => [...prevStudents, ...localStudents]); // Append new data
       console.log("Submitted Student Details:", localStudents);
-      setShowform(myClass.userClassesid)
+      setActiveForm(FormType.UPLOAD_STUDENTS);
     
     
     };
@@ -77,7 +77,7 @@ export const UploadManually = ({ myClass, columns, setStudents,  setShowform }) 
                 type="button"
                 onClick={() => {
         
-                  setShowform(myClass.userClassesid);
+                  setActiveForm(FormType.UPLOAD_STUDENTS);
                   console.log(myClass.userClassesid)
                 }}
                 className="bg-red-500 text-white py-2 w-[48%] rounded-lg"

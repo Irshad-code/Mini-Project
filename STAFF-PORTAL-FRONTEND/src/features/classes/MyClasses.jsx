@@ -7,6 +7,7 @@ import TabButton from "../../components/ui/TabButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UploadManually } from "./UploadManually";
+import {RenderClassCard} from "./RenderClassCard";
 
 const tabs = [
   { id: "current", name: "Current Classes", icon: FiCalendar },
@@ -21,11 +22,21 @@ export default function MyClasses() {
     current: [],
     archived: [],
   });
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditForm, setShowEditForm] = useState(false);
+
+  const FormType={
+    ADD_CLASS:'addClass',
+    EDIT_CLASS:"editClass",
+    NUM_CLASS_PROMPT:"numClassPrompt",
+    UPLOAD_STUDENTS:"uploadStudents",
+    UPLOAD_STUDENTS_MANUALLY:"uploadManually",
+    UPLOAD_STUDENTS_EXCEL:"uploadStudentsExcel",
+    NONE:"none"
+  }
+
+  const[activeForm,setActiveForm]=useState(FormType.NONE);
+
   const [editingClass, setEditingClass] = useState(null);
   const [numClasses, setNumClasses] = useState(1);
-  const [showNumClassesPrompt, setShowNumClassesPrompt] = useState(false);
   const [newClasses, setNewClasses] = useState([
     {
       subject: "",
@@ -79,8 +90,8 @@ export default function MyClasses() {
         courseOutcome: "",
       })
     );
-    setShowNumClassesPrompt(false);
-    setShowAddForm(true);
+    setActiveForm(FormType.ADD_CLASS)
+    
   };
 
   const updateNewClass = (index, field, value) => {
@@ -120,7 +131,7 @@ export default function MyClasses() {
       }
 
       await fetchClasses();
-      setShowAddForm(false);
+      setActiveForm(FormType.NONE)
       setNewClasses([
         {
           subject: "",
@@ -144,8 +155,6 @@ export default function MyClasses() {
   const [students, setStudents] = useState([]);
   
 
-  const[showform,setShowform]=useState(null);
-
 
   const [myClass,setMyClass] = useState(null);
 
@@ -163,7 +172,7 @@ export default function MyClasses() {
             <button
               className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
               onClick={() => {
-                  setShowform((prev) => (prev === "excel" ? null : "excel"));
+                  setActiveForm(FormType.UPLOAD_STUDENTS_EXCEL);
 
                   console.log("id= ", classItem.userclassesId);
                 }}
@@ -175,9 +184,8 @@ export default function MyClasses() {
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
                 
-
-                setShowform('Manually');
-                console.log(`Upload by ${showform}` );
+                 setActiveForm(FormType.UPLOAD_STUDENTS_MANUALLY)
+       
                 
               }}
             >
@@ -187,7 +195,7 @@ export default function MyClasses() {
             <button
               className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
               onClick={() => {
-                setShowform(null);
+                setActiveForm(FormType.NONE);
 
               }}
             >
@@ -223,6 +231,9 @@ export default function MyClasses() {
   }
   
   async function handleStudentExcelDataUpload(classID,file){
+       
+    console.log("Hello" , classID);    
+
      if (!file) {
     console.error("No file selected");
     return;
@@ -230,6 +241,7 @@ export default function MyClasses() {
 
   const formData = new FormData();
   formData.append("excelFile", file); // 'excelFile' should match the backend's expected key
+
 
         try {
       const response = await axios.post(`${BACKEND_LINK}/upload/${classID}`,
@@ -248,7 +260,9 @@ export default function MyClasses() {
         // }));
       }
     } catch (error) {
+    
       console.log(error);
+      
     }
   }
 
@@ -279,7 +293,7 @@ export default function MyClasses() {
               <Button
                 onClick={() => {
                   setEditingClass(classItem);
-                  setShowEditForm(true);
+                  setActiveForm(FormType.EDIT_CLASS);
                 }}
                 className="bg-blue-500"
               >
@@ -297,7 +311,8 @@ export default function MyClasses() {
 
               <Button
                 onClick={() => {
-                  setShowform(classItem.userclassesId);
+                  // setShowform(classItem.userclassesId);
+                  setActiveForm(FormType.UPLOAD_STUDENTS);
                   setMyClass(classItem);
                   console.log(myClass);
                 }}
@@ -307,7 +322,6 @@ export default function MyClasses() {
               </Button>
               <label className="cursor-pointer">
 
-    {showform===classItem.userclassesId && (uploadExcelOrManually(myClass))}
 </label>
             </p>
 
@@ -324,7 +338,10 @@ export default function MyClasses() {
               >
                 Attendance
               </Button>
-              <Button variant="secondary" className="w-full">
+              <Button variant="secondary" className="w-full"
+              
+                onClick={()=> navigate(`/internalmarks/${classItem.userclassesId}`)}
+              >
                 Internal Marks
               </Button>  
               <Button variant="secondary" className="w-full"> 
@@ -354,7 +371,7 @@ export default function MyClasses() {
 
   return (
     <div className="space-y-6">
-      {showNumClassesPrompt ? (
+      {activeForm===FormType.NUM_CLASS_PROMPT ? (
         <Card className="p-6">
           <div className="space-y-4">
             <label className="block text-sm font-medium mb-1">
@@ -371,7 +388,7 @@ export default function MyClasses() {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => setShowNumClassesPrompt(false)}
+                onClick={() => setActiveForm(FormType.NONE)}
               >
                 Cancel
               </Button>
@@ -385,94 +402,7 @@ export default function MyClasses() {
             </div>
           </div>
         </Card>
-      ) : !showAddForm && !showEditForm ? (
-        <>
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">
-                My Classes
-              </h2>
-              <p className="mt-2 text-[var(--color-text-secondary)]">
-                Manage your current and archived classes
-              </p>
-            </div>
-            <Button
-              onClick={() => setShowNumClassesPrompt(true)}
-              variant="primary"
-              icon={<FiPlus className="w-4 h-4" />}
-            >
-              Add New Classes
-            </Button>
-          </div>
-
-          <Tab.Group onChange={() => fetchClasses()}>
-            <Tab.List className="flex space-x-2 border-b border-[var(--color-border-primary)]">
-              {tabs.map((tab, index) => (
-                <TabButton key={tab.id} index={index} name={tab.name} />
-              ))}
-            </Tab.List>
-
-            <Tab.Panels className="mt-6">
-              <Tab.Panel>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {classes.current.map((classItem) =>
-                    renderClassCard(classItem, "current")
-                  )}
-                </div>
-
-      { (showform === 'Manually') && <UploadManually
-  myClass={myClass}
-  columns={[
-    { label: "ID", key: "id", type: "text" },
-    { label: "Name", key: "name", type: "text" },
-    { label: "Phone Number", key: "phone", type: "tel" },
-    { label: "Photo", key: "photo", type: "file" }, // Image upload
-    { label: "Address", key: "address", type: "textarea" }
-  ]}
-  setStudents={setStudents}
-  setShowform={setShowform}
-/>}
-
-{showform === "excel" && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-md">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-      <h3 className="text-lg font-semibold">Upload Excel File</h3>
-      
-      <input
-        type="file"
-        accept=".xlsx, .xls"
-        onChange={(e) =>
-          handleStudentExcelDataUpload(myClass.userclassesId, e.target.files[0])//excel upload fails here
-        }
-        className="mt-3 border p-2 rounded w-full"
-      />
-      
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={() => setShowform(myClass.userclassesId)}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-
-              </Tab.Panel>
-              <Tab.Panel>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {classes.archived.map((classItem) =>
-                    renderClassCard(classItem, "archived")
-                  )}
-                </div>
-              </Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
-        </>
-      ) : showAddForm ? (
+      ) : activeForm===FormType.ADD_CLASS  ? (
         <Card className="p-6">
           <form onSubmit={onAdd_classes} className="space-y-4">
             <div className="overflow-x-auto">
@@ -594,7 +524,7 @@ export default function MyClasses() {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => setShowAddForm(false)}
+                onClick={() => setActiveForm(FormType.NONE)}
               >
                 Cancel
               </Button>
@@ -604,7 +534,7 @@ export default function MyClasses() {
             </div>
           </form>
         </Card>
-      ) : (
+      ) : activeForm=== FormType.EDIT_CLASS  ? (
         <Card className="p-6">
           <form  className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -743,7 +673,7 @@ export default function MyClasses() {
                 type="button"
                 variant="secondary"
                 onClick={() => {
-                  setShowEditForm(false);
+                  setActiveForm(FormType.NONE)
                   setEditingClass(null);
                 }}
               >
@@ -755,7 +685,116 @@ export default function MyClasses() {
             </div>
           </form>
         </Card>
-      )}
+      ): true &&  (
+        <>
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">
+                My Classes
+              </h2>
+              <p className="mt-2 text-[var(--color-text-secondary)]">
+                Manage your current and archived classes
+              </p>
+            </div>
+            <Button
+              onClick={() => setActiveForm(FormType.NUM_CLASS_PROMPT)}
+              variant="primary"
+              icon={<FiPlus className="w-4 h-4" />}
+            >
+              Add New Classes
+            </Button>
+          </div>
+
+          <Tab.Group onChange={() => fetchClasses()}>
+            <Tab.List className="flex space-x-2 border-b border-[var(--color-border-primary)]">
+              {tabs.map((tab, index) => (
+                <TabButton key={tab.id} index={index} name={tab.name} />
+              ))}
+            </Tab.List>
+
+            <Tab.Panels className="mt-6">
+              <Tab.Panel>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {classes.current.map((classItem) =>(
+                    // renderClassCard(classItem, "current")
+                    <RenderClassCard
+                    classItem={classItem}
+                    type="current"
+                    setEditingClass={setEditingClass}
+                    setActiveForm={setActiveForm}
+                    setMyClass={setMyClass}
+                    FormType={FormType}
+                    onDelete_class={onDelete_class}
+                    />
+                  )
+                  )}
+                </div>
+                
+    {(activeForm === FormType.UPLOAD_STUDENTS) && (uploadExcelOrManually(myClass))}
+
+      { (activeForm=== FormType.UPLOAD_STUDENTS_MANUALLY) && <UploadManually
+  myClass={myClass}
+  columns={[
+    { label: "ID", key: "id", type: "text" },
+    { label: "Name", key: "name", type: "text" },
+    { label: "Phone Number", key: "phone", type: "tel" },
+    { label: "Photo", key: "photo", type: "file" }, // Image upload
+    { label: "Address", key: "address", type: "textarea" }
+  ]}
+  setStudents={setStudents}
+  setActiveForm={setActiveForm}
+  FormType={FormType}
+/>}
+
+{activeForm === FormType.UPLOAD_STUDENTS_EXCEL  && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-md">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h3 className="text-lg font-semibold">Upload Excel File</h3>
+      
+      <input
+        type="file"
+        accept=".xlsx, .xls"
+        onChange={(e) =>
+          handleStudentExcelDataUpload(myClass.userclassesId, e.target.files[0])
+        }
+        className="mt-3 border p-2 rounded w-full"
+      />
+      
+      <div className="flex gap-48 justify-end mt-4">
+
+      <button
+          onClick={() => setActiveForm(FormType.UPLOAD_STUDENTS)}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        >
+          ok 
+        </button>
+        <button
+          onClick={() => setActiveForm(FormType.UPLOAD_STUDENTS)}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+              </Tab.Panel>
+              <Tab.Panel>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {classes.archived.map((classItem) =>
+                    renderClassCard(classItem, "archived")
+                  )}
+                </div>
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </>
+      )
+    
+    }
     </div>
   );
 }
