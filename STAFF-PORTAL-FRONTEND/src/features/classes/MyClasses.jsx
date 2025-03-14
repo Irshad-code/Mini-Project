@@ -10,6 +10,12 @@ import { UploadManually } from "./UploadManually";
 
 import RenderClassCard from "./RenderClassCard";
 
+import AddClassCard from "./AddClassCard";
+
+import EditClassCard from "./EditClassCard";
+
+// import DefaultPage from "./DefaultPage";
+
 
 
 const tabs = [
@@ -320,288 +326,19 @@ const renderClassCard= (classItem,type)=>{
           </div>
         </Card>
       ) : activeForm===FormType.ADD_CLASS  ? (
-        <Card className="p-6">
-          <form onSubmit={onAdd_classes} className="space-y-4">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2">Subject Name</th>
-                    <th className="px-4 py-2">Subject Code</th>
-                    <th className="px-4 py-2">Semester</th>
-                    <th className="px-4 py-2">Branch</th>
-                    <th className="px-4 py-2">Students</th>
-                    <th className="px-4 py-2">Schedule</th>
-                    <th className="px-4 py-2">Syllabus</th>
-                    <th className="px-4 py-2">Course Outcome</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {newClasses.map((classData, index) => (
-                    <tr key={index}>
-                      <td className="px-2 py-1">
-                        <input
-                          type="text"
-                          value={classData.subject}
-                          onChange={(e) =>
-                            updateNewClass(index, "subject", e.target.value)
-                          }
-                          className="w-full p-1 border rounded"
-                          required
-                        />
-                      </td>
-                      <td className="px-2 py-1">
-                        <input
-                          type="text"
-                          value={classData.code}
-                          onChange={(e) =>
-                            updateNewClass(index, "code", e.target.value)
-                          }
-                          className="w-full p-1 border rounded"
-                          required
-                        />
-                      </td>
-                      <td className="px-2 py-1">
-                        <input
-                          type="text"
-                          value={classData.semester}
-                          onChange={(e) =>
-                            updateNewClass(index, "semester", e.target.value)
-                          }
-                          className="w-full p-1 border rounded"
-                          required
-                        />
-                      </td>
-                      <td className="px-2 py-1">
-                        <input
-                          type="text"
-                          value={classData.branch}
-                          onChange={(e) =>
-                            updateNewClass(index, "branch", e.target.value)
-                          }
-                          className="w-full p-1 border rounded"
-                          required
-                        />
-                      </td>
-                      <td className="px-2 py-1">
-                        <input
-                          type="number"
-                          value={classData.students}
-                          onChange={(e) =>
-                            updateNewClass(index, "students", e.target.value)
-                          }
-                          className="w-full p-1 border rounded"
-                          min="1"
-                          required
-                        />
-                      </td>
-                      <td className="px-2 py-1">
-                        <input
-                          type="text"
-                          value={classData.schedule}
-                          onChange={(e) =>
-                            updateNewClass(index, "schedule", e.target.value)
-                          }
-                          className="w-full p-1 border rounded"
-                          required
-                        />
-                      </td> 
-                      <td className="px-2 py-1">
-                        <input
-                          type="text"
-                          value={classData.syllabus}
-                          onChange={(e) =>
-                            updateNewClass(index, "syllabus", e.target.value)
-                          }
-                          className="w-full p-1 border rounded"
-                          required
-                        />
-                      </td>
-                      <td className="px-2 py-1">
-                        <input
-                          type="text"
-                          value={classData.courseOutcome}
-                          onChange={(e) =>
-                            updateNewClass(
-                              index,
-                              "courseOutcome",
-                              e.target.value
-                            )
-                          }
-                          className="w-full p-1 border rounded"
-                          required
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setActiveForm(FormType.NONE)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary">
-                Add Classes
-              </Button>
-            </div>
-          </form>
-        </Card>
+
+        <AddClassCard
+        newClasses={newClasses}
+        updateNewClass={updateNewClass}
+        onAdd_classes={onAdd_classes}
+        setActiveForm={setActiveForm}
+        FormType={FormType}
+        />
       ) : activeForm=== FormType.EDIT_CLASS  ? (
-        <Card className="p-6">
-          <form  className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Subject Name
-                </label>
-                <input
-                  type="text"
-                  value={editingClass.subject}
-                  onChange={(e) =>
-                    setEditingClass({
-                      ...editingClass,
-                      subject: e.target.value,
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Subject Code
-                </label>
-                <input
-                  type="text"
-                  value={editingClass.code}
-                  onChange={(e) =>
-                    setEditingClass({ ...editingClass, code: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Semester
-                </label>
-                <input
-                  type="text"
-                  value={editingClass.semester}
-                  onChange={(e) =>
-                    setEditingClass({
-                      ...editingClass,
-                      semester: e.target.value,
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Branch</label>
-                <input
-                  type="text"
-                  value={editingClass.branch}
-                  onChange={(e) =>
-                    setEditingClass({ ...editingClass, branch: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Number of Students
-                </label>
-                <input
-                  type="number"
-                  value={editingClass.students}
-                  onChange={(e) =>
-                    setEditingClass({
-                      ...editingClass,
-                      students: e.target.value,
-                    })
-                  }
-                  min="1"
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Schedule
-                </label>
-                <input
-                  type="text"
-                  value={editingClass.schedule}
-                  onChange={(e) =>
-                    setEditingClass({
-                      ...editingClass,
-                      schedule: e.target.value,
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Syllabus
-                </label>
-                <input
-                  type="text"
-                  value={editingClass.syllabus}
-                  onChange={(e) =>
-                    setEditingClass({
-                      ...editingClass,
-                      syllabus: e.target.value,
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Course Outcome
-                </label>
-                <input
-                  type="text"
-                  value={editingClass.courseOutcome}
-                  onChange={(e) =>
-                    setEditingClass({
-                      ...editingClass,
-                      courseOutcome: e.target.value,
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  setActiveForm(FormType.NONE)
-                  setEditingClass(null);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary">
-                Save Changes
-              </Button>
-            </div>
-          </form>
-        </Card>
+
+        <EditClassCard
+        editingClass={editingClass} setEditingClass={setEditingClass} setActiveForm={setActiveForm} FormType={FormType}
+        />
       ): true &&  (
         <>
           <div className="flex justify-between items-center">
@@ -689,7 +426,6 @@ const renderClassCard= (classItem,type)=>{
 )}
 
 
-
               </Tab.Panel>
               <Tab.Panel>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -701,6 +437,21 @@ const renderClassCard= (classItem,type)=>{
             </Tab.Panels>
           </Tab.Group>
         </>
+
+// <DefaultPage
+//      setActiveForm={setActiveForm}
+//      FormType={FormType}
+//      fetchClasses={fetchClasses}
+//      tabs={tabs}
+//      classes={classes}
+//      renderClassCard={renderClassCard}
+//      activeForm={activeForm}
+//      uploadExcelOrManually={uploadExcelOrManually}
+//      myClass={myClass}
+//      setStudents={setStudents}
+//      handleStudentExcelDataUpload={handleStudentExcelDataUpload}
+// />
+
       )
     
     }
