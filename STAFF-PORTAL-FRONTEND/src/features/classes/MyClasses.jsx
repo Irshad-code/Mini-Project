@@ -7,8 +7,6 @@ import TabButton from "../../components/ui/TabButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UploadManually } from "./UploadManually";
-import {RenderClassCard} from "./RenderClassCard";
-
 const tabs = [
   { id: "current", name: "Current Classes", icon: FiCalendar },
   { id: "archived", name: "Archived Classes", icon: FiArchive },
@@ -28,8 +26,8 @@ export default function MyClasses() {
     EDIT_CLASS:"editClass",
     NUM_CLASS_PROMPT:"numClassPrompt",
     UPLOAD_STUDENTS:"uploadStudents",
-    UPLOAD_STUDENTS_MANUALLY:"uploadManually",
     UPLOAD_STUDENTS_EXCEL:"uploadStudentsExcel",
+    UPLOAD_STUDENTS_MANUALLY:"uploadStudentsManually",
     NONE:"none"
   }
 
@@ -156,6 +154,8 @@ export default function MyClasses() {
   
 
 
+
+
   const [myClass,setMyClass] = useState(null);
 
   
@@ -166,13 +166,14 @@ export default function MyClasses() {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
           <h1 className="text-xl font-bold mb-4 text-center">
-            Upload Students
+            {`Upload Students For ${classItem.subject}`}
           </h1>
           <div className="flex flex-col gap-4">
             <button
               className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
               onClick={() => {
-                  setActiveForm(FormType.UPLOAD_STUDENTS_EXCEL);
+              
+                setActiveForm(FormType.UPLOAD_STUDENTS_EXCEL);
 
                   console.log("id= ", classItem.userclassesId);
                 }}
@@ -184,8 +185,8 @@ export default function MyClasses() {
               className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
               onClick={() => {
                 
-                 setActiveForm(FormType.UPLOAD_STUDENTS_MANUALLY)
-       
+                setActiveForm(FormType.UPLOAD_STUDENTS_MANUALLY);
+              
                 
               }}
             >
@@ -311,7 +312,6 @@ export default function MyClasses() {
 
               <Button
                 onClick={() => {
-                  // setShowform(classItem.userclassesId);
                   setActiveForm(FormType.UPLOAD_STUDENTS);
                   setMyClass(classItem);
                   console.log(myClass);
@@ -322,6 +322,7 @@ export default function MyClasses() {
               </Button>
               <label className="cursor-pointer">
 
+   
 </label>
             </p>
 
@@ -717,6 +718,7 @@ export default function MyClasses() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {classes.current.map((classItem) =>(
                     renderClassCard(classItem, "current")
+
                     // <RenderClassCard
                     // classItem={classItem}
                     // type="current"
@@ -726,13 +728,14 @@ export default function MyClasses() {
                     // FormType={FormType}
                     // onDelete_class={onDelete_class}
                     // />
+
                   )
                   )}
                 </div>
-                
-    {(activeForm === FormType.UPLOAD_STUDENTS) && (uploadExcelOrManually(myClass))}
 
-      { (activeForm=== FormType.UPLOAD_STUDENTS_MANUALLY) && <UploadManually
+                {activeForm===FormType.UPLOAD_STUDENTS && (uploadExcelOrManually(myClass))}
+
+      { (activeForm===FormType.UPLOAD_STUDENTS_MANUALLY) && <UploadManually
   myClass={myClass}
   columns={[
     { label: "ID", key: "id", type: "text" },
@@ -746,7 +749,7 @@ export default function MyClasses() {
   FormType={FormType}
 />}
 
-{activeForm === FormType.UPLOAD_STUDENTS_EXCEL  && (
+{activeForm===FormType.UPLOAD_STUDENTS_EXCEL && (
   <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-md">
     <div className="bg-white p-6 rounded-lg shadow-lg w-96">
       <h3 className="text-lg font-semibold">Upload Excel File</h3>
@@ -760,14 +763,14 @@ export default function MyClasses() {
         className="mt-3 border p-2 rounded w-full"
       />
       
-      <div className="flex gap-48 justify-end mt-4">
-
+      <div className="flex justify-end gap-48 mt-4">
       <button
           onClick={() => setActiveForm(FormType.UPLOAD_STUDENTS)}
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
         >
-          ok 
+          Ok
         </button>
+
         <button
           onClick={() => setActiveForm(FormType.UPLOAD_STUDENTS)}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"

@@ -1,7 +1,8 @@
-import { FiUsers, FiCalendar } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+
+import {  FiCalendar, FiUsers } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
+import { useNavigate } from "react-router-dom";
 
 const RenderClassCard = ({
   classItem,
