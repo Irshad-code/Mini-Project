@@ -1,5 +1,4 @@
-
-import {  FiCalendar, FiUsers } from "react-icons/fi";
+import { FiCalendar, FiUsers } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +13,28 @@ const RenderClassCard = ({
   onDelete_class
 }) => {
   const navigate = useNavigate();
+
+  const handleEdit = () => {
+    setEditingClass(classItem);
+    setActiveForm(FormType.EDIT_CLASS);
+  };
+
+  const handleDelete = () => {
+    onDelete_class(classItem.userclassesId);
+  };
+
+  const handleUploadStudents = () => {
+    setActiveForm(FormType.UPLOAD_STUDENTS);
+    setMyClass(classItem);
+  };
+
+  const renderActionButtons = () => (
+    <div className="flex items-center space-x-2">
+      <Button onClick={handleEdit} className="bg-blue-500">Edit</Button>
+      <Button onClick={handleDelete} className="bg-black">Delete</Button>
+      <Button onClick={handleUploadStudents} className="bg-blue-500">Upload Students</Button>
+    </div>
+  );
 
   return (
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
@@ -35,43 +56,13 @@ const RenderClassCard = ({
 
         {type === "current" ? (
           <div className="space-y-2">
-            <p className="text-[var(--color-text-secondary)] flex items-center space-x-2">
+            <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
               <FiCalendar className="w-4 h-4" />
               <span>{classItem.schedule}</span>
-              <Button
-                onClick={() => {
-                  setEditingClass(classItem);
-                  setActiveForm(FormType.EDIT_CLASS);
-                }}
-                className="bg-blue-500"
-              >
-                Edit
-              </Button>
-              <Button
-                onClick={() => {
-                  console.log("id= ", classItem.userclassesId);
-                  onDelete_class(classItem.userclassesId);
-                }}
-                className="bg-black"
-              >
-                Delete
-              </Button>
-              <Button
-                onClick={() => {
-                  setActiveForm(FormType.UPLOAD_STUDENTS);
-                  setMyClass(classItem);
-                  console.log(classItem);
-                }}
-                className="bg-blue-500"
-              >
-                Upload Students
-              </Button>
-            </p>
-
+            </div>
+            {renderActionButtons()}
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="secondary" className="w-full">
-                Course Files
-              </Button>
+              <Button variant="secondary" className="w-full">Course Files</Button>
               <Button
                 variant="secondary"
                 className="w-full"
@@ -86,9 +77,7 @@ const RenderClassCard = ({
               >
                 Internal Marks
               </Button>
-              <Button variant="secondary" className="w-full">
-                Series Marks
-              </Button>
+              <Button variant="secondary" className="w-full">Series Marks</Button>
             </div>
           </div>
         ) : (
@@ -98,12 +87,8 @@ const RenderClassCard = ({
               <span>Result: {classItem.result}</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="secondary" className="w-full">
-                View Report
-              </Button>
-              <Button variant="secondary" className="w-full">
-                Course Files
-              </Button>
+              <Button variant="secondary" className="w-full">View Report</Button>
+              <Button variant="secondary" className="w-full">Course Files</Button>
             </div>
           </div>
         )}
