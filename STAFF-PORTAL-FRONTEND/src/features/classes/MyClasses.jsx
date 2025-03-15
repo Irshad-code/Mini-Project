@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { Tab } from "@headlessui/react";
-import { FiPlus, FiCalendar, FiUsers, FiBook, FiArchive } from "react-icons/fi";
+import { FiCalendar,FiArchive } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
-import TabButton from "../../components/ui/TabButton";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { UploadManually } from "./UploadManually";
 
 import RenderClassCard from "./RenderClassCard";
 
@@ -14,7 +11,7 @@ import AddClassCard from "./AddClassCard";
 
 import EditClassCard from "./EditClassCard";
 
-// import DefaultPage from "./DefaultPage";
+import DefaultPage from "./DefaultPage";
 
 
 
@@ -163,65 +160,14 @@ export default function MyClasses() {
 
   const [students, setStudents] = useState([]);
   
-
-
-
-
   const [myClass,setMyClass] = useState(null);
 
   
 
   
-  function uploadExcelOrManually(classItem) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
-          <h1 className="text-xl font-bold mb-4 text-center">
-            {`Upload Students For ${classItem.subject}`}
-          </h1>
-          <div className="flex flex-col gap-4">
-            <button
-              className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-              onClick={() => {
-              
-                setActiveForm(FormType.UPLOAD_STUDENTS_EXCEL);
-
-                  console.log("id= ", classItem.userclassesId);
-                }}
-            >
-              Upload Excel
-            </button>
-   
-            <button
-              className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
-              onClick={() => {
-                
-                setActiveForm(FormType.UPLOAD_STUDENTS_MANUALLY);
-              
-                
-              }}
-            >
-              Upload Manually
-            </button>
-
-            <button
-              className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
-              onClick={() => {
-                setActiveForm(FormType.NONE);
-
-              }}
-            >
-              cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   
- 
   
+
 
   async function onDelete_class(classID) {
     try {
@@ -340,120 +286,20 @@ const renderClassCard= (classItem,type)=>{
         editingClass={editingClass} setEditingClass={setEditingClass} setActiveForm={setActiveForm} FormType={FormType}
         />
       ): true &&  (
-        <>
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">
-                My Classes
-              </h2>
-              <p className="mt-2 text-[var(--color-text-secondary)]">
-                Manage your current and archived classes
-              </p>
-            </div>
-            <Button
-              onClick={() => setActiveForm(FormType.NUM_CLASS_PROMPT)}
-              variant="primary"
-              icon={<FiPlus className="w-4 h-4" />}
-            >
-              Add New Classes
-            </Button>
-          </div>
-
-          <Tab.Group onChange={() => fetchClasses()}>
-            <Tab.List className="flex space-x-2 border-b border-[var(--color-border-primary)]">
-              {tabs.map((tab, index) => (
-                <TabButton key={tab.id} index={index} name={tab.name} />
-              ))}
-            </Tab.List>
-
-            <Tab.Panels className="mt-6">
-              <Tab.Panel>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {classes.current.map((classItem) =>(
-                    renderClassCard(classItem, "current")
-
-                  )
-                  )}
-                </div>
-
-                {activeForm===FormType.UPLOAD_STUDENTS && (uploadExcelOrManually(myClass))}
-
-      { (activeForm===FormType.UPLOAD_STUDENTS_MANUALLY) && <UploadManually
-  myClass={myClass}
-  columns={[
-    { label: "ID", key: "id", type: "text" },
-    { label: "Name", key: "name", type: "text" },
-    { label: "Phone Number", key: "phone", type: "tel" },
-    { label: "Photo", key: "photo", type: "file" }, // Image upload
-    { label: "Address", key: "address", type: "textarea" }
-  ]}
-  setStudents={setStudents}
-  setActiveForm={setActiveForm}
-  FormType={FormType}
-/>}
-
-{activeForm===FormType.UPLOAD_STUDENTS_EXCEL && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-md">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-      <h3 className="text-lg font-semibold">Upload Excel File</h3>
-      
-      <input
-        type="file"
-        accept=".xlsx, .xls"
-        onChange={(e) =>
-          handleStudentExcelDataUpload(myClass.userclassesId, e.target.files[0])
-        }
-        className="mt-3 border p-2 rounded w-full"
-      />
-      
-      <div className="flex justify-end gap-48 mt-4">
-      <button
-          onClick={() => setActiveForm(FormType.UPLOAD_STUDENTS)}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          Ok
-        </button>
-
-        <button
-          onClick={() => setActiveForm(FormType.UPLOAD_STUDENTS)}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-              </Tab.Panel>
-              <Tab.Panel>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {classes.archived.map((classItem) =>
-                    renderClassCard(classItem, "archived")
-                  )}
-                </div>
-              </Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
-        </>
-
-// <DefaultPage
-//      setActiveForm={setActiveForm}
-//      FormType={FormType}
-//      fetchClasses={fetchClasses}
-//      tabs={tabs}
-//      classes={classes}
-//      renderClassCard={renderClassCard}
-//      activeForm={activeForm}
-//      uploadExcelOrManually={uploadExcelOrManually}
-//      myClass={myClass}
-//      setStudents={setStudents}
-//      handleStudentExcelDataUpload={handleStudentExcelDataUpload}
-// />
+ <DefaultPage
+     setActiveForm={setActiveForm}
+     FormType={FormType}
+     fetchClasses={fetchClasses}
+     tabs={tabs}
+     classes={classes}
+     renderClassCard={renderClassCard}
+     activeForm={activeForm}
+     myClass={myClass}
+     setStudents={setStudents}
+     handleStudentExcelDataUpload={handleStudentExcelDataUpload}
+/> 
 
       )
-    
     }
     </div>
   );

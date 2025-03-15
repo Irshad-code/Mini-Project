@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import { FiPlus } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import TabButton from "../../components/ui/TabButton";
-import UploadManually from "./UploadManually";
+import { UploadManually } from "./UploadManually";
 
 const DefaultPage = ({
   setActiveForm,
@@ -12,11 +12,53 @@ const DefaultPage = ({
   classes,
   renderClassCard,
   activeForm,
-  uploadExcelOrManually,
   myClass,
   setStudents,
-  handleStudentExcelDataUpload
+  handleStudentExcelDataUpload,
 }) => {
+
+  function uploadExcelOrManually(classItem) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
+          <h1 className="text-xl font-bold mb-4 text-center">
+            {`Upload Students For ${classItem.subject}`}
+          </h1>
+          <div className="flex flex-col gap-4">
+            <button
+              className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+              onClick={() => {
+                setActiveForm(FormType.UPLOAD_STUDENTS_EXCEL);
+
+                console.log("id= ", classItem.userclassesId);
+              }}
+            >
+              Upload Excel
+            </button>
+
+            <button
+              className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+              onClick={() => {
+                setActiveForm(FormType.UPLOAD_STUDENTS_MANUALLY);
+              }}
+            >
+              Upload Manually
+            </button>
+
+            <button
+              className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+              onClick={() => {
+                setActiveForm(FormType.NONE);
+              }}
+            >
+              cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -52,7 +94,8 @@ const DefaultPage = ({
               )}
             </div>
 
-            {activeForm === FormType.UPLOAD_STUDENTS && uploadExcelOrManually(myClass)}
+            {activeForm === FormType.UPLOAD_STUDENTS &&
+              uploadExcelOrManually(myClass)}
 
             {activeForm === FormType.UPLOAD_STUDENTS_MANUALLY && (
               <UploadManually
@@ -62,7 +105,7 @@ const DefaultPage = ({
                   { label: "Name", key: "name", type: "text" },
                   { label: "Phone Number", key: "phone", type: "tel" },
                   { label: "Photo", key: "photo", type: "file" },
-                  { label: "Address", key: "address", type: "textarea" }
+                  { label: "Address", key: "address", type: "textarea" },
                 ]}
                 setStudents={setStudents}
                 setActiveForm={setActiveForm}
@@ -79,7 +122,10 @@ const DefaultPage = ({
                     type="file"
                     accept=".xlsx, .xls"
                     onChange={(e) =>
-                      handleStudentExcelDataUpload(myClass.userclassesId, e.target.files[0])
+                      handleStudentExcelDataUpload(
+                        myClass.userclassesId,
+                        e.target.files[0]
+                      )
                     }
                     className="mt-3 border p-2 rounded w-full"
                   />
