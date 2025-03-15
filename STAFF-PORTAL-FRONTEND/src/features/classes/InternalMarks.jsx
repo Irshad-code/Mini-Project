@@ -66,13 +66,13 @@ export default function InternalMarks() {
                   key={student.id}
                   className="hover:bg-gray-50 transition-colors duration-150"
                 >
-                  <td className="px-4 py-4 text-sm font-medium text-gray-700 break-words whitespace-normal text-center w-20">
+                  <td className="px-4 py-4 text-sm font-medium  text-gray-700 break-words whitespace-normal text-center w-20">
                     {student.rollNo}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-700 break-words whitespace-normal text-center w-32 sm:w-auto">
+                  <td className="px-6 py-4 text-sm font-medium  text-gray-700 break-words whitespace-normal text-center w-32 sm:w-auto">
                     {student.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap flex flex-col items-center space-y-2">
+                  <td className="px-6 py-4 whitespace-nowrap flex flex-wrap gap-5 items-center tex-center space-y-2">
                     {editMode === student.id ? (
                       <input
                         type="number"
