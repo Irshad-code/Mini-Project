@@ -49,8 +49,11 @@ export default function InternalMarks() {
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-blue-500 to-blue-600">
+                <th className="px-4 py-4 text-sm font-semibold text-white tracking-wider w-20">
+                  Roll No.
+                </th>
                 <th className="px-6 py-4 text-sm font-semibold text-white tracking-wider">
-                  Student Details
+                  Student Name
                 </th>
                 <th className="px-6 py-4 text-sm font-semibold text-white tracking-wider">
                   Marks
@@ -63,44 +66,45 @@ export default function InternalMarks() {
                   key={student.id}
                   className="hover:bg-gray-50 transition-colors duration-150"
                 >
-                 <td className="px-6 py-4 text-sm font-medium text-gray-700 break-words whitespace-normal text-left w-32 sm:w-auto">
-  {student.rollNo} - {student.name}
-</td>
-
-<td className="px-6 py-4 whitespace-nowrap flex items-center space-x-2">
-  {editMode === student.id ? (
-    <input
-      type="number"
-      value={tempMarks[student.id]}
-      onChange={(e) =>
-        setTempMarks({ ...tempMarks, [student.id]: e.target.value })
-      }
-      className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm"
-    />
-  ) : (
-    <span className="text-gray-700">{student.marks}</span>
-  )}
-  {editMode === student.id ? (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => handleSave(student.id)}
-      className="bg-green-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
-    >
-      <FiCheck className="text-md" />
-    </motion.button>
-  ) : (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => handleEdit(student.id, student.marks)}
-      className="bg-blue-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
-    >
-      <FiEdit className="text-md" />
-    </motion.button>
-  )}
-</td>
-
+                  <td className="px-4 py-4 text-sm font-medium text-gray-700 break-words whitespace-normal text-center w-20">
+                    {student.rollNo}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-700 break-words whitespace-normal text-center w-32 sm:w-auto">
+                    {student.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap flex flex-col items-center space-y-2">
+                    {editMode === student.id ? (
+                      <input
+                        type="number"
+                        value={tempMarks[student.id]}
+                        onChange={(e) =>
+                          setTempMarks({ ...tempMarks, [student.id]: e.target.value })
+                        }
+                        className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm"
+                      />
+                    ) : (
+                      <span className="text-gray-700">{student.marks}</span>
+                    )}
+                    {editMode === student.id ? (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleSave(student.id)}
+                        className="bg-green-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
+                      >
+                        <FiCheck className="text-md" />
+                      </motion.button>
+                    ) : (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleEdit(student.id, student.marks)}
+                        className="bg-blue-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
+                      >
+                        <FiEdit className="text-md" size={20} />
+                      </motion.button>
+                    )}
+                  </td>
                 </motion.tr>
               ))}
             </tbody>
