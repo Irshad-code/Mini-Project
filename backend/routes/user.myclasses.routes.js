@@ -56,9 +56,17 @@ router.post(
   myClassesController.handleUploadExcel
 );
 
+router.get(
+  "/attendance/:id",
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  myClassesController.completeListOfAllStudentsFromClass
+);
+
 router.put(
-  "/update/attendance/:id", // id of the class
-   commonLimiter,
+  "/attendance/update/:id", // id of the class
+  commonLimiter,
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
   validateId,

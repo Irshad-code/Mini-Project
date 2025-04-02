@@ -145,6 +145,36 @@ async function handleUploadExcel(req, res) {
   });
 }
 
+async function completeListOfAllStudentsFromClass(req, res) {
+  const classId = req.params.id;
+  try {
+    const classData = await UserMyClassesModel.findById(classId).select(
+      "studentList"
+    );
+
+    if (
+      !classData ||
+      !classData.studentList ||
+      classData.studentList.length === 0
+    ) {
+      return res
+        .status(404)
+        .json({ message: "No students found in this class" });
+    }
+    //  Find students whose _id is in studentList
+    const students = await studentModel.find({
+      _id: { $in: classData.studentList },
+    });
+
+    return res.status(200).json(
+      { message: "Students found",
+        students 
+        });
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching students", error });
+  }
+}
+
 async function handleAttendanceOFStudents(req, res) {
     const classId = req.params.id;
     const { studentIdList, date } = req.body; // Expecting list of student IDs and a date
@@ -375,6 +405,7 @@ module.exports = {
   deleteClassIdFromAllTheCorrespondingStudents,
   deleteMultipleStudentsFromAllClasses,
   handleAttendanceOFStudents,
+  completeListOfAllStudentsFromClass,
 };
 
   
