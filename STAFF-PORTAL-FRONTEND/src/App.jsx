@@ -16,6 +16,8 @@ import SignupPage from "./pages/Auth/SignupPage";
 import Dashboard from "./pages/Dashboard";
 import Attendance from "./features/classes/Attendance"
 import InternalMarks from "./features/classes/InternalMarks";
+import SeriesMarks from "./features/classes/SeriesMarks"
+
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -51,7 +53,7 @@ function AppContent() {
           </ProtectedRoute>
         }
       />
-       <Route
+      <Route
         path="/internalmarks/:classId"
         element={
           <ProtectedRoute>
@@ -62,6 +64,20 @@ function AppContent() {
         }
       />
       <Route path="/" element={<Navigate to="/login" />} />
+
+      <Route
+        path="/seriesmarks/:classId"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <SeriesMarks />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<Navigate to="/login" />} />
+
+
     </Routes>
   );
 }

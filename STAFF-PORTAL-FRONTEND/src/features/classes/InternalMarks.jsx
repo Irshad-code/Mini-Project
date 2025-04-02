@@ -72,7 +72,7 @@ export default function InternalMarks() {
                   <td className="px-6 py-4 text-sm font-medium  text-gray-700 break-words whitespace-normal text-center w-32 sm:w-auto">
                     {student.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap flex flex-wrap gap-5 items-center tex-center space-y-2">
+                  <td className="px-6 py-4  flex flex-wrap gap-5 justify-center items-center space-y-2">
                     {editMode === student.id ? (
                       <input
                         type="number"
@@ -80,7 +80,7 @@ export default function InternalMarks() {
                         onChange={(e) =>
                           setTempMarks({ ...tempMarks, [student.id]: e.target.value })
                         }
-                        className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm"
+                        className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm text-center"
                       />
                     ) : (
                       <span className="text-gray-700">{student.marks}</span>

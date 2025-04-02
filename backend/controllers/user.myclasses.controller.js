@@ -145,6 +145,67 @@ async function handleUploadExcel(req, res) {
   });
 }
 
+async function handleAttendanceOFStudents(req, res) {
+    const classId = req.params.id;
+    const { studentIdList, date } = req.body; // Expecting list of student IDs and a date
+
+    try {
+   
+      const updatedStudents = [];
+
+      // Step 2: Process each student in the list
+      for (const studentId of studentIdList) {
+
+        // Step 3: Find student record
+        const student = await studentModel.findById(studentId);
+        if (!student) {
+           return res
+             .status(404)
+             .json({ message: `Student with ID ${studentId} not found` });
+   }
+
+        // Step 5: Add or remove date from attendance list
+        const classRecord = student.classRecords.get(classId);
+        const attendanceDatesList = classRecord.get("attendanceDates");
+        console.log("attendanceDatesList: ", attendanceDatesList);
+
+const formattedDate = new Date(date).toISOString(); // Convert input date to ISO format
+
+// Check if the date already exists in the attendance list
+const dateExists = attendanceDatesList.some(
+  (attDate) => attDate.toISOString() === formattedDate
+);
+
+if (dateExists) {
+  // Date found → Remove it (mark absent)
+  student.classRecords.get(classId).attendanceDates = attendanceDatesList.filter(
+      (attDate) => attDate.toISOString() !== formattedDate
+    );
+} else {
+  // Date not found → Add it (mark present)
+  attendanceDatesList.push(new Date(date));
+  student.classRecords.get(classId).attendanceDates = attendanceDatesList;
+}
+
+        await student.save();
+
+        // Collect updated students for response
+        updatedStudents.push({ studentId });
+      }
+
+      return res.status(200).json({
+        message: `Attendance updated successfully.`,
+        updatedStudents,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: `Error updating attendance`,
+        error: error.message,
+      });
+    }
+  
+}
+
 async function deleteStudentIdFromAllClasses(req,res,next){
      const studentId = req.params.id;
      try{
@@ -204,63 +265,80 @@ async function deleteMultipleStudentsFromAllClasses(req, res,next) {
 }
 }
 
-async function insertStudentIdToCorrespondingClass(req,res){
-  const { name,
-          rollNumber, 
-          semester, 
-          branch, 
-          email, 
-          phone, 
-          classId
-         } = req.body;
-
-  // Step 1: Create the new student jsonObject
-  const newStudent = new studentModel({
-    name,
-    rollNumber,
-    semester,
-    branch,
-    email,
-    phone,
-  });
+async function insertStudentIdToCorrespondingClass(req, res) {
+const {
+  name,
+  rollNumber,
+  semester,
+  branch,
+  email,
+  phone,
+  classRecords, // Now directly extracting the classRecords object
+} = req.body;
 
   try {
-    // Save student to database
-    const studentSavedWithClassIdPush = false;
-    const savedStudent = await newStudent.save();//can be done by commonController.create()
+    // Step 1: Check if the student already exists
+    let student = await studentModel.findOne({ rollNumber });
 
-    savedStudent.classList.push(classId);
-    await savedStudent.save(); // Explicitly save the updated student to Db
-    
-    studentSavedWithClassIdPush = true;
-
-    // Step 2: Check if the class exists
-    const existingClass = await UserMyClassesModel.findById(classId);
-    if (!existingClass) {
-      return res.status(404).json({
-        message: `Class : ${classId}  not found`,
-        error: error.message,
+    if (!student) {
+      // If student doesn't exist, create a new student object
+      student = new studentModel({
+        name,
+        rollNumber,
+        semester,
+        branch,
+        email,
+        phone,
+        classRecords: {}, // Initialize classRecords as an empty object
       });
     }
 
-    const studentId = savedStudent._id;
-    // Step 3: Add the studentId to the class's studentList
-    existingClass.studentList.push(studentId);
-    await existingClass.save(); //explicitly save the class
+    // Step 2: Add or update classRecords for the given classId
+    student.classRecords = classRecords;
+
+    const savedStudent = await student.save(); // Save student to DB
+
+    // Step 3: Check if the class exists
+    const classIds = Object.keys(classRecords); // Extract classIds from classRecords
+    let existingClasses = []; // To store successfully updated class details
+
+    for (const classId of classIds) {
+      const existingClass = await UserMyClassesModel.findById(classId);
+      if (!existingClass) {
+        return res.status(404).json({
+          message: `Class : ${classId} not found`,
+        });
+      }
+
+      // Step 4: Add studentId to the class's studentList
+      const studentId = savedStudent._id;
+      if (!existingClass.studentList.includes(studentId)) {
+        existingClass.studentList.push(studentId);
+        await existingClass.save(); // Explicitly save the class
+      }
+      // Store the class details in the list
+      existingClasses.push({
+        classId: existingClass._id,
+        subject: existingClass.subject,
+        className: existingClass.name,
+      });
+    }
 
     return res.status(201).json({
-      message: `Student : ${savedStudent.name} inserted successfully into the ${existingClass.subject} class.`,
-      student_Id: studentId,
+      message: `Student ${
+        savedStudent.name
+      } inserted successfully into respective classes.`,
+      student_Id: savedStudent._id,
+      assignedClasses: existingClasses, // Sending the class details in response
     });
   } catch (error) {
     return res.status(500).json({
-      message:
-        "Error inserting student id to corresponding class and studentSavedWithClassIdPush = " +
-        studentSavedWithClassIdPush,
+      message: `Error inserting student id to corresponding class`,
       error: error.message,
     });
   }
 }
+
 
 async function deleteClassIdFromAllTheCorrespondingStudents(req, res, next) {
   try{
@@ -296,6 +374,7 @@ module.exports = {
   insertStudentIdToCorrespondingClass,
   deleteClassIdFromAllTheCorrespondingStudents,
   deleteMultipleStudentsFromAllClasses,
+  handleAttendanceOFStudents,
 };
 
   

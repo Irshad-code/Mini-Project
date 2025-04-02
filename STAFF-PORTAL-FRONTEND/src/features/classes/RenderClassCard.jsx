@@ -62,22 +62,36 @@ const RenderClassCard = ({
             </div>
             {renderActionButtons()}
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="secondary" className="w-full">Course Files</Button>
+              <Button variant="secondary" className="w-full">
+                Course Files
+              </Button>
               <Button
                 variant="secondary"
                 className="w-full"
-                onClick={() => navigate(`/attendance/${classItem.userclassesId}`)}
+                onClick={() =>
+                  navigate(`/attendance/${classItem.userclassesId}`)
+                }
               >
                 Attendance
               </Button>
               <Button
                 variant="secondary"
                 className="w-full"
-                onClick={() => navigate(`/internalmarks/${classItem.userclassesId}`)}
+                onClick={() =>
+                  navigate(`/internalmarks/${classItem.userclassesId}`)
+                }
               >
                 Internal Marks
               </Button>
-              <Button variant="secondary" className="w-full">Series Marks</Button>
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() =>
+                  navigate(`/seriesmarks/${classItem.userclassesId}`)
+                }
+              >
+                Series Marks
+              </Button>
             </div>
           </div>
         ) : (
@@ -87,8 +101,12 @@ const RenderClassCard = ({
               <span>Result: {classItem.result}</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="secondary" className="w-full">View Report</Button>
-              <Button variant="secondary" className="w-full">Course Files</Button>
+              <Button variant="secondary" className="w-full">
+                View Report
+              </Button>
+              <Button variant="secondary" className="w-full">
+                Course Files
+              </Button>
             </div>
           </div>
         )}

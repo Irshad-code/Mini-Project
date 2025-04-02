@@ -10,13 +10,18 @@ const StudentSchema = new Schema(
 
     branch: { type: String, required: true },
     semester: { type: String, required: true },
-    classList: [
-      { type: mongoose.Schema.Types.ObjectId, 
-        ref: "MyClass", 
-        default: [] 
-      },
-    ], // Reference to thier class and Store class IDs
+    classRecords: {
+      type: Map, // Defines it as a key-value store (like a JavaScript object)
+      of: new Schema({
+        series1Marks: { type: Number, required: true },
+        series2Marks: { type: Number, required: true },
+        attendanceDates: { type: [Date], default: [] }, // Stores a list of attendance dates
+        internalMarks: { type: Number, required: true },
+      }),
+      default: {}, // Ensures the default value is an empty object
+    },
   },
+
   { timestamps: true }
 );
 

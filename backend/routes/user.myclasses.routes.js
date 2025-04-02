@@ -56,4 +56,14 @@ router.post(
   myClassesController.handleUploadExcel
 );
 
+router.put(
+  "/update/attendance/:id", // id of the class
+   commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  validateId,
+  //validateAndTransformRequest(MyClassesAttendanceRequest),//to create this request
+  myClassesController.handleAttendanceOFStudents
+);
+
 module.exports = router; 

@@ -12,11 +12,12 @@ function isValidObjectId(id) {
   return mongoose.Types.ObjectId.isValid(id);
 }   from validation.middleware
 
-
-To do: 
 upload excel ;
 reduntant data containig excel upload on different classes is possible;
 upload one by one;
 delete one by one of student;
 delete Multiple classes not needed;
 delete multiple students of a class;
+
+To do:
+internalMarks backend

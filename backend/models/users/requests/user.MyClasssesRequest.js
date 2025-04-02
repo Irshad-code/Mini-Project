@@ -13,6 +13,7 @@ const MyClassRequest = Yup.object()
     schedule: Yup.string().required(),
     syllabus: Yup.string().required(), // Assuming this is a string path or URL
     courseOutcome: Yup.string().required(),
+    currentClass: Yup.boolean().required(),
 
     //studentList: Yup.array().of(Yup.string()).required(), // studentList is an array of strings
   })
