@@ -106,32 +106,42 @@ export default function Attendance() {
 
   async function setAllPresent() {
     try {
-      // Get all student IDs
-      const studentsIdList = students.map((student) => student.studentId);
-      setUpdatedStudentsId(studentsIdList);
-
-      // Update UI state to mark all students present
-      setStudents((prevStudents) =>
-        prevStudents.map((student) => ({
-          ...student,
-          classRecords: {
-            ...student.classRecords,
-            [classId]: {
-              ...student.classRecords[classId],
-              attendanceDates: [
-                ...new Set([...student.classRecords[classId].attendanceDates, date])
-              ]
-            }
-          }
-        }))
+      
+      // Identify students who are currently absent
+      const newlyMarkedPresent = students.filter(
+        (student) =>
+          !student.classRecords[classId].attendanceDates.includes(date)
       );
 
-      // Make API call to update backend
-      await axios.put(BACKEND_LINK, {
-        studentIdList: studentsIdList,
-        date: date,
-      });
+      // Extract only the student IDs that were changed
+      const updatedStudentIds = newlyMarkedPresent.map(
+        (student) => student.studentId
+      );
 
+      // Update UI state only for those who were previously absent
+      setStudents((prevStudents) =>
+        prevStudents.map((student) =>
+          updatedStudentIds.includes(student.studentId)
+            ? {
+                ...student,
+                classRecords: {
+                  ...student.classRecords,
+                  [classId]: {
+                    ...student.classRecords[classId],
+                    attendanceDates: [
+                      ...student.classRecords[classId].attendanceDates,
+                      date, // Only add the date if it was missing
+                    ],
+                  },
+                },
+              }
+            : student
+        )
+      );
+
+      // Store only the updated students' IDs
+      setUpdatedStudentsId(updatedStudentIds);
+    
     } catch (error) {
       console.error("Error marking all students present:", error);
     }
@@ -143,11 +153,6 @@ async function  handleSubmit  () {
     // This will later connect to backend
     console.log("Updated Students: ", updatedStudentsId);
     await axios.put(`http://localhost:3000/api/usermyclasses/attendance/update/${classId}`,{studentIdList: updatedStudentsId, date: date});
-
-    //  setUpdatedStudentsId([]);
-
-    
-
 
     alert("Attendance submitted successfully!");
   };
