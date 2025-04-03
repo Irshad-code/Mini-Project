@@ -46,26 +46,31 @@ export default function InternalMarks() {
   const [tempMarks, setTempMarks] = useState({});
 
   const handleEdit = (id, marks) => {
+    console.log("id:", id);
+    console.log("marks:", marks)
     setEditMode(id);
     setTempMarks((prev) => ({ ...prev, [id]: marks }));
   };
 
   async function studentUpdate(student){
-    const res = await axios.put(`http://localhost:3000/api/student/update/${student.id}`,student);
+    let updateStudent= student;
+    updateStudent.classRecords[classId].internalMarks = parseInt(tempMarks[student.studentId]);
+    console.log("axios: ", updateStudent);
+    const res = await axios.put(`http://localhost:3000/api/student/update/${student.studentId}`,updateStudent);
     return res.message;
   }
   const handleSave = (Student) => {
+    console.log("student-id:", Student.studentId);
     setStudents((prev) =>
       prev.map((student) =>
-        student.id === Student.id
-          ? { ...student, marks: tempMarks[Student.id] }
+        student.studentId === Student.studentId
+          ? { ...student, marks: tempMarks[Student.studentId] }
           : student
       )
     );
     studentUpdate(Student);
     setEditMode(null);
   };
-
   const handleSubmit = () => {
     console.log("Internal Marks Submitted:", students);
     alert("Marks submitted successfully!");
@@ -111,26 +116,24 @@ export default function InternalMarks() {
                     {student.name}
                   </td>
                   <td className="px-6 py-4  flex flex-wrap gap-5 justify-center items-center space-y-2">
-                    {editMode === student.id ? (
+                    {editMode === student.studentId ? (
                       <input
                         type="number"
-                        value={tempMarks[student.id]}
+                        value={tempMarks[student.studentId]}
                         onChange={(e) =>
                           setTempMarks({
                             ...tempMarks,
-                            [student.id]: e.target.value,
+                            [student.studentId]: e.target.value,
                           })
                         }
                         className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm text-center"
                       />
                     ) : (
                       <span className="text-gray-700">
-                        {
-                          student.classRecords[classId].internalMarks
-                        }
+                        {student.classRecords[classId].internalMarks}
                       </span>
                     )}
-                    {editMode === student.id ? (
+                    {editMode === student.studentId ? (
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -143,7 +146,12 @@ export default function InternalMarks() {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleEdit(student.id, student.marks)}
+                        onClick={() =>
+                          handleEdit(
+                            student.studentId,
+                            student.classRecords[classId].internalMarks
+                          )
+                        }
                         className="bg-blue-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
                       >
                         <FiEdit className="text-md" size={20} />
