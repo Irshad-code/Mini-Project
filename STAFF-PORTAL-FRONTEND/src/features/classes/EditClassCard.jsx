@@ -13,9 +13,20 @@ const EditingClassCard = ({ editingClass, setEditingClass, setActiveForm, FormTy
   };
 
   async function handleSubmit(e) {
+    const formatTime = (time) => {
+      const [hour, minute] = time.split(":");
+      const hourInt = parseInt(hour, 10);
+      const ampm = hourInt >= 12 ? "PM" : "AM";
+      const formattedHour = hourInt % 12 || 12; // Convert 0 to 12 for 12 AM
+      return `${formattedHour}:${minute} ${ampm}`;
+    };
     e.preventDefault();
-    const { subject, code, semester, branch, students, schedule, syllabus, courseOutcome, currentClass } = formData;
-    const dataToSend = { subject: subject, code: code, semester: semester, branch: branch, students: students, schedule: schedule, syllabus: syllabus, courseOutcome: courseOutcome, currentClass: currentClass };
+    const { subject, code, semester, branch, students, schedule, syllabus, courseOutcome, currentClass ,fromTime,toTime} = formData;
+    console.log(formatTime(fromTime));
+
+    const formattedShedule = `${schedule}#${formatTime(fromTime)}#${formatTime(toTime)}`;
+    
+    const dataToSend = { subject: subject, code: code, semester: semester, branch: branch, students: students, schedule: formattedShedule, syllabus: syllabus, courseOutcome: courseOutcome, currentClass: currentClass };
 
     try {
       const Response = await axios.put(`http://localhost:3000/api/usermyclasses/update/${classId}`, dataToSend);
@@ -34,23 +45,42 @@ const EditingClassCard = ({ editingClass, setEditingClass, setActiveForm, FormTy
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          {["subject", "code", "semester", "branch", "students", "schedule", "syllabus", "courseOutcome"].map(
-            (field, index) => (
-              <div key={index}>
-                <label className="block text-sm font-medium mb-1">
-                  {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, " $1")} {/* Formats label */}
-                </label>
-                <input
-                  type={field === "students" ? "number" : "text"}
-                  name={field}
-                  value={formData[field] || ""}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-            )
-          )}
+          {[
+            "subject",
+            "code",
+            "semester",
+            "branch",
+            "students",
+            "schedule",
+            "fromTime",
+            "toTime",
+            "syllabus",
+            "courseOutcome",
+          ].map((field, index) => (
+            <div key={index}>
+              <label className="block text-sm font-medium mb-1">
+                {field.charAt(0).toUpperCase() +
+                  field.slice(1).replace(/([A-Z])/g, " $1")}{" "}
+                {/* Formats label */}
+              </label>
+              <input
+                type={
+                  field === "students"
+                    ? "number"
+                    : field === "schedule"
+                    ? "date"
+                    : field === "fromTime" || field === "toTime"
+                    ? "time"
+                    : "text"
+                }
+                name={field}
+                value={formData[field] || ""}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+          ))}
         </div>
         <div className="flex justify-end space-x-2">
           <Button

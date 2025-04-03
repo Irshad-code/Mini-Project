@@ -35,7 +35,7 @@ const RenderClassCard = ({
       <Button onClick={handleUploadStudents} className="bg-blue-500">Upload Students</Button>
     </div>
   );
-
+     const scheduleParts = classItem.schedule.split("#");
   return (
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
@@ -58,7 +58,10 @@ const RenderClassCard = ({
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
               <FiCalendar className="w-4 h-4" />
-              <span>{classItem.schedule}</span>
+
+              <span>
+                {classItem.schedule}
+              </span>
             </div>
             {renderActionButtons()}
             <div className="grid grid-cols-2 gap-4">

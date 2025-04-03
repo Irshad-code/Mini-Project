@@ -40,7 +40,13 @@ const AddClassCard = ({
                   ].map((field) => (
                     <td key={field} className="px-2 py-1">
                       <input
-                        type={field === "students" ? "number" : "text"}
+                        type={
+                          field === "students"
+                            ? "number"
+                            : field === "schedule"
+                            ? "date"
+                            : "text"
+                        }
                         value={classData[field]}
                         onChange={(e) =>
                           updateNewClass(index, field, e.target.value)
