@@ -53,6 +53,50 @@ async function findUserById(model, userId) {
     userId: new mongoose.Types.ObjectId(userId),
   });
 }
+
+async function updateStudentById(model, userId, data) {
+  try {
+    model = removeapi(model);
+    logger.debug(`Updating Student by ID: ${userId}`);
+
+    const student = await modelHandlers[model].findById(userId);
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    // Merge existing classRecords with incoming data
+    if (data.classRecords) {
+      Object.keys(data.classRecords).forEach((classId) => {
+        if (!student.classRecords.has(classId)) {
+          // If the classRecord doesn't exist, add it
+          student.classRecords.set(classId, data.classRecords[classId]);
+        } else {
+          // If it exists, update only the provided fields
+          Object.assign(
+            student.classRecords.get(classId),
+            data.classRecords[classId]
+          );
+        }
+      });
+
+      // Mark classRecords as modified so Mongoose detects the update
+      student.markModified("classRecords");
+    }
+
+    // Update other fields
+    Object.assign(student, data);
+
+    // Save changes
+    const updatedResult = await student.save();
+    logger.debug(`Updated Student: ${JSON.stringify(updatedResult, null, 2)}`);
+
+    return updatedResult;
+  } catch (error) {
+    logger.error("Error in updateStudentById:", error);
+    throw new Error(error.message);
+  }
+}
+
 async function upsertByUserId(model, userId, data) {
   model = removeapi(model);
   logger.info("model", model);
@@ -238,4 +282,5 @@ module.exports = {
   getapproximatecount,
   findUserById,
   upsertByUserId,
+  updateStudentById,//student
 };

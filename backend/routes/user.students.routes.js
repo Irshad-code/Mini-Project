@@ -32,8 +32,9 @@ router.put(
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
   validateId,
-  validateAndTransformRequest(MyClassesStudentRequest),
+ // validateAndTransformRequest(MyClassesStudentRequest),
   commonController.updateById
+  //commonController.updateStudentById
 );
 
 router.delete(

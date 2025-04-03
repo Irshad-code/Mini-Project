@@ -89,12 +89,17 @@ module.exports.findById = async function (req, res) {
     return handleError(res, 500, "Internal server error", error);
   }
 };
+
+module.exports.updateStudentById = async function (req, res) {
+
+};
+
 module.exports.updateById = async function (req, res, next) {
   const id = req.params.id;
   const updateData = req.body;
   try {
     const modelname = req.baseUrl.substring(1).toLowerCase();
-    const updatedRecord = await commonService.updateById(
+    const updatedRecord = await commonService.updateStudentById(
       modelname,
       id,
       updateData
