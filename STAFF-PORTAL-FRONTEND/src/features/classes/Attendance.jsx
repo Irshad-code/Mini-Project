@@ -1,49 +1,129 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiCalendar, FiCheck, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export default function Attendance() {
-  // Dummy student data
-  const [students,setStudents] = useState([
-    { id: 1, name: "John Doe", rollNo: "CS101", present: false },
-    { id: 2, name: "Jane Smith", rollNo: "CS102", present: false },
-    { id: 3, name: "Mike Johnson", rollNo: "CS103", present: false },
-    { id: 4, name: "Sarah Williams", rollNo: "CS104", present: false },
-    { id: 5, name: "Tom Brown", rollNo: "CS105", present: false },
-  ]);
+  // const BACKEND_LINK = import.meta.env.VITE_API_URL + "/student";
 
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [attendanceData, setAttendanceData] = useState(students);
+  const [updatedStudentsId,setUpdatedStudentsId] = useState([]);
 
-  const handleAttendance = (studentId) => {
-    setAttendanceData((prev) =>
-      prev.map((student) =>
-        student.id === studentId
-          ? { ...student, present: !student.present } // Toggle present state
-          : student
-      )
-    );
-  };
+  const classeId = useParams();
+  console.log(classeId);
 
-  const setAllPresent = () => {
-    setAttendanceData((prevData) =>
-      prevData.map((student) => ({ ...student, present: true }))
-    );
+  const [students, setStudents] = useState([]);
+
+  const fetchStudents = async () => {
+    try {
+      console.log("Fetching Students.....");
+  
+      const response = await axios.get(
+        "http://localhost:3000/api/usermyclasses/attendance/67bdb84a1aa09d93ffddbe1d"
+      );
+  
+      console.log("Response: ", response.data.students);
+      const data = response.data.students || [];
+  
+      // Ensure attendance records are correctly mapped
+      // const formattedStudents = data.map((student) => ({
+      //   ...student,
+      //   classRecords: student.classRecords || {}, // Ensure classRecords is always an object
+      // }));
+  
+      setStudents(data);
+      console.log("fetch Students: ", data );
+  
+      
+    } catch (error) {
+      console.error("Error fetching Students:", error);
+    }
   };
   
-  const setAllAbsent = () => {
-    setAttendanceData((prevData) =>
-      prevData.map((student) => ({ ...student, present: false }))
-    );
-  };
+
+  useEffect(() => {
+    fetchStudents();
+ 
+  }, []);
+
+  const [date, setDate] = useState(new Date());
+  // const[dateExists,setDateExists] = useState(false);
+  async function handleAttendance(studentId) {
+
+
+    try {
+      // Step 1: Find the student in the current state
+      const student = students.find((s) => s.studentId === studentId);
+      if (!student) return;
+  
+      // Step 2: Check if the date is already in attendance
+      const attendanceDates = student.classRecords?.[date]?.attendanceDates || [];
+      const isPresent = attendanceDates.includes(date);
+
+      console.log("Is present: ",isPresent);
+
+      setUpdatedStudentsId((prev) => [...prev, studentId]);
+  
+      // Step 3: Toggle attendance based on current state
+      const updatedAttendanceDates = isPresent
+        ? attendanceDates.filter((d) => d !== date) // Remove date (mark as absent)
+        : [...attendanceDates, date]; // Add date (mark as present)
+  
+      // Step 4: Send update to backend
+      // await axios.put("http://localhost:3000/api/usermyclasses/attendance/update/67bdb84a1aa09d93ffddbe1d", {
+      //   studentIdList: [studentId],
+      //   date: date
+      // });
+  
+      console.log("Attendance toggled for:", studentId);
+  
+      // Step 5: Update UI state dynamically
+      setStudents((prevStudents) =>
+        prevStudents.map((s) =>
+          s.studentId === studentId
+            ? {
+                ...s,
+                classRecords: {
+                  ...s.classRecords,
+                  [date]: {
+                    ...(s.classRecords?.[date] || {}),
+                    attendanceDates: updatedAttendanceDates // Set new toggled value
+                  }
+                }
+              }
+            : s
+        )
+      );
+    } catch (error) {
+      console.error("Error updating attendance:", error);
+    }
+  }
+  
+  
   
 
-  const handleSubmit = () => {
+  // Check if the date already exists in the attendance list
+
+  async function setAllPresent  ()  {
+
+    const studentsIdList = students.map((student) => student.studentId);
+
+    console.log(studentsIdList);
+
+       
+    await axios.put("http://localhost:3000/api/usermyclasses/attendance/update/67bdb84a1aa09d93ffddbe1d",{studentIdList: studentsIdList, date: date});
+  };
+
+async function  handleSubmit  () {
     // This will later connect to backend
-    console.log({
-      date,
-      attendance: attendanceData,
-    });
+    console.log("Updated Students: ", updatedStudentsId);
+    await axios.put("http://localhost:3000/api/usermyclasses/attendance/update/67bdb84a1aa09d93ffddbe1d",{studentIdList: updatedStudentsId, date: date});
+
+     setUpdatedStudentsId([]);
+
+    
+
+
     alert("Attendance submitted successfully!");
   };
 
@@ -79,8 +159,8 @@ export default function Attendance() {
             <FiCalendar className="text-blue-500 text-xl" />
             <input
               type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={date ? date.toISOString().split("T")[0] : ""}
+              onChange={(e) => setDate(new Date(e.target.value))}
               className="border rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200"
             />
           </div>
@@ -90,27 +170,18 @@ export default function Attendance() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="overflow-x-auto rounded-xl shadow-sm border border-gray-100 flex flex-col gap-5 items-center" 
+          className="overflow-x-auto rounded-xl shadow-sm border border-gray-100 flex flex-col gap-5 items-center"
         >
-              <motion.div className="flex  flex-wrap gap-10 space-x-4">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={setAllPresent}
-          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md shadow-green-200"
-        >
-          Set Present
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={setAllAbsent}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md shadow-red-200"
-        >
-          Set Absent
-        </motion.button>
-      </motion.div>
+          <motion.div className="flex  flex-wrap gap-10 space-x-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={setAllPresent}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md shadow-green-200"
+            >
+              Set Present
+            </motion.button>
+          </motion.div>
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-blue-500 to-blue-600">
@@ -127,38 +198,52 @@ export default function Attendance() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {attendanceData.map((student, index) => (
-                <motion.tr
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  key={student.id}
-                  className="hover:bg-gray-50 transition-colors duration-150"
-                >
-                  <td className="px-6 py-4 text-sm font-medium break-words text-gray-700 text-center">
-                    {student.rollNo}
-                  </td>
-                  <td className="px-6 py-4 text-sm break-words text-gray-700 text-center">
-                    {student.name}
-                  </td>
+            {students.map((student, index) => {
+  console.log(`Student ${index}:`, student); // ✅ Properly logging student object
 
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  onClick={() => handleAttendance(student.id)}
-  className={`px-2 py-1 rounded-lg transition-all duration-200 flex items-center justify-center min-w-[40px] max-w-[80px]
-      ${student.present 
-          ? 'bg-green-500 text-white shadow-lg shadow-green-200'  
-          : 'bg-red-500 text-white shadow-lg shadow-red-200'}`}
->
-  {student.present ? <FiCheck size={25}/> : <FiX size={25}/>}
-</motion.button>
+  return (
+    <motion.tr
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.1 }}
+      key={student.id || index} // ✅ Fallback key
+      className="hover:bg-gray-50 transition-colors duration-150"
+    >
+      <td className="px-6 py-4 text-sm font-medium break-words text-gray-700 text-center">
+        {student.rollNumber}
+      </td>
+      <td className="px-6 py-4 text-sm break-words text-gray-700 text-center">
+        {student.name}
+      </td>
 
+      <td className="px-6 py-4 whitespace-nowrap text-center">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleAttendance(student.studentId
+          )}
+          className={`px-2 py-1 rounded-lg transition-all duration-200 flex items-center justify-center min-w-[40px] max-w-[80px]
+            ${
+              Object.values(student.classRecords).some((record) =>
+                record.attendanceDates?.includes(date)
+              )
+                ? "bg-green-500 text-white shadow-lg shadow-green-200"
+                : "bg-red-500 text-white shadow-lg shadow-red-200"
+            }`}
+        >
+          {Object.values(student.classRecords).some(
+            (record) => record.attendanceDates?.includes(date)
+          ) ? (
+            <FiCheck size={25} />
+          ) : (
+            <FiX size={25} />
+          )}
+        </motion.button>
+      </td>
+    </motion.tr>
+  );
+})}
 
-                  </td>
-                </motion.tr>
-              ))}
             </tbody>
           </table>
         </motion.div>
