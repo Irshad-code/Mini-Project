@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-export default function InternalMarks() {
+export default function SeriesMarks() {
   const [students, setStudents] = useState([]);
 
   const classId = useParams().classId;
@@ -19,12 +19,6 @@ export default function InternalMarks() {
     
         console.log("Response: ", response.data.students);
         const data = response.data.students || [];
-    
-        // Ensure attendance records are correctly mapped
-        // const formattedStudents = data.map((student) => ({
-        //   ...student,
-        //   classRecords: student.classRecords || {}, // Ensure classRecords is always an object
-        // }));
     
         setStudents(data);
         console.log("fetch Students: ", data );
@@ -41,22 +35,93 @@ export default function InternalMarks() {
    
     }, []);
 
-  const [editMode, setEditMode] = useState(null);
-  const [tempMarks, setTempMarks] = useState({});
+  const [editMode, setEditMode] = useState({
+    studentId: null,
+    attribute: null,
+  });
+  const [tempMarks, setTempMarks] = useState(
+    {
+      series1Marks: {},
+      series2Marks: {},
+    }
+  );
 
-  const handleEdit = (id, marks) => {
-    setEditMode(id);
-    setTempMarks((prev) => ({ ...prev, [id]: marks }));
+  const handleEdit = (id, marks, attribute) => {
+    setEditMode({
+      studentId: id,
+      attribute: attribute,
+    });
+
+    setTempMarks((prev) => ({
+      ...prev,
+      [attribute]: {
+        ...prev[attribute],
+        [id]: marks, // Store marks in the correct attribute (series1Marks or series2Marks)
+      },
+    }));
   };
 
-  const handleSave = (id) => {
+
+ async function studentUpdate(student, attribute, marksValue) {
+   try {
+     // Create a deep copy of student to avoid state mutation
+     let updateStudent = {
+       ...student,
+       classRecords: {
+         ...student.classRecords,
+         [classId]: {
+           ...student.classRecords[classId],
+           [attribute]: marksValue, // Use the passed marksValue directly
+         },
+       },
+     };
+
+     console.log("axios: ", updateStudent);
+
+     const res = await axios.put(
+       `http://localhost:3000/api/student/update/${student.studentId}`,
+       updateStudent
+     );
+
+     return res.data.message;
+   } catch (error) {
+     console.error("Error updating student:", error);
+     alert("Failed to update student marks. Please try again.");
+   }
+ }
+
+  const handleSave = (student, attribute) => {
     setStudents((prev) =>
-      prev.map((student) =>
-        student.id === id ? { ...student, marks: tempMarks[id] } : student
+      prev.map((s) =>
+        s.studentId === student.studentId
+          ? {
+              ...s,
+              classRecords: {
+                ...s.classRecords,
+                [classId]: {
+                  ...s.classRecords[classId],
+                  [attribute]:
+                    tempMarks[attribute]?.[student.studentId] ||
+                    s.classRecords[classId][attribute],
+                },
+              },
+            }
+          : s
       )
     );
-    setEditMode(null);
+
+    // Ensure the value is not undefined before calling the update
+    const marksValue = tempMarks[attribute]?.[student.studentId];
+
+    if (marksValue === undefined || marksValue === "") {
+      alert("Marks cannot be empty!");
+      return;
+    }
+
+    studentUpdate(student, attribute, marksValue); // Pass marksValue to ensure correct data
+    setEditMode({});
   };
+
 
   const handleSubmit = () => {
     console.log("Internal Marks Submitted:", students);
@@ -96,7 +161,7 @@ export default function InternalMarks() {
             <tbody className="bg-white divide-y divide-gray-100">
               {students.map((student) => (
                 <motion.tr
-                  key={student.id}
+                  key={student.studentId}
                   className="hover:bg-gray-50 transition-colors duration-150"
                 >
                   <td className="px-4 py-4 text-sm font-medium  text-gray-700 break-words whitespace-normal text-center w-20">
@@ -106,15 +171,19 @@ export default function InternalMarks() {
                     {student.name}
                   </td>
                   <td className="px-6 py-4 text-center align-middle">
-                    {editMode === student.id ? (
+                    {editMode.studentId === student.studentId &&
+                    editMode.attribute === "series1Marks" ? (
                       <input
                         type="number"
-                        value={tempMarks[student.id]}
+                        value={tempMarks.series1Marks[student.studentId] || ""}
                         onChange={(e) =>
-                          setTempMarks({
-                            ...tempMarks,
-                            [student.id]: e.target.value,
-                          })
+                          setTempMarks((prev) => ({
+                            ...prev,
+                            series1Marks: {
+                              ...prev.series1Marks,
+                              [student.studentId]: e.target.value, // Updates series1Marks
+                            },
+                          }))
                         }
                         className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm text-center"
                       />
@@ -123,12 +192,14 @@ export default function InternalMarks() {
                         {student.classRecords[classId].series1Marks}
                       </span>
                     )}
-                    {editMode === student.id ? (
+
+                    {editMode.studentId === student.studentId &&
+                    editMode.attribute === "series1Marks" ? (
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleSave(student.id)}
-                        className="bg-green-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
+                        onClick={() => handleSave(student, "series1Marks")}
+                        className="bg-green-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center ml-2"
                       >
                         <FiCheck className="text-md" />
                       </motion.button>
@@ -136,40 +207,50 @@ export default function InternalMarks() {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleEdit(student.id, student.marks)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
+                        onClick={() =>
+                          handleEdit(
+                            student.studentId,
+                            student.classRecords[classId].series1Marks,
+                            "series1Marks"
+                          )
+                        }
+                        className="bg-blue-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center ml-2"
                       >
                         <FiEdit className="text-md" size={20} />
                       </motion.button>
                     )}
                   </td>
+
                   <td className="px-6 py-4 text-center align-middle">
-                    {editMode === student.id ? (
+                    {editMode.studentId === student.studentId &&
+                    editMode.attribute === "series2Marks" ? (
                       <input
                         type="number"
-                        value={tempMarks[student.id]}
+                        value={tempMarks.series2Marks[student.studentId] || ""}
                         onChange={(e) =>
-                          setTempMarks({
-                            ...tempMarks,
-                            [student.id]: e.target.value,
-                          })
+                          setTempMarks((prev) => ({
+                            ...prev,
+                            series2Marks: {
+                              ...prev.series2Marks,
+                              [student.studentId]: e.target.value, // Updates series2Marks
+                            },
+                          }))
                         }
                         className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm text-center"
                       />
                     ) : (
                       <span className="text-gray-700">
-                        {
-                          student.classRecords[classId]
-                            .series2Marks
-                        }
+                        {student.classRecords[classId].series2Marks}
                       </span>
                     )}
-                    {editMode === student.id ? (
+
+                    {editMode.studentId === student.studentId &&
+                    editMode.attribute === "series2Marks" ? (
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleSave(student.id)}
-                        className="bg-green-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
+                        onClick={() => handleSave(student, "series2Marks")}
+                        className="bg-green-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center ml-2"
                       >
                         <FiCheck className="text-md" />
                       </motion.button>
@@ -177,13 +258,21 @@ export default function InternalMarks() {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleEdit(student.id, student.marks)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
+                        onClick={() =>
+                          handleEdit(
+                            student.studentId,
+                            student.classRecords[classId].series2Marks,
+                            "series2Marks"
+                          )
+                        }
+                        className="bg-blue-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center ml-2"
                       >
                         <FiEdit className="text-md" size={20} />
                       </motion.button>
                     )}
                   </td>
+
+                  {/*/input field and buttn of series 2 */}
                 </motion.tr>
               ))}
             </tbody>
