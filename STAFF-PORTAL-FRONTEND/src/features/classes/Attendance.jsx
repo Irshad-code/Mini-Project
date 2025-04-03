@@ -200,7 +200,7 @@ async function  handleSubmit  () {
               onClick={setAllPresent}
               className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md shadow-green-200"
             >
-              Set Present
+              Set All Present
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
