@@ -220,7 +220,7 @@ if (dateExists) {
         await student.save();
 
         // Collect updated students for response
-        updatedStudents.push({ studentId });
+        updatedStudents.push( studentId );
       }
 
       return res.status(200).json({
