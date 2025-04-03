@@ -191,6 +191,7 @@ async function updateById(model, id, updateData) {
       }
     );
     logger.debug(`Updated result: ${updatedResult}`);
+
     if (model == "representatives") {
       CachedDataHandler.findreps();
     }

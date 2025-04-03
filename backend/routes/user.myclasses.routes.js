@@ -57,7 +57,7 @@ router.post(
 );
 
 router.get(
-  "/attendance/:id",
+  "/:id",
   commonLimiter,
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,

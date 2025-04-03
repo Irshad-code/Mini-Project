@@ -1,15 +1,46 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { FiEdit, FiCheck } from "react-icons/fi";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export default function InternalMarks() {
-  const [students, setStudents] = useState([
-    { id: 1, name: "John Doe", rollNo: "CS101", marks: 85 },
-    { id: 2, name: "Jane Smith", rollNo: "CS102", marks: 90 },
-    { id: 3, name: "Mike Johnson", rollNo: "CS103", marks: 78 },
-    { id: 4, name: "Sarah Williams", rollNo: "CS104", marks: 88 },
-    { id: 5, name: "Tom Brown", rollNo: "CS105", marks: 92 },
-  ]);
+  const [students, setStudents] = useState([]);
+
+  const classId = useParams().classId;
+  console.log(classId);
+
+   const fetchStudents = async () => {
+      try {
+        console.log("Fetching Students.....");
+    
+        const response = await axios.get(
+          "http://localhost:3000/api/usermyclasses/67eca31a672e8b5db9c31adc"
+        );
+    
+        console.log("Response: ", response.data.students);
+        const data = response.data.students || [];
+    
+        // Ensure attendance records are correctly mapped
+        // const formattedStudents = data.map((student) => ({
+        //   ...student,
+        //   classRecords: student.classRecords || {}, // Ensure classRecords is always an object
+        // }));
+    
+        setStudents(data);
+        console.log("fetch Students: ", data );
+    
+        
+      } catch (error) {
+        console.error("Error fetching Students:", error);
+      }
+    };
+    
+  
+    useEffect(() => {
+      fetchStudents();
+   
+    }, []);
 
   const [editMode, setEditMode] = useState(null);
   const [tempMarks, setTempMarks] = useState({});
@@ -70,7 +101,7 @@ export default function InternalMarks() {
                   className="hover:bg-gray-50 transition-colors duration-150"
                 >
                   <td className="px-4 py-4 text-sm font-medium  text-gray-700 break-words whitespace-normal text-center w-20">
-                    {student.rollNo}
+                    {student.rollNumber}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium  text-gray-700 break-words whitespace-normal text-center w-32 sm:w-auto">
                     {student.name}
@@ -89,7 +120,9 @@ export default function InternalMarks() {
                         className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm text-center"
                       />
                     ) : (
-                      <span className="text-gray-700">{student.marks}</span>
+                      <span className="text-gray-700">
+                        {student.classRecords[classId].series1Marks}
+                      </span>
                     )}
                     {editMode === student.id ? (
                       <motion.button
@@ -125,7 +158,12 @@ export default function InternalMarks() {
                         className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm text-center"
                       />
                     ) : (
-                      <span className="text-gray-700">{student.marks}</span>
+                      <span className="text-gray-700">
+                        {
+                          student.classRecords[classId]
+                            .series2Marks
+                        }
+                      </span>
                     )}
                     {editMode === student.id ? (
                       <motion.button
@@ -147,7 +185,7 @@ export default function InternalMarks() {
                       </motion.button>
                     )}
                   </td>
-                </motion.tr> 
+                </motion.tr>
               ))}
             </tbody>
           </table>

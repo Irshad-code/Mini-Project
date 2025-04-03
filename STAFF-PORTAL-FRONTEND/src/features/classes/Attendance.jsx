@@ -5,12 +5,14 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 export default function Attendance() {
-  // const BACKEND_LINK = import.meta.env.VITE_API_URL + "/student";
+  const classId = useParams().classId;
+  console.log(classId);
+
+   const BACKEND_LINK = import.meta.env.VITE_API_URL + `/usermyclasses/${classId}`;
 
   const [updatedStudentsId,setUpdatedStudentsId] = useState([]);
 
-  const classeId = useParams();
-  console.log(classeId);
+  
 
   const [students, setStudents] = useState([]);
 
@@ -18,11 +20,11 @@ export default function Attendance() {
     try {
       console.log("Fetching Students.....");
   
-      const response = await axios.get(
-        "http://localhost:3000/api/usermyclasses/attendance/67bdb84a1aa09d93ffddbe1d"
-      );
+      const response = await axios.get(BACKEND_LINK);
   
-      console.log("Response: ", response.data.students);
+      console.log(
+        "Response: ",
+        response.data.students[0].classRecords[classId].attendanceDates);
       const data = response.data.students || [];
   
       // Ensure attendance records are correctly mapped
@@ -32,7 +34,7 @@ export default function Attendance() {
       // }));
   
       setStudents(data);
-      console.log("fetch Students: ", data );
+      //console.log("fetch Students: ", data[0].classRecords[classId].attendanceDates );
   
       
     } catch (error) {
@@ -70,7 +72,7 @@ export default function Attendance() {
         : [...attendanceDates, date]; // Add date (mark as present)
   
       // Step 4: Send update to backend
-      // await axios.put("http://localhost:3000/api/usermyclasses/attendance/update/67bdb84a1aa09d93ffddbe1d", {
+      // await axios.put(BACKEND_LINK, {
       //   studentIdList: [studentId],
       //   date: date
       // });
@@ -111,13 +113,16 @@ export default function Attendance() {
     console.log(studentsIdList);
 
        
-    await axios.put("http://localhost:3000/api/usermyclasses/attendance/update/67bdb84a1aa09d93ffddbe1d",{studentIdList: studentsIdList, date: date});
+    await axios.put(BACKEND_LINK, {
+      studentIdList: studentsIdList,
+      date: date,
+    });
   };
 
 async function  handleSubmit  () {
     // This will later connect to backend
     console.log("Updated Students: ", updatedStudentsId);
-    await axios.put("http://localhost:3000/api/usermyclasses/attendance/update/67bdb84a1aa09d93ffddbe1d",{studentIdList: updatedStudentsId, date: date});
+    await axios.put(BACKEND_LINK,{studentIdList: updatedStudentsId, date: date});
 
      setUpdatedStudentsId([]);
 

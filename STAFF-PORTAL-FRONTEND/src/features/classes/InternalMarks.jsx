@@ -3,19 +3,20 @@ import { FiEdit, FiCheck } from "react-icons/fi";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { dataListAnatomy } from "@chakra-ui/react/anatomy";
 
 export default function InternalMarks() {
   const [students, setStudents] = useState([]);
 
 
-  const classId = useParams();
+  const classId = useParams().classId;
   console.log(classId);
   const fetchStudents = async () => {
     try {
       console.log("Fetching Students.....");
   
       const response = await axios.get(
-        "http://localhost:3000/api/usermyclasses/attendance/67bdb84a1aa09d93ffddbe1d"
+        `http://localhost:3000/api/usermyclasses/${classId}`
       );
   
       console.log("Response: ", response.data.students);
@@ -50,12 +51,19 @@ export default function InternalMarks() {
     setTempMarks((prev) => ({ ...prev, [id]: marks }));
   };
 
-  const handleSave = (id) => {
+  async function studentUpdate(student){
+    const res = await axios.put(`http://localhost:3000/api/student/update/${student.id}`,student);
+    return res.message;
+  }
+  const handleSave = (Student) => {
     setStudents((prev) =>
       prev.map((student) =>
-        student.id === id ? { ...student, marks: tempMarks[id] } : student
+        student.id === Student.id
+          ? { ...student, marks: tempMarks[Student.id] }
+          : student
       )
     );
+    studentUpdate(Student);
     setEditMode(null);
   };
 
@@ -109,18 +117,25 @@ export default function InternalMarks() {
                         type="number"
                         value={tempMarks[student.id]}
                         onChange={(e) =>
-                          setTempMarks({ ...tempMarks, [student.id]: e.target.value })
+                          setTempMarks({
+                            ...tempMarks,
+                            [student.id]: e.target.value,
+                          })
                         }
                         className="border p-1 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200 w-16 text-sm text-center"
                       />
                     ) : (
-                      <span className="text-gray-700">{student.classRecords[0].internalMarks}</span>
+                      <span className="text-gray-700">
+                        {
+                          student.classRecords[classId].internalMarks
+                        }
+                      </span>
                     )}
                     {editMode === student.id ? (
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleSave(student.id)}
+                        onClick={() => handleSave(student)}
                         className="bg-green-500 text-white px-2 py-1 rounded-md shadow-md text-sm flex items-center justify-center"
                       >
                         <FiCheck className="text-md" />
