@@ -1,19 +1,33 @@
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { useState } from "react";
+import axios from "axios";
 
-const EditingClassCard = ({ editingClass, setEditingClass, setActiveForm, FormType }) => {
+const EditingClassCard = ({ editingClass, setEditingClass, setActiveForm, FormType,fetchClasses }) => {
   const [formData, setFormData] = useState(editingClass || {});
+  const classId = editingClass.userclassesId;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("Form submitted:", formData);
+    const { subject, code, semester, branch, students, schedule, syllabus, courseOutcome, currentClass } = formData;
+    const dataToSend = { subject: subject, code: code, semester: semester, branch: branch, students: students, schedule: schedule, syllabus: syllabus, courseOutcome: courseOutcome, currentClass: currentClass };
+
+    try {
+      const Response = await axios.put(`http://localhost:3000/api/usermyclasses/update/${classId}`, dataToSend);
+      console.log(Response);
+      //refetching the class
+      await fetchClasses();
+      // Close the form after successful submission
+      setActiveForm(FormType.NONE);
+      setEditingClass(null);
+    } catch (error) {
+      console.error("Error updating class:", error);
+    }
   };
 
   return (

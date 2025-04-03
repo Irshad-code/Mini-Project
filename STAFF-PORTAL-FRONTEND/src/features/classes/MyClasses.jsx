@@ -285,7 +285,8 @@ const renderClassCard= (classItem,type)=>{
       ) : activeForm=== FormType.EDIT_CLASS  ? (
 
         <EditClassCard
-        editingClass={editingClass} setEditingClass={setEditingClass} setActiveForm={setActiveForm} FormType={FormType}
+        editingClass={editingClass} setEditingClass={setEditingClass} setActiveForm={setActiveForm} FormType={FormType} 
+        fetchClasses={fetchClasses}
         />
       ): true &&  (
  <DefaultPage
