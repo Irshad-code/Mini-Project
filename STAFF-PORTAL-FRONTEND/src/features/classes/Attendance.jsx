@@ -79,14 +79,14 @@ export default function Attendance() {
       // Step 5: Update UI state dynamically
       setStudents((prevStudents) =>
         prevStudents.map((s) =>
-          s.id === student.studentId
+          s.studentId === student.studentId
             ? {
                 ...s,
                 classRecords: {
                   ...s.classRecords,
-                  [currentDate]: {
-                    ...(s.classRecords?.[currentDate] || {}),
-                    attendanceDates: updatedAttendanceDates // Set new toggled value
+                  [classId]: {
+                    ...s.classRecords[classId],
+                    attendanceDates: updatedAttendanceDates
                   }
                 }
               }
@@ -104,18 +104,38 @@ export default function Attendance() {
 
   // Check if the date already exists in the attendance list
 
-  async function setAllPresent  ()  {
+  async function setAllPresent() {
+    try {
+      // Get all student IDs
+      const studentsIdList = students.map((student) => student.studentId);
+      setUpdatedStudentsId(studentsIdList);
 
-    const studentsIdList = students.map((student) => student.studentId);
+      // Update UI state to mark all students present
+      setStudents((prevStudents) =>
+        prevStudents.map((student) => ({
+          ...student,
+          classRecords: {
+            ...student.classRecords,
+            [classId]: {
+              ...student.classRecords[classId],
+              attendanceDates: [
+                ...new Set([...student.classRecords[classId].attendanceDates, date])
+              ]
+            }
+          }
+        }))
+      );
 
-    console.log(studentsIdList);
+      // Make API call to update backend
+      await axios.put(BACKEND_LINK, {
+        studentIdList: studentsIdList,
+        date: date,
+      });
 
-       
-    await axios.put(BACKEND_LINK, {
-      studentIdList: studentsIdList,
-      date: date,
-    });
-  };
+    } catch (error) {
+      console.error("Error marking all students present:", error);
+    }
+  }
 
   console.log("Updated Students: ", updatedStudentsId);
 
@@ -211,6 +231,8 @@ async function  handleSubmit  () {
                   student.classRecords[classId].attendanceDates
                 ); // ✅ Properly logging student object
 
+                const isPresent = student.classRecords[classId].attendanceDates.includes(date);
+
                 return (
                   <motion.tr
                     initial={{ opacity: 0, x: -20 }}
@@ -231,27 +253,13 @@ async function  handleSubmit  () {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleAttendance(student)}
-                        className={`px-2 py-1 rounded-lg transition-all duration-200 flex items-center justify-center min-w-[40px] max-w-[80px]
-    ${
-      Object.values(student.classRecords).some((record) => {
-        console.log("attendance dates: ", record.attendanceDates);
-        console.log("date: ", date);
-
-        return record.attendanceDates.some((attDate) => attDate === date);
-      })
-        ? "bg-green-500 text-white shadow-lg shadow-green-200"
-        : "bg-red-500 text-white shadow-lg shadow-red-200"
-    }`}
+                        className={`px-2 py-1 rounded-lg transition-all duration-200 flex items-center justify-center min-w-[40px] max-w-[80px] ${
+                          isPresent
+                            ? "bg-green-500 text-white shadow-lg shadow-green-200"
+                            : "bg-red-500 text-white shadow-lg shadow-red-200"
+                        }`}
                       >
-                        {Object.values(student.classRecords).some((record) =>
-                          record.attendanceDates.some(
-                            (attDate) => attDate === date
-                          )
-                        ) ? (
-                          <FiCheck size={25} />
-                        ) : (
-                          <FiX size={25} />
-                        )}
+                        {isPresent ? <FiCheck size={25} /> : <FiX size={25} />}
                       </motion.button>
                     </td>
                   </motion.tr>
