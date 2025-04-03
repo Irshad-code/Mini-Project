@@ -9,14 +9,13 @@ export default function InternalMarks() {
 
   const classId = useParams().classId;
   console.log(classId);
+  const BACKEND_LINK =  import.meta.env.VITE_API_URL + `/usermyclasses/${classId}`;
 
    const fetchStudents = async () => {
       try {
         console.log("Fetching Students.....");
     
-        const response = await axios.get(
-          "http://localhost:3000/api/usermyclasses/67eca31a672e8b5db9c31adc"
-        );
+        const response = await axios.get(BACKEND_LINK);
     
         console.log("Response: ", response.data.students);
         const data = response.data.students || [];

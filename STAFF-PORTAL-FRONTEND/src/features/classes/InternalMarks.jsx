@@ -3,20 +3,19 @@ import { FiEdit, FiCheck } from "react-icons/fi";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { dataListAnatomy } from "@chakra-ui/react/anatomy";
 
 export default function InternalMarks() {
   const [students, setStudents] = useState([]);
-
-
   const classId = useParams().classId;
   console.log(classId);
+  const BACKEND_LINK =  import.meta.env.VITE_API_URL + `/usermyclasses/${classId}`;
+
   const fetchStudents = async () => {
     try {
       console.log("Fetching Students.....");
   
       const response = await axios.get(
-        `http://localhost:3000/api/usermyclasses/${classId}`
+        BACKEND_LINK
       );
   
       console.log("Response: ", response.data.students);

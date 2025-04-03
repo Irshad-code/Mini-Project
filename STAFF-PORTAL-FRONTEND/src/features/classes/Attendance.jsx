@@ -50,39 +50,34 @@ export default function Attendance() {
 
   const [date, setDate] = useState(new Date());
   // const[dateExists,setDateExists] = useState(false);
-  async function handleAttendance(studentId) {
-
+  async function handleAttendance(student) {
+   console.log("student: ",student);
 
     try {
-      // Step 1: Find the student in the current state
-      const student = students.find((s) => s.studentId === studentId);
-      if (!student) return;
   
       // Step 2: Check if the date is already in attendance
-      const attendanceDates = student.classRecords?.[date]?.attendanceDates || [];
-      const isPresent = attendanceDates.includes(date);
+      const attendanceDates = student.classRecords[classId].attendanceDates || [];
+     const isPresent = attendanceDates.some(
+  (attDate) => new Date(attDate).toISOString().split("T")[0] === new Date(date).toISOString().split("T")[0]
+);
 
       console.log("Is present: ",isPresent);
 
-      setUpdatedStudentsId((prev) => [...prev, studentId]);
+      setUpdatedStudentsId((prev) => [...prev, student.studentId]);
+      console.log("student id: ",student.studentId);
+      console.log("Updated Students: ",updatedStudentsId);
   
       // Step 3: Toggle attendance based on current state
       const updatedAttendanceDates = isPresent
         ? attendanceDates.filter((d) => d !== date) // Remove date (mark as absent)
         : [...attendanceDates, date]; // Add date (mark as present)
   
-      // Step 4: Send update to backend
-      // await axios.put(BACKEND_LINK, {
-      //   studentIdList: [studentId],
-      //   date: date
-      // });
-  
-      console.log("Attendance toggled for:", studentId);
+      console.log("Attendance toggled for:", student);
   
       // Step 5: Update UI state dynamically
       setStudents((prevStudents) =>
         prevStudents.map((s) =>
-          s.studentId === studentId
+          s.id === student.studentId
             ? {
                 ...s,
                 classRecords: {
@@ -96,6 +91,7 @@ export default function Attendance() {
             : s
         )
       );
+      console.log("updatedAttendanceDates: ", updatedAttendanceDates);
     } catch (error) {
       console.error("Error updating attendance:", error);
     }
@@ -119,12 +115,14 @@ export default function Attendance() {
     });
   };
 
+  console.log("Updated Students: ", updatedStudentsId);
+
 async function  handleSubmit  () {
     // This will later connect to backend
     console.log("Updated Students: ", updatedStudentsId);
-    await axios.put(BACKEND_LINK,{studentIdList: updatedStudentsId, date: date});
+    await axios.put(`http://localhost:3000/api/usermyclasses/attendance/update/${classId}`,{studentIdList: updatedStudentsId, date: date});
 
-     setUpdatedStudentsId([]);
+    //  setUpdatedStudentsId([]);
 
     
 
@@ -204,14 +202,14 @@ async function  handleSubmit  () {
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
             {students.map((student, index) => {
-  console.log(`Student ${index}:`, student); // ✅ Properly logging student object
+  console.log(`Student attendance dates of index ${index}:`, student.classRecords[classId].attendanceDates); // ✅ Properly logging student object
 
   return (
     <motion.tr
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
-      key={student.id || index} // ✅ Fallback key
+      key={student.studentId} // ✅ Fallback key
       className="hover:bg-gray-50 transition-colors duration-150"
     >
       <td className="px-6 py-4 text-sm font-medium break-words text-gray-700 text-center">
@@ -225,19 +223,29 @@ async function  handleSubmit  () {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => handleAttendance(student.studentId
-          )}
+          onClick={() => handleAttendance(student)}
           className={`px-2 py-1 rounded-lg transition-all duration-200 flex items-center justify-center min-w-[40px] max-w-[80px]
-            ${
-              Object.values(student.classRecords).some((record) =>
-                record.attendanceDates?.includes(date)
-              )
-                ? "bg-green-500 text-white shadow-lg shadow-green-200"
-                : "bg-red-500 text-white shadow-lg shadow-red-200"
-            }`}
+    ${
+      Object.values(student.classRecords).some((record) => {
+        console.log("attendance dates: ", record.attendanceDates);
+        console.log("date: ", date.toISOString().split("T")[0]);
+
+        return record.attendanceDates.some(
+          (attDate) =>
+            new Date(attDate).toISOString().split("T")[0] ===
+            date.toISOString().split("T")[0]
+        );
+      })
+        ? "bg-green-500 text-white shadow-lg shadow-green-200"
+        : "bg-red-500 text-white shadow-lg shadow-red-200"
+    }`}
         >
-          {Object.values(student.classRecords).some(
-            (record) => record.attendanceDates?.includes(date)
+          {Object.values(student.classRecords).some((record) =>
+            record.attendanceDates.some(
+              (attDate) =>
+                new Date(attDate).toISOString().split("T")[0] ===
+                date.toISOString().split("T")[0]
+            )
           ) ? (
             <FiCheck size={25} />
           ) : (

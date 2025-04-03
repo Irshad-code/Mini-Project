@@ -61,8 +61,8 @@ export default function MyClasses() {
       const response = await axios.get(BACKEND_LINK);
       const data = response.data || [];
 
-      const current = data.filter((cls) => !cls.isArchived);
-      const archived = data.filter((cls) => cls.isArchived);
+      const current = data.filter((cls) => cls.currentClass);
+      const archived = data.filter((cls) => !cls.currentClass);
 
       setClasses({
         current,
@@ -94,6 +94,7 @@ export default function MyClasses() {
         schedule: "",
         syllabus: "",
         courseOutcome: "",
+        currentClass: true,
       })
     );
     setActiveForm(FormType.ADD_CLASS)
@@ -148,6 +149,7 @@ export default function MyClasses() {
           schedule: "",
           syllabus: "",
           courseOutcome: "",
+          currentClass: true,// it should be builded on UI
         },
       ]);
     } catch (error) {
