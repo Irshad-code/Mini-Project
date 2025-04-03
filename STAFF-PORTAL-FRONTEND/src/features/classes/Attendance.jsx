@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { FiCalendar, FiCheck, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function Attendance() {
   const classId = useParams().classId;
+  const navigate = useNavigate();
   console.log(classId);
 
    const BACKEND_LINK = import.meta.env.VITE_API_URL + `/usermyclasses/${classId}`;
@@ -204,7 +205,7 @@ async function  handleSubmit  () {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="overflow-x-auto rounded-xl shadow-sm border border-gray-100 flex flex-col gap-5 items-center"
         >
-          <motion.div className="flex  flex-wrap gap-10 space-x-4">
+          <motion.div className="flex flex-wrap gap-10 space-x-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -212,6 +213,14 @@ async function  handleSubmit  () {
               className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md shadow-green-200"
             >
               Set Present
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate(`/attendance-report/${classId}`)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md shadow-blue-200"
+            >
+              View Report
             </motion.button>
           </motion.div>
           <table className="min-w-full">

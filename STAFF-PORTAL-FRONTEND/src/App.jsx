@@ -14,7 +14,8 @@ import Layout from "./components/layout/Layout";
 import LoginPage from "./pages/Auth/LoginPage";
 import SignupPage from "./pages/Auth/SignupPage";
 import Dashboard from "./pages/Dashboard";
-import Attendance from "./features/classes/Attendance"
+import Attendance from "./features/classes/Attendance";
+import AttendanceReport from "./features/classes/AttendanceReport";
 import InternalMarks from "./features/classes/InternalMarks";
 import SeriesMarks from "./features/classes/SeriesMarks"
 
@@ -77,6 +78,14 @@ function AppContent() {
       />
       <Route path="/" element={<Navigate to="/login" />} />
 
+      <Route path="/attendance/:classId" element={<Attendance />} />
+      <Route path="/attendance-report/:classId" element={
+         <ProtectedRoute>
+         <Layout>
+         <AttendanceReport />
+         </Layout>
+       </ProtectedRoute>
+        } />
 
     </Routes>
   );
