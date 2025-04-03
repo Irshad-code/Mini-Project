@@ -199,21 +199,19 @@ async function handleAttendanceOFStudents(req, res) {
         const attendanceDatesList = classRecord.get("attendanceDates");
         console.log("attendanceDatesList: ", attendanceDatesList);
 
-const formattedDate = new Date(date).toISOString(); // Convert input date to ISO format
-
 // Check if the date already exists in the attendance list
 const dateExists = attendanceDatesList.some(
-  (attDate) => attDate.toISOString() === formattedDate
+  (attDate) => attDate === date
 );
 
 if (dateExists) {
   // Date found → Remove it (mark absent)
   student.classRecords.get(classId).attendanceDates = attendanceDatesList.filter(
-      (attDate) => attDate.toISOString() !== formattedDate
+      (attDate) => attDate !== date
     );
 } else {
   // Date not found → Add it (mark present)
-  attendanceDatesList.push(new Date(date));
+  attendanceDatesList.push(date);
   student.classRecords.get(classId).attendanceDates = attendanceDatesList;
 }
 

@@ -5,7 +5,7 @@ const ClassRecordSchema = new Schema(
   {
     series1Marks: { type: Number, required: true },
     series2Marks: { type: Number, required: true },
-    attendanceDates: { type: [Date], default: [] }, // Stores a list of attendance dates
+    attendanceDates: { type: [String], default: [] }, // Stores a list of attendance dates
     internalMarks: { type: Number, required: true },
   },
   { _id: false } // Prevents automatic `_id` generation

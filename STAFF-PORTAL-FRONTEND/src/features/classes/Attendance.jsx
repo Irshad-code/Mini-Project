@@ -48,17 +48,19 @@ export default function Attendance() {
  
   }, []);
 
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   // const[dateExists,setDateExists] = useState(false);
   async function handleAttendance(student) {
    console.log("student: ",student);
-
+     const currentDate =  date;
+     console.log("currentDate: ", currentDate);
     try {
   
       // Step 2: Check if the date is already in attendance
       const attendanceDates = student.classRecords[classId].attendanceDates || [];
+    console.log(" attendanceDates: ",attendanceDates);
      const isPresent = attendanceDates.some(
-  (attDate) => new Date(attDate).toISOString().split("T")[0] === new Date(date).toISOString().split("T")[0]
+  (attDate) => attDate === currentDate
 );
 
       console.log("Is present: ",isPresent);
@@ -69,8 +71,8 @@ export default function Attendance() {
   
       // Step 3: Toggle attendance based on current state
       const updatedAttendanceDates = isPresent
-        ? attendanceDates.filter((d) => d !== date) // Remove date (mark as absent)
-        : [...attendanceDates, date]; // Add date (mark as present)
+        ? attendanceDates.filter((d) => d !== currentDate) // Remove date (mark as absent)
+        : [...attendanceDates, currentDate]; // Add date (mark as present)
   
       console.log("Attendance toggled for:", student);
   
@@ -82,8 +84,8 @@ export default function Attendance() {
                 ...s,
                 classRecords: {
                   ...s.classRecords,
-                  [date]: {
-                    ...(s.classRecords?.[date] || {}),
+                  [currentDate]: {
+                    ...(s.classRecords?.[currentDate] || {}),
                     attendanceDates: updatedAttendanceDates // Set new toggled value
                   }
                 }
@@ -162,8 +164,10 @@ async function  handleSubmit  () {
             <FiCalendar className="text-blue-500 text-xl" />
             <input
               type="date"
-              value={date ? date.toISOString().split("T")[0] : ""}
-              onChange={(e) => setDate(new Date(e.target.value))}
+              value={date ? date : ""}
+              onChange={(e) =>
+                setDate(new Date(e.target.value).toISOString().split("T")[0])
+              }
               className="border rounded-lg p-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition-all duration-200"
             />
           </div>
@@ -201,62 +205,58 @@ async function  handleSubmit  () {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-            {students.map((student, index) => {
-  console.log(`Student attendance dates of index ${index}:`, student.classRecords[classId].attendanceDates); // ✅ Properly logging student object
+              {students.map((student, index) => {
+                console.log(
+                  `Student attendance dates of index ${index}:`,
+                  student.classRecords[classId].attendanceDates
+                ); // ✅ Properly logging student object
 
-  return (
-    <motion.tr
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
-      key={student.studentId} // ✅ Fallback key
-      className="hover:bg-gray-50 transition-colors duration-150"
-    >
-      <td className="px-6 py-4 text-sm font-medium break-words text-gray-700 text-center">
-        {student.rollNumber}
-      </td>
-      <td className="px-6 py-4 text-sm break-words text-gray-700 text-center">
-        {student.name}
-      </td>
+                return (
+                  <motion.tr
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    key={student.studentId} // ✅ Fallback key
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium break-words text-gray-700 text-center">
+                      {student.rollNumber}
+                    </td>
+                    <td className="px-6 py-4 text-sm break-words text-gray-700 text-center">
+                      {student.name}
+                    </td>
 
-      <td className="px-6 py-4 whitespace-nowrap text-center">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => handleAttendance(student)}
-          className={`px-2 py-1 rounded-lg transition-all duration-200 flex items-center justify-center min-w-[40px] max-w-[80px]
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleAttendance(student)}
+                        className={`px-2 py-1 rounded-lg transition-all duration-200 flex items-center justify-center min-w-[40px] max-w-[80px]
     ${
       Object.values(student.classRecords).some((record) => {
         console.log("attendance dates: ", record.attendanceDates);
-        console.log("date: ", date.toISOString().split("T")[0]);
+        console.log("date: ", date);
 
-        return record.attendanceDates.some(
-          (attDate) =>
-            new Date(attDate).toISOString().split("T")[0] ===
-            date.toISOString().split("T")[0]
-        );
+        return record.attendanceDates.some((attDate) => attDate === date);
       })
         ? "bg-green-500 text-white shadow-lg shadow-green-200"
         : "bg-red-500 text-white shadow-lg shadow-red-200"
     }`}
-        >
-          {Object.values(student.classRecords).some((record) =>
-            record.attendanceDates.some(
-              (attDate) =>
-                new Date(attDate).toISOString().split("T")[0] ===
-                date.toISOString().split("T")[0]
-            )
-          ) ? (
-            <FiCheck size={25} />
-          ) : (
-            <FiX size={25} />
-          )}
-        </motion.button>
-      </td>
-    </motion.tr>
-  );
-})}
-
+                      >
+                        {Object.values(student.classRecords).some((record) =>
+                          record.attendanceDates.some(
+                            (attDate) => attDate === date
+                          )
+                        ) ? (
+                          <FiCheck size={25} />
+                        ) : (
+                          <FiX size={25} />
+                        )}
+                      </motion.button>
+                    </td>
+                  </motion.tr>
+                );
+              })}
             </tbody>
           </table>
         </motion.div>
