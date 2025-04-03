@@ -14,7 +14,6 @@ const MyClassRequest = Yup.object()
     syllabus: Yup.string().required(), // Assuming this is a string path or URL
     courseOutcome: Yup.string().required(),
     currentClass: Yup.boolean().required(),
-
     //studentList: Yup.array().of(Yup.string()).required(), // studentList is an array of strings
   })
   .noUnknown(true); // This strips any unknown keys from the request

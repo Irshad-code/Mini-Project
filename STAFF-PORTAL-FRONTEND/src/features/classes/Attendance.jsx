@@ -13,8 +13,6 @@ export default function Attendance() {
 
   const [updatedStudentsId,setUpdatedStudentsId] = useState([]);
 
-  
-
   const [students, setStudents] = useState([]);
 
   const fetchStudents = async () => {
@@ -28,21 +26,12 @@ export default function Attendance() {
         response.data.students[0].classRecords[classId].attendanceDates);
       const data = response.data.students || [];
   
-      // Ensure attendance records are correctly mapped
-      // const formattedStudents = data.map((student) => ({
-      //   ...student,
-      //   classRecords: student.classRecords || {}, // Ensure classRecords is always an object
-      // }));
-  
       setStudents(data);
-      //console.log("fetch Students: ", data[0].classRecords[classId].attendanceDates );
-  
-      
+     
     } catch (error) {
       console.error("Error fetching Students:", error);
     }
   };
-  
 
   useEffect(() => {
     fetchStudents();
@@ -50,7 +39,6 @@ export default function Attendance() {
   }, []);
 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  // const[dateExists,setDateExists] = useState(false);
   async function handleAttendance(student) {
    console.log("student: ",student);
      const currentDate =  date;

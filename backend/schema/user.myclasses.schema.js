@@ -14,6 +14,7 @@ const MyClassesSchema = new Schema(
     courseOutcome: { type: String, required: true }, // File path or URL
     studentList: [{ type: mongoose.Schema.Types.ObjectId, default: [] }], // Store student IDs
     currentClass: { type: Boolean, required: true },
+    attendanceDateList: [{ type: String, default: [] }],
   },
   { timestamps: true }
 );

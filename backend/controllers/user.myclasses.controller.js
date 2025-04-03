@@ -185,40 +185,52 @@ async function handleAttendanceOFStudents(req, res) {
 
       // Step 2: Process each student in the list
       for (const studentId of studentIdList) {
-
         // Step 3: Find student record
         const student = await studentModel.findById(studentId);
         if (!student) {
-           return res
-             .status(404)
-             .json({ message: `Student with ID ${studentId} not found` });
-   }
+          return res
+            .status(404)
+            .json({ message: `Student with ID ${studentId} not found` });
+        }
 
         // Step 5: Add or remove date from attendance list
         const classRecord = student.classRecords.get(classId);
         const attendanceDatesList = classRecord.get("attendanceDates");
         console.log("attendanceDatesList: ", attendanceDatesList);
 
-// Check if the date already exists in the attendance list
-const dateExists = attendanceDatesList.some(
-  (attDate) => attDate === date
-);
+///////////////////////////////////////////////////////////////////////
+        const Class = await UserMyClassesModel.findById(classId);
+        // Check if the date already exists in the attendance list of class
+        if (!Class.attendanceDateList.includes(date)) {
+          Class.attendanceDateList.push(date);
+        }
+        //else{
+        //   Class.attendanceDateList=Class.attendanceDateList.filter(attDate => attDate !== date);
+        // }
+        await Class.save();
+        console.log("class dateList: ",Class.attendanceDateList);
+///////////////////////////////////////////////////////////////////////
 
-if (dateExists) {
-  // Date found → Remove it (mark absent)
-  student.classRecords.get(classId).attendanceDates = attendanceDatesList.filter(
-      (attDate) => attDate !== date
-    );
-} else {
-  // Date not found → Add it (mark present)
-  attendanceDatesList.push(date);
-  student.classRecords.get(classId).attendanceDates = attendanceDatesList;
-}
+        // Check if the date already exists in the attendance list of student
+        const dateExists = attendanceDatesList.some(
+          (attDate) => attDate === date
+        );
+
+        if (dateExists) {
+          // Date found → Remove it (mark absent)
+          student.classRecords.get(classId).attendanceDates =
+            attendanceDatesList.filter((attDate) => attDate !== date);
+        } else {
+          // Date not found → Add it (mark present)
+          attendanceDatesList.push(date);
+          student.classRecords.get(classId).attendanceDates =
+            attendanceDatesList;
+        }
 
         await student.save();
 
         // Collect updated students for response
-        updatedStudents.push( studentId );
+        updatedStudents.push(studentId);
       }
 
       return res.status(200).json({

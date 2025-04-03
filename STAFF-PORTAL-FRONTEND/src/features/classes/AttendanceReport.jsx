@@ -1,33 +1,51 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { motion } from 'framer-motion';
-// import { FiCalendar } from 'react-icons/fi';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion";
 
 export default function AttendanceReport() {
-  const classId = useParams().classId;
+  const { classId } = useParams();
   const BACKEND_LINK = import.meta.env.VITE_API_URL + `/usermyclasses/${classId}`;
-  
-  const [students, setStudents] = useState([]);
-  const [totalClassDays, setTotalClassDays] = useState(0);
 
+  // State for students and attendance dates
+  const [students, setStudents] = useState([]);
+  const [attendanceDateList, setAttendanceDateList] = useState([]);
+
+  // Fetch attendance dates List
+  async function fetchAttendanceDateList() {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/usermyclasses/"
+      );
+      const classData = response.data.find(
+        (cls) => cls.userclassesId === classId
+      );
+
+      if (classData) {
+        setAttendanceDateList(classData.attendanceDateList || []); // Store in state
+      } else {
+        console.log("Class not found!");
+        setAttendanceDateList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching attendance date list:", error);
+      setAttendanceDateList([]);
+    }
+  }
+
+  // Fetch students
   const fetchStudents = async () => {
     try {
       const response = await axios.get(BACKEND_LINK);
-      const data = response.data.students || [];
-      setStudents(data);
-
-      // Calculate total unique class days from the first student's attendance
-      if (data.length > 0) {
-        const uniqueDates = new Set(data[0].classRecords[classId].attendanceDates);
-        setTotalClassDays(uniqueDates.size);
-      }
+      setStudents(response.data.students || []);
     } catch (error) {
-      console.error("Error fetching Students:", error);
+      console.error("Error fetching students:", error);
     }
   };
 
+  // Use effect to load data when component mounts
   useEffect(() => {
+    fetchAttendanceDateList();
     fetchStudents();
   }, []);
 
@@ -57,18 +75,29 @@ export default function AttendanceReport() {
           <table className="min-w-full">
             <thead>
               <tr className="bg-gradient-to-r from-blue-500 to-blue-600">
-                <th className="px-6 py-4 text-sm font-semibold text-white">Roll No</th>
-                <th className="px-6 py-4 text-sm font-semibold text-white">Name</th>
-                <th className="px-6 py-4 text-sm font-semibold text-white">Days Present</th>
-                <th className="px-6 py-4 text-sm font-semibold text-white">Attendance %</th>
+                <th className="px-6 py-4 text-sm font-semibold text-white">
+                  Roll No
+                </th>
+                <th className="px-6 py-4 text-sm font-semibold text-white">
+                  Name
+                </th>
+                <th className="px-6 py-4 text-sm font-semibold text-white">
+                  Days Present
+                </th>
+                <th className="px-6 py-4 text-sm font-semibold text-white">
+                  Attendance %
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
               {students.map((student, index) => {
-                const daysPresent = student.classRecords[classId].attendanceDates.length;
-                const attendancePercentage = totalClassDays > 0 
-                  ? ((daysPresent / totalClassDays) * 100).toFixed(2)
-                  : 0;
+                const daysPresent =
+                  student.classRecords?.[classId]?.attendanceDates?.length || 0;
+                const totalDays = attendanceDateList.length;
+                const attendancePercentage =
+                  totalDays > 0
+                    ? ((daysPresent / totalDays) * 100).toFixed(2)
+                    : 0;
 
                 return (
                   <motion.tr
@@ -88,11 +117,15 @@ export default function AttendanceReport() {
                       {daysPresent}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700 text-center">
-                      <span className={`px-3 py-1 rounded-full ${
-                        attendancePercentage >= 75 ? 'bg-green-100 text-green-800' : 
-                        attendancePercentage >= 60 ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full ${
+                          attendancePercentage >= 75
+                            ? "bg-green-100 text-green-800"
+                            : attendancePercentage >= 60
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
                         {attendancePercentage}%
                       </span>
                     </td>
@@ -105,4 +138,4 @@ export default function AttendanceReport() {
       </motion.div>
     </motion.div>
   );
-} 
+}
