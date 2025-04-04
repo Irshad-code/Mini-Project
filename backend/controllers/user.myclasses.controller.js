@@ -120,6 +120,14 @@ async function handleUploadExcel(req, res) {
         phone: student["Phone"],
         semester: student["Semester"],
         branch: student["Branch"],
+        classRecords: {
+          [classId]: {
+            series1Marks: 0,
+            series2Marks: 0,
+            attendanceDates: [],
+            internalMarks: 0,
+          },
+        },
       }));
       
       const insertedStudents = await studentModel.insertMany(studentRecords);
