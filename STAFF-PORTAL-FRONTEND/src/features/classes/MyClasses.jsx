@@ -204,13 +204,15 @@ export default function MyClasses() {
 
 
         try {
-      const response = await axios.post(`${BACKEND_LINK}/upload/${classID}`,
-            formData, 
-          {
-             headers: {
-             "Content-Type": "multipart/form-data",
-                },
-          });
+      const response = await axios.post(
+        `${BACKEND_LINK}/excelupload/${classID}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response) {
         console.log("Students excel sheet uploaded successfully.\n DATA= ",response.data.record);

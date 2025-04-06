@@ -24,7 +24,7 @@ const EditingClassCard = ({ editingClass, setEditingClass, setActiveForm, FormTy
     const { subject, code, semester, branch, students, schedule, syllabus, courseOutcome, currentClass ,fromTime,toTime} = formData;
     console.log(formatTime(fromTime));
 
-    const formattedShedule = `${schedule}#${formatTime(fromTime)}#${formatTime(toTime)}`;
+    const formattedShedule = `${schedule} From: ${formatTime(fromTime)} To: ${formatTime(toTime)}`;
     
     const dataToSend = { subject: subject, code: code, semester: semester, branch: branch, students: students, schedule: formattedShedule, syllabus: syllabus, courseOutcome: courseOutcome, currentClass: currentClass };
 

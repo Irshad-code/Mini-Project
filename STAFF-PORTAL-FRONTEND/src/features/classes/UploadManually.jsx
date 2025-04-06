@@ -18,13 +18,13 @@ export const UploadManually = ({ myClass, columns, setStudents,  setActiveForm, 
       );
     };
   
-    const handleSubmit = (e) => {
+    async function handleSubmit(e){
       e.preventDefault();
       setStudents((prevStudents) => [...prevStudents, ...localStudents]); // Append new data
       console.log("Submitted Student Details:", localStudents);
       setActiveForm(FormType.UPLOAD_STUDENTS);
-    
-    
+      const res=await axios.post(`http://localhost:3000/api/usermyclasses/manualupload/${classId}`,localStudents);
+      console.log(res);
     };
   
     return (

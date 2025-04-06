@@ -59,13 +59,20 @@ const RenderClassCard = ({
             <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
               <FiCalendar className="w-4 h-4" />
 
-              <span>
-                {classItem.schedule}
-              </span>
+              <span>{classItem.schedule}</span>
             </div>
             {renderActionButtons()}
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="secondary" className="w-full">
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={() =>
+                  window.open(
+                    "https://drive.google.com/drive/folders/1_iyHqZk4MUDLTec5reneK9Az_JmU-MUl?usp=drive_link",
+                    "_blank"
+                  )
+                }
+              >
                 Course Files
               </Button>
               <Button
