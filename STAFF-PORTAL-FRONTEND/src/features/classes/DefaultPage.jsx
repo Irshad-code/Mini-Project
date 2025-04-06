@@ -106,11 +106,12 @@ const DefaultPage = ({
               <UploadManually
                 myClass={myClass}
                 columns={[
-                  { label: "ID", key: "id", type: "text" },
+                  { label: "Roll No", key: "rollNumber", type: "text" },
                   { label: "Name", key: "name", type: "text" },
                   { label: "Phone Number", key: "phone", type: "tel" },
-                  { label: "Photo", key: "photo", type: "file" },
-                  { label: "Address", key: "address", type: "textarea" },
+                  { label: "Semester", key: "semester", type: "text" },
+                  { label: "Branch", key: "branch", type: "text" },
+                  { label: "Email", key: "email", type: "email" },
                 ]}
                 setStudents={setStudents}
                 setActiveForm={setActiveForm}

@@ -1,7 +1,13 @@
 import{useState,useEffect} from 'react'
 import axios from 'axios';
 
-export const UploadManually = ({ myClass, columns, setStudents,  setActiveForm, FormType }) => {
+export const UploadManually = (
+  {  myClass,
+     columns,
+     setStudents,
+     setActiveForm,
+     FormType }
+        ) => {
     const [localStudents, setLocalStudents] = useState([]);
   
     useEffect(() => {
@@ -13,18 +19,18 @@ export const UploadManually = ({ myClass, columns, setStudents,  setActiveForm, 
       );
     }, [myClass.students, columns]);
   
-    const handleInputChange = (index, field, value) => {
+    const handleInputChange = (index, Key, value) => {
       setLocalStudents((prev) =>
-        prev.map((student, i) => (i === index ? { ...student, [field]: value } : student))
+        prev.map((student, i) => (i === index ? { ...student, [Key]: value } : student))
       );
     };
-  
+    
     async function handleSubmit(e){
       e.preventDefault();
       setStudents((prevStudents) => [...prevStudents, ...localStudents]); // Append new data
       console.log("Submitted Student Details:", localStudents);
       setActiveForm(FormType.UPLOAD_STUDENTS);
-      const res=await axios.post(`http://localhost:3000/api/usermyclasses/manualupload/${classId}`,localStudents);
+      const res=await axios.post(`http://localhost:3000/api/usermyclasses/manualupload/${myClass.userclassesId}`,localStudents);
       console.log("response from handleSubmit: ",res);
     };
   

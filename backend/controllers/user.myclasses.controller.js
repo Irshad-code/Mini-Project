@@ -134,7 +134,7 @@ async function handleUploadManual(req, res) {
       );
 
       return res.status(201).json({
-        message: `Excel uploaded successfully for class id= ${classId}`,
+        message: `Manually uploaded students data successfully for class id= ${classId}`,
         record: insertedStudents,
       });
     } catch (error) {
