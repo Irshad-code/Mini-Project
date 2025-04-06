@@ -24,7 +24,7 @@ export const UploadManually = ({ myClass, columns, setStudents,  setActiveForm, 
       console.log("Submitted Student Details:", localStudents);
       setActiveForm(FormType.UPLOAD_STUDENTS);
       const res=await axios.post(`http://localhost:3000/api/usermyclasses/manualupload/${classId}`,localStudents);
-      console.log(res);
+      console.log("response from handleSubmit: ",res);
     };
   
     return (

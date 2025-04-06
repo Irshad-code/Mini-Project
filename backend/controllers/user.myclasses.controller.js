@@ -144,6 +144,22 @@ async function handleUploadManual(req, res) {
     }
 }
 
+async function handleArchiveOrUnArchiveClass(req, res) {
+  const classId = req.params.id;
+  try {
+    const Class = await UserMyClassesModel.findById(classId);
+    Class.currentClass= !Class.currentClass; //just toggle currentClass field value
+    console.log(Class.currentClass);
+    await Class.save();
+
+    return res.status(200).json(
+      { message: `Current class status updated successfully to ${Class.currentClass}`,
+        });
+  }catch(error){
+    return res.status(500).json({ message: "Error archieving/unarchiving class: ", error });
+  }
+}
+
 // Handle excel file upload
 async function handleUploadExcel(req, res) {
   const classId = req.params.id; // Get 'id' from URL
@@ -539,6 +555,7 @@ async function deleteClassIdFromAllTheCorrespondingStudents(req, res, next) {
 }
 // ✅ Ensure the function is exported correctly
 module.exports = {
+  handleArchiveOrUnArchiveClass,
   handleUploadExcel,
   handleUploadManual,
   deleteStudentIdFromAllClasses,

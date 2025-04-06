@@ -45,6 +45,17 @@ router.delete(
   commonController.deleteById,//delete the classObject
   
 ); 
+
+router.post(
+  "/archieveorunarchieveclass/:id",
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  validateId,
+  //validateAndTransformRequest(MyClassesStudentRequest),
+  myClassesController.handleArchiveOrUnArchiveClass
+);
+
  //excel upload student 
 router.post(
   "/excelupload/:id",
