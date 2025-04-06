@@ -1,7 +1,7 @@
 import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
 
-export default function TabButton({ index, name }) {
+export default function TabButton({ noOfClasses, name }) {
   return (
     <Tab
       className={({ selected }) =>
@@ -14,10 +14,10 @@ export default function TabButton({ index, name }) {
       }
     >
       <span className="flex items-center">
-        <span className="w-6 h-6 rounded-full bg-[var(--color-bg-tertiary)] flex items-center justify-center mr-2">
-          {index + 1}
-        </span>
         {name}
+        <span className="w-6 h-6 rounded-full bg-[var(--color-bg-tertiary)] flex items-center justify-center ml-2">
+          {noOfClasses}
+        </span>
       </span>
     </Tab>
   );

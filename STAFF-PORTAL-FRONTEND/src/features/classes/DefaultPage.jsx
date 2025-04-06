@@ -81,17 +81,22 @@ const DefaultPage = ({
 
       <Tab.Group onChange={() => fetchClasses()}>
         <Tab.List className="flex space-x-2 border-b border-[var(--color-border-primary)]">
-          {tabs.map((tab, index) => (
-            <TabButton key={tab.id} index={index} name={tab.name} />
+          {tabs.map((tab) => (
+            <TabButton 
+            key={tab.id} 
+            noOfClasses={tab.name==="Current Classes"?classes.current.length:classes.archived.length} 
+            name={tab.name} />
           ))}
         </Tab.List>
 
         <Tab.Panels className="mt-6">
           <Tab.Panel>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {classes.current.map((classItem) =>
+              {classes.current.length?
+              classes.current.map((classItem) =>
                 renderClassCard(classItem, "current")
-              )}
+              ):<div className="text-center">No current classes</div>
+              }
             </div>
 
             {activeForm === FormType.UPLOAD_STUDENTS &&
@@ -151,9 +156,12 @@ const DefaultPage = ({
           </Tab.Panel>
           <Tab.Panel>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {classes.archived.map((classItem) =>
+              {
+              classes.archived.length?
+              classes.archived.map((classItem) =>
                 renderClassCard(classItem, "archived")
-              )}
+              ): <div className="text-center">No archived classes</div>
+            }
             </div>
           </Tab.Panel>
         </Tab.Panels>

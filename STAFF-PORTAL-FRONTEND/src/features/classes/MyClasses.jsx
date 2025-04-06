@@ -228,19 +228,26 @@ export default function MyClasses() {
     }
   }
 
-const renderClassCard= (classItem,type)=>{
+  // function to handle refreshing classes smoothly
+  const handleRefreshClasses = async () => {
+    await fetchClasses();
+  };
+
+  // Modify the renderClassCard function to pass the refresh callback
+  const renderClassCard = (classItem, type) => {
     return (
       <RenderClassCard
-      classItem={classItem}
-      type={type}
-      setEditingClass={setEditingClass}
-      setActiveForm={setActiveForm}
-      setMyClass={setMyClass}
-      FormType={FormType}
-      onDelete_class={onDelete_class}
+        classItem={classItem}
+        type={type}
+        setEditingClass={setEditingClass}
+        setActiveForm={setActiveForm}
+        setMyClass={setMyClass}
+        FormType={FormType}
+        onDelete_class={onDelete_class}
+        refreshClasses={handleRefreshClasses}  
       />
-    )
-}
+    );
+  };
 
   return (
     <div className="space-y-6">

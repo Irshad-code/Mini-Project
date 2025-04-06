@@ -2,6 +2,7 @@ import { FiCalendar, FiUsers } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const RenderClassCard = ({
   classItem,
@@ -10,7 +11,8 @@ const RenderClassCard = ({
   setActiveForm,
   setMyClass,
   FormType,
-  onDelete_class
+  onDelete_class,
+  refreshClasses
 }) => {
   const navigate = useNavigate();
 
@@ -26,6 +28,20 @@ const RenderClassCard = ({
   const handleUploadStudents = () => {
     setActiveForm(FormType.UPLOAD_STUDENTS);
     setMyClass(classItem);
+  };
+
+  const handleArchive = async () => {
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/api/usermyclasses/archieveorunarchieveclass/${classItem.userclassesId}`
+      );
+      console.log(res);
+      if (refreshClasses) {
+        refreshClasses();
+      }
+    } catch (error) {
+      console.error("Error archiving class:", error);
+    }
   };
 
   const renderActionButtons = () => (
@@ -48,13 +64,19 @@ const RenderClassCard = ({
               {classItem.code} • {classItem.semester} {classItem.branch}
             </p>
           </div>
+          <Button
+            onClick={handleArchive}
+            className="bg-yellow-500 hover:bg-yellow-600"
+          >
+            {type === "current" ? "Archive Class" : "Unarchive Class"}
+          </Button>
           <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
             <FiUsers className="w-4 h-4" />
-            <span>{classItem.students} students</span>
+            <span>{classItem.studentList.length} students</span>
           </div>
         </div>
 
-        {type === "current" ? (
+        
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
               <FiCalendar className="w-4 h-4" />
@@ -104,22 +126,7 @@ const RenderClassCard = ({
               </Button>
             </div>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex justify-between text-[var(--color-text-secondary)]">
-              <span>Year: {classItem.year}</span>
-              <span>Result: {classItem.result}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="secondary" className="w-full">
-                View Report
-              </Button>
-              <Button variant="secondary" className="w-full">
-                Course Files
-              </Button>
-            </div>
-          </div>
-        )}
+          
       </div>
     </Card>
   );
