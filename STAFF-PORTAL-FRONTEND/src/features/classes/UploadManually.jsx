@@ -9,7 +9,20 @@ export const UploadManually = (
      FormType }
         ) => {
     const [localStudents, setLocalStudents] = useState([]);
-  
+
+  async function fetchStudents(){
+               
+           try{
+            const response=await axios.get(`http://localhost:3000/api/usermyclasses/${myClass.userclassesId}`);
+                   
+             setLocalStudents(response.data.students);
+             console.log("response Students : ",response);
+
+
+           }catch(error){
+                  console.log("Fetching not working "+ error);}
+}
+
     useEffect(() => {
       // Initialize state dynamically based on columns
       setLocalStudents(
@@ -17,8 +30,13 @@ export const UploadManually = (
           Object.fromEntries(columns.map(({ key }) => [key, ""])) // Create empty fields
         )
       );
+
+      fetchStudents();
     }, [myClass.students, columns]);
-  
+
+  console.log("classId : ",myClass.userclassesId);
+  console.log("localStudents : ",localStudents);
+
     const handleInputChange = (index, Key, value) => {
       setLocalStudents((prev) =>
         prev.map((student, i) => (i === index ? { ...student, [Key]: value } : student))
