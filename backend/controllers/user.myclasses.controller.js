@@ -394,6 +394,54 @@ async function handleAttendanceOFStudents(req, res) {
   }
 }
 
+async function updateStudentInClass(req,res){
+  const classId= req.params.classId;
+  const {
+    name,
+    rollNumber,
+    semester,
+    branch,
+    email,
+    phone,
+    studentId,
+  } = req.body;
+
+   try {
+     // Find the student by ID
+     const student = await studentModel.findById(studentId);
+
+     if (!student) {
+       return res.status(404).json({
+         message: `Student with ID ${studentId} not found`,
+       });
+     }
+
+     // Update the student fields
+     student.name = name;
+     student.rollNumber = rollNumber;
+     student.semester = semester;
+     student.branch = branch;
+     student.email = email;
+     student.phone = phone;
+
+     // Save the updated student
+     await student.save();
+
+     return res.status(200).json({
+       message: `Details of student ${student.name} updated successfully`,
+       updatedStudentId: studentId,
+       assignedClassId: classId,
+     });
+   } catch (error) {
+     return res
+       .status(500)
+       .json({ 
+             msg: `Error updating student ${student.name} in class` ,
+             error:error.message
+            });
+   }
+}
+
 async function deleteStudentIdFromClass(req, res) {
   const { studentId } = req.body;
   const classId = req.params.id;
@@ -650,7 +698,7 @@ module.exports = {
   handleUploadExcel,
   handleUploadManual,
   handleAttendanceOFStudents,
-  
+
   deleteStudentIdFromClass,
   deleteMultipleStudentIdsFromClass,
 
@@ -660,4 +708,5 @@ module.exports = {
 
   insertStudentIdToCorrespondingClass,
   completeListOfAllStudentsFromClass,
+  updateStudentInClass,
 };

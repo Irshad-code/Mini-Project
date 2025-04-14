@@ -53,10 +53,10 @@ function StudentPage() {
 
     setEditableStudentId(null);
     setEditedStudent({});
-
+    console.log("Edited Student: ", editedStudent);
     // Try saving in background
     try {
-      const response = await axios.post(`
+      const response = await axios.put(`
         ${BACKEND_LINK}/usermyclasses/students/update/${classId}`,
         editedStudent
       );

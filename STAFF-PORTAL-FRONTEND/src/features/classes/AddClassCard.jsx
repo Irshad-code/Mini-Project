@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 
@@ -8,6 +9,11 @@ const AddClassCard = ({
   setActiveForm,
   FormType,
 }) => {
+  // Toggle visibility of schedule editor per row
+  const toggleScheduleEditor = (index) => {
+    updateNewClass(index, "showScheduleEditor", !newClasses[index].showScheduleEditor);
+  };
+
   return (
     <Card className="p-6">
       <form onSubmit={onAdd_classes} className="space-y-4">
@@ -18,42 +24,107 @@ const AddClassCard = ({
                 <th className="px-4 py-2">Subject Code</th>
                 <th className="px-4 py-2">Subject Name</th>
                 <th className="px-4 py-2">Semester</th>
-                <th className="px-4 py-2">Branch</th>
                 <th className="px-4 py-2">Schedule</th>
+                <th className="px-4 py-2">Class Type</th>
+                <th className="px-4 py-2">Branch</th>
               </tr>
             </thead>
             <tbody>
               {newClasses.map((classData, index) => (
                 <tr key={index}>
-                  {[
-                    "subject",
-                    "code",
-                    "semester",
-                    "branch",
-                    "schedule",
-                  ].map((field) => (
+                  {/* Subject Code, Subject Name, Semester */}
+                  {["code", "subject", "semester"].map((field) => (
                     <td key={field} className="px-2 py-1">
                       <input
-                        type={
-                         field === "schedule"
-                            ? "date"
-                            : "text"
-                        }
+                        type="text"
                         value={classData[field]}
                         onChange={(e) =>
                           updateNewClass(index, field, e.target.value)
                         }
                         className="w-full p-1 border rounded"
                         required
-                        {...(field === "students" && { min: 1 })}
                       />
                     </td>
                   ))}
+
+                  {/* Schedule */}
+                  <td className="px-2 py-1">
+                    <div className="space-y-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full text-xs"
+                        onClick={() => toggleScheduleEditor(index)}
+                      >
+                        {classData.fromTime && classData.toTime
+                          ? `${classData.fromTime} - ${classData.toTime}`
+                          : "Set Schedule"}
+                      </Button>
+                      {classData.showScheduleEditor && (
+                        <div className="space-y-1">
+                          <input
+                            type="time"
+                            value={classData.fromTime}
+                            onChange={(e) =>
+                              updateNewClass(index, "fromTime", e.target.value)
+                            }
+                            className="w-full p-1 border rounded"
+                            required
+                          />
+                          <input
+                            type="time"
+                            value={classData.toTime}
+                            onChange={(e) =>
+                              updateNewClass(index, "toTime", e.target.value)
+                            }
+                            className="w-full p-1 border rounded"
+                            required
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Class Type dropdown */}
+                  <td className="px-2 py-1">
+                    <select
+                      value={classData.type || "ordinary"}
+                      onChange={(e) =>
+                        updateNewClass(index, "type", e.target.value)
+                      }
+                      className="w-full p-1 border rounded"
+                      required
+                    >
+                      <option value="ordinary">Ordinary</option>
+                      <option value="honour">Honour</option>
+                      <option value="minor">Minor</option>
+                    </select>
+                  </td>
+
+                  {/* Branch input */}
+                  <td className="px-2 py-1">
+                    <input
+                      type="text"
+                      value={classData.branch}
+                      onChange={(e) =>
+                        updateNewClass(index, "branch", e.target.value)
+                      }
+                      className="w-full p-1 border rounded"
+                      required={classData.type === "ordinary"}
+                      disabled={classData.type !== "ordinary"}
+                      placeholder={
+                        classData.type === "ordinary"
+                          ? "Enter branch"
+                          : "N/A"
+                      }
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
         <div className="flex justify-end space-x-2">
           <Button
             type="button"

@@ -14,7 +14,7 @@ router.post(
   commonLimiter,
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
-  validateAndTransformRequest(MyClassRequest),
+  //validateAndTransformRequest(MyClassRequest),
   commonController.create
 );
 
@@ -31,7 +31,7 @@ router.put(
   commonLimiter,
   // passport.authenticate("jwt", { session: false }), 
   // authorizeAdminUser,
-  validateAndTransformRequest(MyClassRequest),
+  //validateAndTransformRequest(MyClassRequest),
   commonController.updateById
 );
 
@@ -84,6 +84,14 @@ router.get(
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
   myClassesController.completeListOfAllStudentsFromClass
+);
+
+router.put(
+  "/students/update/:id",
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  myClassesController.updateStudentInClass
 );
 
 router.post(

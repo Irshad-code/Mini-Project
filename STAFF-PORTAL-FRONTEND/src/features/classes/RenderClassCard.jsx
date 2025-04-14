@@ -12,7 +12,7 @@ const RenderClassCard = ({
   setMyClass,
   FormType,
   onDelete_class,
-  refreshClasses
+  refreshClasses,
 }) => {
   const navigate = useNavigate();
 
@@ -46,12 +46,18 @@ const RenderClassCard = ({
 
   const renderActionButtons = () => (
     <div className="flex items-center space-x-2">
-      <Button onClick={handleEdit} className="bg-blue-500">Edit</Button>
-      <Button onClick={handleDelete} className="bg-black">Delete</Button>
-      <Button onClick={handleUploadStudents} className="bg-blue-500">Upload Students</Button>
+      <Button onClick={handleEdit} className="bg-blue-500">
+        Edit
+      </Button>
+      <Button onClick={handleDelete} className="bg-black">
+        Delete
+      </Button>
+      <Button onClick={handleUploadStudents} className="bg-blue-500">
+        Upload Students
+      </Button>
     </div>
   );
-    
+
   return (
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
@@ -61,7 +67,12 @@ const RenderClassCard = ({
               {classItem.subject}
             </h3>
             <p className="text-[var(--color-text-secondary)]">
-              {classItem.code} • {classItem.semester} {classItem.branch}
+              {classItem.code} • {classItem.semester}{" "}
+              {classItem.type &&
+              classItem.type.toLowerCase() !== "ordinary"
+                ? classItem.type.charAt(0).toUpperCase() +
+                  classItem.type.slice(1)
+                : classItem.branch}
             </p>
           </div>
           <Button
@@ -70,65 +81,61 @@ const RenderClassCard = ({
           >
             {type === "current" ? "Archive Class" : "Unarchive Class"}
           </Button>
-          <Button className="flex items-center space-x-2 text-[var(--color-text-secondary)] text-white"
-              onClick={()=> navigate(`/students/${classItem.userclassesId}`)}
+          <Button
+            className="flex items-center space-x-2 text-[var(--color-text-secondary)] text-white"
+            onClick={() => navigate(`/students/${classItem.userclassesId}`)}
           >
             <FiUsers className="w-4 h-4" />
             <span>{classItem.studentList.length} students</span>
           </Button>
         </div>
 
-        
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
-              <FiCalendar className="w-4 h-4" />
-
-              <span>{classItem.schedule}</span>
-            </div>
-            {renderActionButtons()}
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                variant="secondary"
-                className="w-full"
-                onClick={() =>
-                  window.open(
-                    "https://drive.google.com/drive/folders/1_iyHqZk4MUDLTec5reneK9Az_JmU-MUl?usp=drive_link",
-                    "_blank"
-                  )
-                }
-              >
-                Course Files
-              </Button>
-              <Button
-                variant="secondary"
-                className="w-full"
-                onClick={() =>
-                  navigate(`/attendance/${classItem.userclassesId}`)
-                }
-              >
-                Attendance
-              </Button>
-              <Button
-                variant="secondary"
-                className="w-full"
-                onClick={() =>
-                  navigate(`/internalmarks/${classItem.userclassesId}`)
-                }
-              >
-                Internal Marks
-              </Button>
-              <Button
-                variant="secondary"
-                className="w-full"
-                onClick={() =>
-                  navigate(`/seriesmarks/${classItem.userclassesId}`)
-                }
-              >
-                Series Marks
-              </Button>
-            </div>
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
+            <FiCalendar className="w-4 h-4" />
+            <span>{classItem.schedule}</span>
           </div>
-          
+          {renderActionButtons()}
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() =>
+                window.open(
+                  "https://drive.google.com/drive/folders/1_iyHqZk4MUDLTec5reneK9Az_JmU-MUl?usp=drive_link",
+                  "_blank"
+                )
+              }
+            >
+              Course Files
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => navigate(`/attendance/${classItem.userclassesId}`)}
+            >
+              Attendance
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() =>
+                navigate(`/internalmarks/${classItem.userclassesId}`)
+              }
+            >
+              Internal Marks
+            </Button>
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() =>
+                navigate(`/seriesmarks/${classItem.userclassesId}`)
+              }
+            >
+              Series Marks
+            </Button>
+          </div>
+        </div>
       </div>
     </Card>
   );

@@ -3,7 +3,6 @@ import { FiCalendar,FiArchive } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 import RenderClassCard from "./RenderClassCard";
 
@@ -23,7 +22,6 @@ const tabs = [
 const BACKEND_LINK = import.meta.env.VITE_API_URL + "/usermyclasses";
 
 export default function MyClasses() {
-  const navigate = useNavigate();
   const [classes, setClasses] = useState({
     current: [],
     archived: [],
@@ -45,14 +43,16 @@ export default function MyClasses() {
   const [numClasses, setNumClasses] = useState(1);
   const [newClasses, setNewClasses] = useState([
     {
-      subject: "",
       code: "",
+      subject: "",
       semester: "",
+      type: "ordinary",
       branch: "",
-      students: "",
-      schedule: "",
-      syllabus: "",
-      courseOutcome: "",
+      fromTime: "",             // added
+      toTime: "",               // added
+      schedule: "",             // still needed
+      showScheduleEditor: false, // added for UI toggle
+      currentClass: true,
     },
   ]);
 
@@ -83,22 +83,22 @@ export default function MyClasses() {
     fetchClasses();
   }, []);
 
-  const handleNumClassesSubmit = () => {
-    setNewClasses(
-      Array(numClasses).fill({
-        subject: "",
-        code: "",
-        semester: "",
-        branch: "",
-        students: "",
-        schedule: "",
-        syllabus: "",
-        courseOutcome: "",
-        currentClass: true,
-      })
-    );
-    setActiveForm(FormType.ADD_CLASS)
-    
+ const handleNumClassesSubmit = () => {
+    const newArray = Array.from({ length: numClasses }, () => ({
+      code: "",
+      subject: "",
+      semester: "",
+      type: "ordinary",
+      branch: "",
+      fromTime: "",             // added
+      toTime: "",               // added
+      schedule: "",             // still needed
+      showScheduleEditor: false, // added for UI toggle
+      currentClass: true,
+    }));
+  
+    setNewClasses(newArray);
+    setActiveForm(FormType.ADD_CLASS);
   };
 
   const updateNewClass = (index, field, value) => {
@@ -112,48 +112,88 @@ export default function MyClasses() {
 
   async function onAdd_classes(e) {
     e.preventDefault();
-
-    // Validate all classes
-    for (let classData of newClasses) {
+  
+    const cleanedClasses = [];
+  
+    for (let i = 0; i < newClasses.length; i++) {
+      const classData = newClasses[i];
+      const {
+        subject,
+        code,
+        semester,
+        type,
+        branch,
+        fromTime,
+        toTime,
+        currentClass,
+      } = classData;
+  
       if (
-        !classData.students ||
-        isNaN(classData.students) ||
-        parseInt(classData.students) <= 0
+        !subject ||
+        !code ||
+        !semester ||
+        (type === "ordinary" && !branch) ||
+        !fromTime ||
+        !toTime
       ) {
-        console.error(
-          "Number of students must be greater than 0 for all classes"
-        );
+        alert(`Please fill out all fields for class #${i + 1}`);
         return;
       }
+  
+      // Construct formatted schedule
+      
+        const convertTo12Hour = (time24) => {
+        const [hour, minute] = time24.split(":").map(Number);
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const hour12 = hour % 12 || 12;
+        return `${hour12.toString().padStart(2, "0")}:${minute
+          .toString()
+          .padStart(2, "0")} ${ampm}`;
+      };
+      
+     
+      
+      const schedule = `${convertTo12Hour(fromTime)} - ${convertTo12Hour(toTime)}`;
+  
+      cleanedClasses.push({
+        subject,
+        code,
+        semester,
+        type,
+        branch: type === "ordinary" ? branch : "", // Clear branch for other types
+        schedule,
+        currentClass,
+      });
     }
 
+    console.log("Class Data ", cleanedClasses)
+  
     try {
-      // Add all classes sequentially
-      for (let classData of newClasses) {
-        const formattedData = {
-          ...classData,
-          students: parseInt(classData.students),
-        };
-        await axios.post(`${BACKEND_LINK}/create`, formattedData);
+      for (const classData of cleanedClasses) {
+        await axios.post(`${BACKEND_LINK}/create`, classData);
       }
-
+  
       await fetchClasses();
-      setActiveForm(FormType.NONE)
+  
+      // Reset form
+      setActiveForm(FormType.NONE);
       setNewClasses([
         {
           subject: "",
           code: "",
           semester: "",
+          type: "ordinary",
           branch: "",
-          students: "",
+          fromTime: "",
+          toTime: "",
           schedule: "",
-          syllabus: "",
-          courseOutcome: "",
-          currentClass: true,// it should be builded on UI
+          showScheduleEditor: false,
+          currentClass: true,
         },
       ]);
     } catch (error) {
       console.error("Error adding classes:", error);
+      alert("Error adding classes, please try again later.");
     }
   }
 
