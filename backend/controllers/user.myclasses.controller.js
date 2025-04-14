@@ -99,11 +99,11 @@ async function handleUploadManual(req, res) {
 
       return res.status(203).json({
         message:
-          "No students found outside of the Db, so inserted existing students Id from Db to the class as mentioned in Excel",
+          "No students found outside of the Db, so inserted existing students Id from Db to the class as mentioned in the request.",
         studentIdList: newStudentIdsToInsertFromDb,
       });
     }
-
+    const Class = await UserMyClassesModel.findById(classId);
     const studentRecords = uniqueStudents.map((student) => ({
       classList: [classId],
       name: student["name"],
@@ -111,7 +111,7 @@ async function handleUploadManual(req, res) {
       email: student["email"],
 
       phone: student["phone"],
-      semester: student["semester"],
+      semester: Class["semester"],
       branch: student["branch"],
       classRecords: {
         [classId]: {
@@ -141,7 +141,8 @@ async function handleUploadManual(req, res) {
   } catch (error) {
     return res
       .status(500)
-      .json({ error: "Error processing file.", details: error.message });
+      .json({ error: "Error processing request.",
+              details: error.message });
   }
 }
 
