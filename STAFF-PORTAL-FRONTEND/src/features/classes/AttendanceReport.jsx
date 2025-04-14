@@ -54,7 +54,7 @@ export default function AttendanceReport() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-8 max-w-5xl mx-auto"
+      className="p-8 max-w-full mx-auto"
     >
       <motion.div
         initial={{ scale: 0.95 }}
@@ -72,19 +72,19 @@ export default function AttendanceReport() {
         </motion.h1>
 
         <div className="overflow-x-auto rounded-xl shadow-sm border border-gray-100">
-          <table className="min-w-full">
+          <table className="min-w-full table-auto">
             <thead>
               <tr className="bg-gradient-to-r from-blue-500 to-blue-600">
-                <th className="px-6 py-4 text-sm font-semibold text-white">
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
                   Roll No
                 </th>
-                <th className="px-6 py-4 text-sm font-semibold text-white">
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
                   Name
                 </th>
-                <th className="px-6 py-4 text-sm font-semibold text-white">
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
                   Days Present
                 </th>
-                <th className="px-6 py-4 text-sm font-semibold text-white">
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
                   Attendance %
                 </th>
               </tr>
@@ -107,16 +107,16 @@ export default function AttendanceReport() {
                     key={student.studentId}
                     className="hover:bg-gray-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-700 text-center">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-700 text-left sm:text-center">
                       {student.rollNumber}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 text-center">
+                    <td className="px-6 py-4 text-sm text-gray-700 text-left sm:text-center">
                       {student.name}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 text-center">
+                    <td className="px-6 py-4 text-sm text-gray-700 text-left sm:text-center">
                       {daysPresent}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 text-center">
+                    <td className="px-6 py-4 text-sm text-gray-700 text-left sm:text-center">
                       <span
                         className={`px-3 py-1 rounded-full ${
                           attendancePercentage >= 75

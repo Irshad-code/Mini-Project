@@ -20,10 +20,14 @@ const RenderClassCard = ({
     setEditingClass(classItem);
     setActiveForm(FormType.EDIT_CLASS);
   };
-
   const handleDelete = () => {
-    onDelete_class(classItem.userclassesId);
+    const isConfirmed = window.confirm(`Do you want to delete the class ${classItem.subject}?`);
+  
+    if (isConfirmed) {
+      onDelete_class(classItem.userclassesId);
+    }
   };
+  
 
   const handleUploadStudents = () => {
     setActiveForm(FormType.UPLOAD_STUDENTS);
@@ -75,7 +79,10 @@ const RenderClassCard = ({
                 : classItem.branch}
             </p>
           </div>
-          <Button
+
+
+        <div  className=" flex flex-col space-y-2">
+        <Button
             onClick={handleArchive}
             className="bg-yellow-500 hover:bg-yellow-600"
           >
@@ -88,6 +95,11 @@ const RenderClassCard = ({
             <FiUsers className="w-4 h-4" />
             <span>{classItem.studentList.length} students</span>
           </Button>
+
+
+        </div>
+
+
         </div>
 
         <div className="space-y-2">

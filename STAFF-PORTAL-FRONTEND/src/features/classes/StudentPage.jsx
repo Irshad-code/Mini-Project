@@ -13,9 +13,7 @@ function StudentPage() {
   const fetchStudents = async () => {
     try {
       console.log("Fetching Students...");
-      const response = await axios.get(
-        `${BACKEND_LINK}/usermyclasses/${classId}`
-      );
+      const response = await axios.get(`${BACKEND_LINK}/usermyclasses/${classId}`);
       const data = response.data.students || [];
       setStudents(data);
     } catch (error) {
@@ -24,10 +22,7 @@ function StudentPage() {
   };
 
   useEffect(() => {
-    console.log(
-      "Backend Link: ",
-      `BACKEND_LINK + /usermyclasses/students/update/${classId}`
-    );
+    console.log("Backend Link: ", `${BACKEND_LINK}/usermyclasses/students/update/${classId}`);
     fetchStudents();
   }, []);
 
@@ -54,10 +49,10 @@ function StudentPage() {
     setEditableStudentId(null);
     setEditedStudent({});
     console.log("Edited Student: ", editedStudent);
-    // Try saving in background
+    // Try saving in the background
     try {
-      const response = await axios.put(`
-        ${BACKEND_LINK}/usermyclasses/students/update/${classId}`,
+      const response = await axios.put(
+        `${BACKEND_LINK}/usermyclasses/students/update/${classId}`,
         editedStudent
       );
       console.log("Student updated:", response.data);
@@ -72,24 +67,21 @@ function StudentPage() {
     setStudents((prevStudents) =>
       prevStudents.filter((student) => student.studentId !== studentId)
     );
-  
+
     // Try deleting in background
     try {
-      const jsonData={
-        studentId:studentId
-    };
-      const response = await axios.
-      post(`${BACKEND_LINK}/usermyclasses/students/delete/${classId}`,jsonData );
+      const jsonData = {
+        studentId: studentId,
+      };
+      const response = await axios.post(`${BACKEND_LINK}/usermyclasses/students/delete/${classId}`, jsonData);
       console.log("Student deleted:", response.data);
     } catch (error) {
       console.log("Delete failed:", error.response?.data || error.message);
-      console.log("Delete studentId :",studentId)
-     // alert("Failed to delete student from server. Please refresh to sync data.");
-      // Optionally: re-add the student if delete failed
-      // (not necessary if you're handling sync elsewhere)
     }
   };
+
   ////////////////////////////////////////////////////
+
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
   const handleCheckboxChange = (studentId) => {
@@ -126,7 +118,6 @@ function StudentPage() {
     };
 
     try {
-      console.log("student ids: ",jsonData)
       await axios.post(`${BACKEND_LINK}/usermyclasses/students/multi_delete/${classId}`, jsonData);
       setSelectedStudentIds([]);
     } catch (error) {
@@ -134,7 +125,7 @@ function StudentPage() {
     }
   };
 
- return (
+  return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -161,30 +152,25 @@ function StudentPage() {
             <input
               type="checkbox"
               id="selectAll"
-              checked={
-                selectedStudentIds.length === students.length &&
-                students.length > 0
-              }
+              checked={selectedStudentIds.length === students.length && students.length > 0}
               onChange={handleSelectAll}
               className="w-6 h-6"
             />
-            <label
-              htmlFor="selectAll"
-              className="text-lg font-medium text-gray-700"
-            >
+            <label htmlFor="selectAll" className="text-lg font-medium text-gray-700">
               Select All
             </label>
           </div>
 
-        { selectedStudentIds.length>0 ?(<motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleMultiDelete}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md"
-          >
-            Delete Selected
-          </motion.button>):null
-        }
+          {selectedStudentIds.length > 0 && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleMultiDelete}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md"
+            >
+              Delete Selected
+            </motion.button>
+          )}
         </div>
 
         <motion.div
@@ -193,22 +179,11 @@ function StudentPage() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="w-full overflow-x-auto rounded-xl shadow-sm border border-gray-100"
         >
-          <table className="min-w-full">
+          <table className="min-w-full table-auto sm:text-sm">
             <thead>
               <tr className="bg-gradient-to-r from-blue-500 to-blue-600">
-                <th className="px-4 py-2 text-sm font-semibold text-white text-center">
-                  Select
-                </th>
-
-                {[
-                  "Roll No",
-                  "Name",
-                  "Phone",
-                  "Semester",
-                  "Branch",
-                  "Email",
-                  "Actions",
-                ].map((heading) => (
+                <th className="px-4 py-2 text-sm font-semibold text-white text-center">Select</th>
+                {["Roll No", "Name", "Phone", "Semester", "Branch", "Email", "Actions"].map((heading) => (
                   <th
                     key={heading}
                     className="px-4 py-2 text-sm font-semibold text-white text-center break-words whitespace-normal max-w-[150px]"
@@ -235,9 +210,7 @@ function StudentPage() {
                     />
                   </td>
 
-                  <td className="px-4 py-2 text-sm text-center">
-                    {student.rollNumber}
-                  </td>
+                  <td className="px-4 py-2 text-sm text-center">{student.rollNumber}</td>
 
                   <td className="px-4 py-2 text-sm text-center">
                     {editableStudentId === student.studentId ? (
@@ -323,11 +296,7 @@ function StudentPage() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => {
-                        if (
-                          window.confirm(
-                            "Are you sure you want to delete this student?"
-                          )
-                        ) {
+                        if (window.confirm("Are you sure you want to delete this student?")) {
                           handleDelete(student.studentId);
                         }
                       }}
