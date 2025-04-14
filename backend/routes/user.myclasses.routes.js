@@ -79,11 +79,27 @@ router.post(
 );
 
 router.get(
-  "/:id",
+  "/:id",//  /students/:id
   commonLimiter,
   // passport.authenticate("jwt", { session: false }),
   // authorizeAdminUser,
   myClassesController.completeListOfAllStudentsFromClass
+);
+
+router.post(
+  "/students/delete/:id",
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  myClassesController.deleteStudentIdFromClass
+);
+
+router.post(
+  "/students/multi_delete/:id",
+  commonLimiter,
+  // passport.authenticate("jwt", { session: false }),
+  // authorizeAdminUser,
+  myClassesController.deleteMultipleStudentIdsFromClass
 );
 
 router.put(

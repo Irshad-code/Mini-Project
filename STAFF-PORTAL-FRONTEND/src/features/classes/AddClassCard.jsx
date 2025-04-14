@@ -15,14 +15,11 @@ const AddClassCard = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-4 py-2">Subject Name</th>
                 <th className="px-4 py-2">Subject Code</th>
+                <th className="px-4 py-2">Subject Name</th>
                 <th className="px-4 py-2">Semester</th>
                 <th className="px-4 py-2">Branch</th>
-                <th className="px-4 py-2">Students</th>
                 <th className="px-4 py-2">Schedule</th>
-                <th className="px-4 py-2">Syllabus</th>
-                <th className="px-4 py-2">Course Outcome</th>
               </tr>
             </thead>
             <tbody>
@@ -33,17 +30,12 @@ const AddClassCard = ({
                     "code",
                     "semester",
                     "branch",
-                    "students",
                     "schedule",
-                    "syllabus",
-                    "courseOutcome",
                   ].map((field) => (
                     <td key={field} className="px-2 py-1">
                       <input
                         type={
-                          field === "students"
-                            ? "number"
-                            : field === "schedule"
+                         field === "schedule"
                             ? "date"
                             : "text"
                         }

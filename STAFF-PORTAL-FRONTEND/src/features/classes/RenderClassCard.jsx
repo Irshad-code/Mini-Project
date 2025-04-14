@@ -51,7 +51,7 @@ const RenderClassCard = ({
       <Button onClick={handleUploadStudents} className="bg-blue-500">Upload Students</Button>
     </div>
   );
-     const scheduleParts = classItem.schedule.split("#");
+    
   return (
     <Card key={classItem.id} className="p-6 hover:shadow-lg transition-shadow">
       <div className="space-y-4">
@@ -70,10 +70,12 @@ const RenderClassCard = ({
           >
             {type === "current" ? "Archive Class" : "Unarchive Class"}
           </Button>
-          <div className="flex items-center space-x-2 text-[var(--color-text-secondary)]">
+          <Button className="flex items-center space-x-2 text-[var(--color-text-secondary)] text-white"
+              onClick={()=> navigate(`/students/${classItem.userclassesId}`)}
+          >
             <FiUsers className="w-4 h-4" />
             <span>{classItem.studentList.length} students</span>
-          </div>
+          </Button>
         </div>
 
         

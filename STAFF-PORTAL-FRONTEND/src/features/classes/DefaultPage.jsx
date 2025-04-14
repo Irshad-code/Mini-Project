@@ -109,7 +109,6 @@ const DefaultPage = ({
                   { label: "Roll No", key: "rollNumber", type: "text" },
                   { label: "Name", key: "name", type: "text" },
                   { label: "Phone Number", key: "phone", type: "tel" },
-                  { label: "Semester", key: "semester", type: "text" },
                   { label: "Branch", key: "branch", type: "text" },
                   { label: "Email", key: "email", type: "email" },
                 ]}

@@ -47,7 +47,7 @@ router.delete(
   commonController.deleteById, //delete the student Object from Db
 );
 
-router.delete(
+router.post(
   "/deleteAll", // idList of the students to be passed in body
   commonLimiter,
   // passport.authenticate("jwt", { session: false }),

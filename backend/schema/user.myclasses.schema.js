@@ -7,11 +7,24 @@ const MyClassesSchema = new Schema(
     subject: { type: String, required: true },
     code: { type: String, required: true }, //may set Unique
     semester: { type: String, required: true },
-    branch: { type: String, required: true },
-    students: { type: Number, required: true, min: 1 },
+    type: { type: String, required: true },
+    branch: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          // If type is 'ordinary', then branch must not be empty
+          if (this.type === "ordinary") {
+            return value && value.trim().length > 0;
+          }
+          // Otherwise it's okay even if branch is empty
+          return true;
+        },
+        message: "Branch is required when type is 'ordinary'",
+      },
+    },
     schedule: { type: String, required: true },
-    syllabus: { type: String, required: true }, // File path or URL
-    courseOutcome: { type: String, required: true }, // File path or URL
+    //syllabus: { type: String, required: true }, // File path or URL
+    //courseOutcome: { type: String, required: true }, // File path or URL
     studentList: [{ type: mongoose.Schema.Types.ObjectId, default: [] }], // Store student IDs
     currentClass: { type: Boolean, required: true },
     attendanceDateList: [{ type: String, default: [] }],
