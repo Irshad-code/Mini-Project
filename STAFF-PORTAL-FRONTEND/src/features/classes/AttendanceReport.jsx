@@ -7,22 +7,15 @@ export default function AttendanceReport() {
   const { classId } = useParams();
   const BACKEND_LINK = import.meta.env.VITE_API_URL + `/usermyclasses/${classId}`;
 
-  // State for students and attendance dates
   const [students, setStudents] = useState([]);
   const [attendanceDateList, setAttendanceDateList] = useState([]);
 
-  // Fetch attendance dates List
   async function fetchAttendanceDateList() {
     try {
-      const response = await axios.get(
-        "http://localhost:3000/api/usermyclasses/"
-      );
-      const classData = response.data.find(
-        (cls) => cls.userclassesId === classId
-      );
-
+      const response = await axios.get("http://localhost:3000/api/usermyclasses/");
+      const classData = response.data.find((cls) => cls.userclassesId === classId);
       if (classData) {
-        setAttendanceDateList(classData.attendanceDateList || []); // Store in state
+        setAttendanceDateList(classData.attendanceDateList || []);
       } else {
         console.log("Class not found!");
         setAttendanceDateList([]);
@@ -33,7 +26,6 @@ export default function AttendanceReport() {
     }
   }
 
-  // Fetch students
   const fetchStudents = async () => {
     try {
       const response = await axios.get(BACKEND_LINK);
@@ -43,7 +35,6 @@ export default function AttendanceReport() {
     }
   };
 
-  // Use effect to load data when component mounts
   useEffect(() => {
     fetchAttendanceDateList();
     fetchStudents();
@@ -54,50 +45,40 @@ export default function AttendanceReport() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-8 max-w-full mx-auto"
+      className="p-4 sm:p-8 max-w-full mx-auto"
     >
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-xl shadow-2xl p-8 border border-gray-100"
+        className="bg-white rounded-xl shadow-2xl p-6 sm:p-8 border border-gray-100"
       >
         <motion.h1
           initial={{ y: -20 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-4xl font-bold text-gray-800 mb-8 text-center"
+          className="text-3xl sm:text-4xl font-bold text-gray-800 mb-8 text-center"
         >
           Attendance Report
         </motion.h1>
 
-        <div className="overflow-x-auto rounded-xl shadow-sm border border-gray-100">
+        {/* Desktop Table */}
+        <div className="hidden sm:block overflow-x-auto rounded-xl shadow-sm border border-gray-100">
           <table className="min-w-full table-auto">
             <thead>
               <tr className="bg-gradient-to-r from-blue-500 to-blue-600">
-                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
-                  Roll No
-                </th>
-                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
-                  Name
-                </th>
-                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
-                  Days Present
-                </th>
-                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">
-                  Attendance %
-                </th>
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">Roll No</th>
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">Name</th>
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">Days Present</th>
+                <th className="px-6 py-4 text-sm font-semibold text-white text-left sm:text-center">Attendance %</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
               {students.map((student, index) => {
-                const daysPresent =
-                  student.classRecords?.[classId]?.attendanceDates?.length || 0;
+                const daysPresent = student.classRecords?.[classId]?.attendanceDates?.length || 0;
                 const totalDays = attendanceDateList.length;
                 const attendancePercentage =
-                  totalDays > 0
-                    ? ((daysPresent / totalDays) * 100).toFixed(2)
-                    : 0;
+                  totalDays > 0 ? ((daysPresent / totalDays) * 100).toFixed(2) : 0;
 
                 return (
                   <motion.tr
@@ -134,6 +115,50 @@ export default function AttendanceReport() {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="sm:hidden flex flex-col gap-4">
+          {students.map((student, index) => {
+            const daysPresent = student.classRecords?.[classId]?.attendanceDates?.length || 0;
+            const totalDays = attendanceDateList.length;
+            const attendancePercentage =
+              totalDays > 0 ? ((daysPresent / totalDays) * 100).toFixed(2) : 0;
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                key={student.studentId}
+                className="border border-gray-200 rounded-xl p-4 shadow-sm bg-white"
+              >
+                <p className="text-sm font-semibold text-gray-700">
+                  <span className="font-bold">Roll No:</span> {student.rollNumber}
+                </p>
+                <p className="text-sm font-semibold text-gray-700">
+                  <span className="font-bold">Name:</span> {student.name}
+                </p>
+                <p className="text-sm font-semibold text-gray-700">
+                  <span className="font-bold">Days Present:</span> {daysPresent}
+                </p>
+                <p className="text-sm font-semibold text-gray-700">
+                  <span className="font-bold">Attendance:</span>{" "}
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm inline-block ${
+                      attendancePercentage >= 75
+                        ? "bg-green-100 text-green-800"
+                        : attendancePercentage >= 60
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {attendancePercentage}%
+                  </span>
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
     </motion.div>

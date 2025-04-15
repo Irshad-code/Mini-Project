@@ -9,10 +9,10 @@ function StudentPage() {
   const [students, setStudents] = useState([]);
   const [editableStudentId, setEditableStudentId] = useState(null);
   const [editedStudent, setEditedStudent] = useState({});
+  const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
   const fetchStudents = async () => {
     try {
-      console.log("Fetching Students...");
       const response = await axios.get(`${BACKEND_LINK}/usermyclasses/${classId}`);
       const data = response.data.students || [];
       setStudents(data);
@@ -22,7 +22,6 @@ function StudentPage() {
   };
 
   useEffect(() => {
-    console.log("Backend Link: ", `${BACKEND_LINK}/usermyclasses/students/update/${classId}`);
     fetchStudents();
   }, []);
 
@@ -39,50 +38,35 @@ function StudentPage() {
   };
 
   const handleSave = async () => {
-    // Immediately update the UI
     setStudents((prevStudents) =>
       prevStudents.map((student) =>
         student.studentId === editableStudentId ? editedStudent : student
       )
     );
-
     setEditableStudentId(null);
     setEditedStudent({});
-    console.log("Edited Student: ", editedStudent);
-    // Try saving in the background
     try {
-      const response = await axios.put(
+      await axios.put(
         `${BACKEND_LINK}/usermyclasses/students/update/${classId}`,
         editedStudent
       );
-      console.log("Student updated:", response.data);
     } catch (error) {
-      console.error("Update failed:", error.response?.data || error.message);
       alert("Failed to save changes.");
     }
   };
 
   const handleDelete = async (studentId) => {
-    // Immediately update the UI
     setStudents((prevStudents) =>
       prevStudents.filter((student) => student.studentId !== studentId)
     );
-
-    // Try deleting in background
     try {
-      const jsonData = {
-        studentId: studentId,
-      };
-      const response = await axios.post(`${BACKEND_LINK}/usermyclasses/students/delete/${classId}`, jsonData);
-      console.log("Student deleted:", response.data);
+      await axios.post(`${BACKEND_LINK}/usermyclasses/students/delete/${classId}`, {
+        studentId,
+      });
     } catch (error) {
-      console.log("Delete failed:", error.response?.data || error.message);
+      console.error("Delete failed:", error);
     }
   };
-
-  ////////////////////////////////////////////////////
-
-  const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
   const handleCheckboxChange = (studentId) => {
     setSelectedStudentIds((prev) =>
@@ -113,15 +97,13 @@ function StudentPage() {
       prev.filter((student) => !selectedStudentIds.includes(student.studentId))
     );
 
-    const jsonData = {
-      studentIdList: selectedStudentIds,
-    };
-
     try {
-      await axios.post(`${BACKEND_LINK}/usermyclasses/students/multi_delete/${classId}`, jsonData);
+      await axios.post(`${BACKEND_LINK}/usermyclasses/students/multi_delete/${classId}`, {
+        studentIdList: selectedStudentIds,
+      });
       setSelectedStudentIds([]);
     } catch (error) {
-      console.error("Multi delete failed:", error.response?.data || error.message);
+      console.error("Multi delete failed:", error);
     }
   };
 
@@ -173,21 +155,14 @@ function StudentPage() {
           )}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="w-full overflow-x-auto rounded-xl shadow-sm border border-gray-100"
-        >
-          <table className="min-w-full table-auto sm:text-sm">
+        {/* Desktop Table */}
+        <motion.div className="hidden sm:block overflow-x-auto rounded-xl shadow-sm border border-gray-100">
+          <table className="min-w-full table-auto text-sm">
             <thead>
-              <tr className="bg-gradient-to-r from-blue-500 to-blue-600">
-                <th className="px-4 py-2 text-sm font-semibold text-white text-center">Select</th>
+              <tr className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                <th className="px-4 py-2 text-center">Select</th>
                 {["Roll No", "Name", "Phone", "Semester", "Branch", "Email", "Actions"].map((heading) => (
-                  <th
-                    key={heading}
-                    className="px-4 py-2 text-sm font-semibold text-white text-center break-words whitespace-normal max-w-[150px]"
-                  >
+                  <th key={heading} className="px-4 py-2 text-center">
                     {heading}
                   </th>
                 ))}
@@ -195,13 +170,7 @@ function StudentPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
               {students.map((student, index) => (
-                <motion.tr
-                  key={student.studentId}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="hover:bg-gray-50 transition-colors duration-150"
-                >
+                <tr key={student.studentId} className="hover:bg-gray-50">
                   <td className="px-4 py-2 text-center">
                     <input
                       type="checkbox"
@@ -209,107 +178,113 @@ function StudentPage() {
                       onChange={() => handleCheckboxChange(student.studentId)}
                     />
                   </td>
-
-                  <td className="px-4 py-2 text-sm text-center">{student.rollNumber}</td>
-
-                  <td className="px-4 py-2 text-sm text-center">
+                  <td className="px-4 py-2 text-center">{student.rollNumber}</td>
+                  {["name", "phone", "semester", "branch", "email"].map((field) => (
+                    <td key={field} className="px-4 py-2 text-center">
+                      {editableStudentId === student.studentId ? (
+                        <input
+                          value={editedStudent[field]}
+                          onChange={(e) => handleChange(e, field)}
+                          className="border px-2 py-1 rounded w-full"
+                        />
+                      ) : (
+                        student[field]
+                      )}
+                    </td>
+                  ))}
+                  <td className="px-4 py-2 text-center">
                     {editableStudentId === student.studentId ? (
-                      <input
-                        value={editedStudent.name}
-                        onChange={(e) => handleChange(e, "name")}
-                        className="border px-2 py-1 rounded w-full"
-                      />
-                    ) : (
-                      student.name
-                    )}
-                  </td>
-
-                  <td className="px-4 py-2 text-sm text-center">
-                    {editableStudentId === student.studentId ? (
-                      <input
-                        value={editedStudent.phone}
-                        onChange={(e) => handleChange(e, "phone")}
-                        className="border px-2 py-1 rounded w-full"
-                      />
-                    ) : (
-                      student.phone
-                    )}
-                  </td>
-
-                  <td className="px-4 py-2 text-sm text-center">
-                    {editableStudentId === student.studentId ? (
-                      <input
-                        value={editedStudent.semester}
-                        onChange={(e) => handleChange(e, "semester")}
-                        className="border px-2 py-1 rounded w-full"
-                      />
-                    ) : (
-                      student.semester
-                    )}
-                  </td>
-
-                  <td className="px-4 py-2 text-sm text-center">
-                    {editableStudentId === student.studentId ? (
-                      <input
-                        value={editedStudent.branch}
-                        onChange={(e) => handleChange(e, "branch")}
-                        className="border px-2 py-1 rounded w-full"
-                      />
-                    ) : (
-                      student.branch
-                    )}
-                  </td>
-
-                  <td className="px-4 py-2 text-sm text-center">
-                    {editableStudentId === student.studentId ? (
-                      <input
-                        value={editedStudent.email}
-                        onChange={(e) => handleChange(e, "email")}
-                        className="border px-2 py-1 rounded w-full"
-                      />
-                    ) : (
-                      student.email
-                    )}
-                  </td>
-
-                  <td className="px-4 py-2 text-sm text-center">
-                    {editableStudentId === student.studentId ? (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      <button
                         onClick={handleSave}
-                        className="px-3 py-1 bg-green-500 text-white rounded-lg shadow-md shadow-green-200 mr-2"
+                        className="bg-green-500 text-white px-3 py-1 rounded mr-2"
                       >
                         Save
-                      </motion.button>
+                      </button>
                     ) : (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      <button
                         onClick={() => handleEdit(student)}
-                        className="px-3 py-1 bg-orange-500 text-white rounded-lg shadow-md shadow-orange-200 mr-2"
+                        className="bg-orange-500 text-white px-3 py-1 rounded mr-2"
                       >
                         Edit
-                      </motion.button>
+                      </button>
                     )}
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        if (window.confirm("Are you sure you want to delete this student?")) {
-                          handleDelete(student.studentId);
-                        }
-                      }}
-                      className="px-3 py-1 bg-red-500 text-white rounded-lg shadow-md shadow-red-200"
+                    <button
+                      onClick={() =>
+                        window.confirm("Delete this student?") &&
+                        handleDelete(student.studentId)
+                      }
+                      className="bg-red-500 text-white px-3 py-1 rounded"
                     >
                       Delete
-                    </motion.button>
+                    </button>
                   </td>
-                </motion.tr>
+                </tr>
               ))}
             </tbody>
           </table>
         </motion.div>
+
+        {/* Mobile Stacked Cards */}
+        <div className="sm:hidden space-y-4 mt-4">
+          {students.map((student) => (
+            <div
+              key={student.studentId}
+              className="border rounded-lg p-4 shadow-md bg-gray-50 space-y-2"
+            >
+              <div className="flex justify-between items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedStudentIds.includes(student.studentId)}
+                  onChange={() => handleCheckboxChange(student.studentId)}
+                  className="w-5 h-5"
+                />
+                <span className="font-semibold text-sm text-gray-700">Roll No: {student.rollNumber}</span>
+              </div>
+
+              {["name", "phone", "semester", "branch", "email"].map((field) => (
+                <div key={field}>
+                  <label className="block text-xs text-gray-600 capitalize">{field}</label>
+                  {editableStudentId === student.studentId ? (
+                    <input
+                      value={editedStudent[field]}
+                      onChange={(e) => handleChange(e, field)}
+                      className="w-full border px-2 py-1 rounded mt-1"
+                    />
+                  ) : (
+                    <p className="text-sm">{student[field]}</p>
+                  )}
+                </div>
+              ))}
+
+              <div className="flex justify-end gap-2 pt-2">
+                {editableStudentId === student.studentId ? (
+                  <button
+                    onClick={handleSave}
+                    className="bg-green-500 text-white px-3 py-1 rounded"
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleEdit(student)}
+                    className="bg-orange-500 text-white px-3 py-1 rounded"
+                  >
+                    Edit
+                  </button>
+                )}
+                <button
+                  onClick={() =>
+                    window.confirm("Delete this student?") &&
+                    handleDelete(student.studentId)
+                  }
+                  className="bg-red-500 text-white px-3 py-1 rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </motion.div>
     </motion.div>
   );
