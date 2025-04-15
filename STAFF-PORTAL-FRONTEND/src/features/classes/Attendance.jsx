@@ -142,15 +142,16 @@ export default function Attendance() {
 
    if(isConfirm){
     console.log("Updated Students: ", updatedStudentsId);
-    await axios.put(
+    console.log("Updated date: ", date);
+   const res= await axios.put(
       `http://localhost:3000/api/usermyclasses/attendance/update/${classId}`,
-      { studentIdList: updatedStudentsId, date: date }
-    );
-   }
-
-  
+    {studentIdList: updatedStudentsId,
+       date: date}
+      );
+    console.log("response: ", res);
+    alert("Attendance submitted successfully!");
+  };
   }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -298,3 +299,4 @@ export default function Attendance() {
     </motion.div>
   );
 }
+

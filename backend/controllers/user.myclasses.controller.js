@@ -332,6 +332,19 @@ async function handleAttendanceOFStudents(req, res) {
   const { studentIdList, date } = req.body; // Expecting list of student IDs and a date
 
   try {
+    ///////////////////////////////////////////////////////////////////////
+    const Class = await UserMyClassesModel.findById(classId);
+    // Check if the date already exists in the attendance list of class
+    if (!Class.attendanceDateList.includes(date)) {
+      Class.attendanceDateList.push(date);
+    }
+    //else{
+    //   Class.attendanceDateList=Class.attendanceDateList.filter(attDate => attDate !== date);
+    // }
+    await Class.save();
+    console.log("class dateList: ", Class.attendanceDateList);
+    ///////////////////////////////////////////////////////////////////////
+    
     const updatedStudents = [];
 
     // Step 2: Process each student in the list
@@ -348,19 +361,6 @@ async function handleAttendanceOFStudents(req, res) {
       const classRecord = student.classRecords.get(classId);
       const attendanceDatesList = classRecord.get("attendanceDates");
       console.log("attendanceDatesList: ", attendanceDatesList);
-
-      ///////////////////////////////////////////////////////////////////////
-      const Class = await UserMyClassesModel.findById(classId);
-      // Check if the date already exists in the attendance list of class
-      if (!Class.attendanceDateList.includes(date)) {
-        Class.attendanceDateList.push(date);
-      }
-      //else{
-      //   Class.attendanceDateList=Class.attendanceDateList.filter(attDate => attDate !== date);
-      // }
-      await Class.save();
-      console.log("class dateList: ", Class.attendanceDateList);
-      ///////////////////////////////////////////////////////////////////////
 
       // Check if the date already exists in the attendance list of student
       const dateExists = attendanceDatesList.some(
