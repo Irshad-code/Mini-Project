@@ -109,11 +109,11 @@ const AddClassCard = ({
         </div>
 
         {/* Mobile view (cards) */}
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden space-y-10">
           {newClasses.map((classData, index) => (
             <div
               key={index}
-              className="p-4 border rounded space-y-3 bg-gray-50 shadow-sm"
+              className="p-4 border rounded space-y-3 bg-gray-300 shadow-sm"
             >
               {["code", "subject", "semester"].map((field) => (
                 <div key={field}>

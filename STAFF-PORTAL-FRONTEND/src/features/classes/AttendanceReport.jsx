@@ -115,7 +115,7 @@ export default function AttendanceReport() {
                       {student.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700 text-left sm:text-center">
-                      {daysPresent}
+                      {daysPresent}/{totalDays}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700 text-left sm:text-center">
                       <div className="w-full bg-gray-400 rounded-full h-6">
@@ -167,7 +167,7 @@ export default function AttendanceReport() {
                   <span className="font-bold">Name:</span> {student.name}
                 </p>
                 <p className="text-sm font-semibold text-gray-700">
-                  <span className="font-bold">Days Present:</span> {daysPresent}
+                  <span className="font-bold">Days Present:</span> {daysPresent}/{totalDays}
                 </p>
                 <p className="text-sm font-semibold text-gray-700">
                   <span className="font-bold">Attendance:</span>{" "}

@@ -75,7 +75,12 @@ export default function SeriesMarks() {
          },
        },
      };
+     const series1 = Number(updateStudent.classRecords[classId].series1Marks);
+     const series2 = Number(updateStudent.classRecords[classId].series2Marks);
 
+     const internalMarks = (series1+series2)/2;//internal marks calculation part
+
+     updateStudent.classRecords[classId].internalMarks=internalMarks;
      console.log("axios: ", updateStudent);
 
      const res = await axios.put(
