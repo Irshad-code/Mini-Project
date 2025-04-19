@@ -114,7 +114,7 @@ const RenderClassCard = ({
               className="w-full"
               onClick={() =>
                 window.open(
-                  "https://drive.google.com/drive/folders/1_iyHqZk4MUDLTec5reneK9Az_JmU-MUl?usp=drive_link",
+                  `${classItem.courseFilesLink}`,
                   "_blank"
                 )
               }

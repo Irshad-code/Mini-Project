@@ -126,6 +126,7 @@ export default function MyClasses() {
         fromTime,
         toTime,
         currentClass,
+        courseFilesLink,
       } = classData;
   
       if (
@@ -134,7 +135,8 @@ export default function MyClasses() {
         !semester ||
         (type === "ordinary" && !branch) ||
         !fromTime ||
-        !toTime
+        !toTime //||
+        //!courseFilesLink 
       ) {
         alert(`Please fill out all fields for class #${i + 1}`);
         return;
@@ -163,6 +165,7 @@ export default function MyClasses() {
         branch: type === "ordinary" ? branch : "", // Clear branch for other types
         schedule,
         currentClass,
+        courseFilesLink,
       });
     }
 
@@ -189,6 +192,7 @@ export default function MyClasses() {
           schedule: "",
           showScheduleEditor: false,
           currentClass: true,
+          courseFilesLink:"",
         },
       ]);
     } catch (error) {

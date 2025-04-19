@@ -27,6 +27,7 @@ const AddClassCard = ({
                 <th className="px-4 py-2">Schedule</th>
                 <th className="px-4 py-2">Class Type</th>
                 <th className="px-4 py-2">Branch</th>
+                <th className="px-4 py-2">Course Files Link</th>
               </tr>
             </thead>
             <tbody>
@@ -102,6 +103,16 @@ const AddClassCard = ({
                       placeholder={classData.type === "ordinary" ? "Enter branch" : "N/A"}
                     />
                   </td>
+                    <td key={"courseFilesLink"} className="px-2 py-1">
+                      <input
+                        type="text"
+                        placeholder="paste Gdrive link here"
+                        value={classData["courseFilesLink"]}
+                        onChange={(e) => updateNewClass(index, "courseFilesLink", e.target.value)}
+                        className="w-full p-1 border rounded"
+                        required
+                      />
+                    </td>                  
                 </tr>
               ))}
             </tbody>
@@ -196,6 +207,18 @@ const AddClassCard = ({
                   placeholder={classData.type === "ordinary" ? "Enter branch" : "N/A"}
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Course Files Link</label>
+                      <input
+                        type="text"
+                        placeholder="paste Gdrive link here"
+                        value={classData["courseFilesLink"]}
+                        onChange={(e) => updateNewClass(index, "courseFilesLink", e.target.value)}
+                        className="w-full p-1 border rounded"
+                        required
+                      />
+                    </div>
             </div>
           ))}
         </div>

@@ -76,6 +76,7 @@ const handleChange = (e) => {
       branch,
       type,
       currentClass,
+      courseFilesLink,
       fromTime,
       toTime,
     } = formData;
@@ -89,6 +90,7 @@ const handleChange = (e) => {
       branch,
       type,
       currentClass,
+      courseFilesLink,
       schedule: formattedSchedule,
     };
 
@@ -108,7 +110,7 @@ const handleChange = (e) => {
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-4">
        <div className="grid grid-cols-2 gap-4">
-  {["subject", "code", "semester", "branch", "type", "fromTime", "toTime"].map((field, index) => (
+  {["subject", "code", "semester", "branch", "type", "fromTime", "toTime", "courseFilesLink"].map((field, index) => (
     <div key={index}>
       <label className="block text-sm font-medium mb-1">
         {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, " $1")}
@@ -138,10 +140,11 @@ const handleChange = (e) => {
         <input
           type={field === "fromTime" || field === "toTime" ? "time" : "text"}
           name={field}
+          placeholder={field === "courseFilesLink"?"paste your Gdrive link here..":""}
           value={formData[field] || ""}
           onChange={handleChange}
           className="w-full p-2 border rounded"
-          required
+          required={field !== "courseFilesLink"}
         />
       )}
     </div>
